@@ -2,10 +2,12 @@ package com.project.zzimccong.controller.corp;
 
 
 import com.project.zzimccong.model.dto.corp.CorporationDTO;
+import com.project.zzimccong.model.dto.email.EmailDTO;
 import com.project.zzimccong.service.corp.CorporationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.project.zzimccong.model.entity.corp.Corporation;
+import com.project.zzimccong.service.email.EmailVerificationService;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,9 +16,11 @@ import java.util.Map;
 public class CorporationController {
 
     private final CorporationService corporationService;
+    private final EmailVerificationService emailVerificationService;
 
-    public CorporationController(CorporationService corporationService) {
+    public CorporationController(CorporationService corporationService, EmailVerificationService emailVerificationService) {
         this.corporationService = corporationService;
+        this.emailVerificationService = emailVerificationService;
     }
 
     @PostMapping("/corp-register")
@@ -52,4 +56,23 @@ public class CorporationController {
             return ResponseEntity.status(500).body(null);
         }
     }
+
+    @PostMapping("/verify-email")
+    public ResponseEntity<String> verifyEmail(@RequestParam String email, @RequestParam String code) {
+        EmailDTO emailDTO = new EmailDTO();
+        emailDTO.setCorpEmail(email);
+        emailDTO.setVerificationCode(code);
+
+        try {
+            boolean isVerified = emailVerificationService.verifyCode(emailDTO);
+            if (isVerified) {
+                return ResponseEntity.ok("Email verified successfully.");
+            } else {
+                return ResponseEntity.badRequest().body("Invalid verification code.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error verifying email: " + e.getMessage());
+        }
+    }
+
 }
