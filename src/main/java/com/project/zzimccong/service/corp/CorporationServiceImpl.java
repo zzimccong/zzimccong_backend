@@ -74,4 +74,29 @@ public class CorporationServiceImpl implements CorporationService {
     public Corporation getCorporationById(String corpId) {
         return corporationRepository.findByCorpId(corpId).orElseThrow(() -> new IllegalArgumentException("Corporation not found"));
     }
+
+    @Override
+    public Corporation updateCorporation(CorporationDTO corporationDTO) {
+        Corporation corporation = corporationRepository.findByCorpId(corporationDTO.getCorpId())
+                .orElseThrow(() -> new IllegalArgumentException("Corporation not found"));
+
+        if (corporationDTO.getCorpName() != null) {
+            corporation.setCorpName(corporationDTO.getCorpName());
+        }
+        if (corporationDTO.getCorpDept() != null) {
+            corporation.setCorpDept(corporationDTO.getCorpDept());
+        }
+        if (corporationDTO.getCorpEmail() != null) {
+            corporation.setCorpEmail(corporationDTO.getCorpEmail());
+        }
+        if (corporationDTO.getCorpAddress() != null) {
+            corporation.setCorpAddress(corporationDTO.getCorpAddress());
+        }
+        if (corporationDTO.getPassword() != null && !corporationDTO.getPassword().isEmpty()) {
+            corporation.setPassword(passwordEncoder.encode(corporationDTO.getPassword()));
+        }
+
+        return corporationRepository.save(corporation);
+    }
+
 }
