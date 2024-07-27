@@ -99,4 +99,17 @@ public class CorporationServiceImpl implements CorporationService {
         return corporationRepository.save(corporation);
     }
 
+    @Override
+    public void changePassword(String corpId, String oldPassword, String newPassword) {
+        Corporation corporation = corporationRepository.findByCorpId(corpId)
+                .orElseThrow(() -> new IllegalArgumentException("Corporation not found"));
+
+        if (!passwordEncoder.matches(oldPassword, corporation.getPassword())) {
+            throw new IllegalArgumentException("Old password is incorrect");
+        }
+
+        corporation.setPassword(passwordEncoder.encode(newPassword));
+        corporationRepository.save(corporation);
+    }
+
 }
