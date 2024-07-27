@@ -13,4 +13,5 @@ public interface CorporationService {
     String authenticate(String corpId, String password);
 
     Corporation getCorporationById(String corpId);
+    Corporation updateCorporation(CorporationDTO corporationDTO);
 }
