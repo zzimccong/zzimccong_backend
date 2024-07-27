@@ -5,6 +5,12 @@ import com.project.zzimccong.model.entity.corp.Corporation;
 
 public interface CorporationService {
     Corporation registerCorporation(CorporationDTO corporationDTO);
+
     boolean isCorpEmailExists(String corpEmail);
+
     boolean isCorpIdExists(String corpId);
+
+    String authenticate(String corpId, String password);
+
+    Corporation getCorporationById(String corpId);
 }
