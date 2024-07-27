@@ -103,4 +103,19 @@ public class CorporationController {
         }
     }
 
+    @PutMapping("/{corpId}/change-password")
+    public ResponseEntity<String> changePassword(
+            @PathVariable String corpId,
+            @RequestBody Map<String, String> passwordMap) {
+        String oldPassword = passwordMap.get("oldPassword");
+        String newPassword = passwordMap.get("newPassword");
+
+        try {
+            corporationService.changePassword(corpId, oldPassword, newPassword);
+            return ResponseEntity.ok("Password changed successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }
