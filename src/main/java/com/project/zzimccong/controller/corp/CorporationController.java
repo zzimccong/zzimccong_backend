@@ -75,4 +75,32 @@ public class CorporationController {
         }
     }
 
+    @GetMapping("/check-id")
+    public ResponseEntity<Boolean> checkCorpIdExists(@RequestParam String corpId) {
+        boolean exists = corporationService.isCorpIdExists(corpId);
+        return ResponseEntity.ok(exists);
+    }
+
+
+    @GetMapping("/{corpId}")
+    public ResponseEntity<Corporation> getCorporationById(@PathVariable String corpId) {
+        try {
+            Corporation corporation = corporationService.getCorporationById(corpId);
+            return ResponseEntity.ok(corporation);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @PutMapping("/{corpId}")
+    public ResponseEntity<String> updateCorporation(@PathVariable String corpId, @RequestBody CorporationDTO corporationDTO) {
+        try {
+            corporationDTO.setCorpId(corpId);
+            corporationService.updateCorporation(corporationDTO);
+            return ResponseEntity.ok("Update successful");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }
