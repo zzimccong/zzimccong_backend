@@ -1,8 +1,9 @@
 package com.project.zzimccong.security.service.corp;
 
+import com.project.zzimccong.model.entity.corp.Corporation;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import com.project.zzimccong.model.entity.corp.Corporation;
+
 
 import java.util.Collection;
 import java.util.Collections;
@@ -17,7 +18,6 @@ public class CorpDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // 권한이 필요하다면 여기서 반환
         return Collections.emptyList();
     }
 

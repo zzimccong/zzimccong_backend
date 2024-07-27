@@ -1,10 +1,13 @@
 package com.project.zzimccong.controller.corp;
 
+
 import com.project.zzimccong.model.dto.corp.CorporationDTO;
-import com.project.zzimccong.model.entity.corp.Corporation;
 import com.project.zzimccong.service.corp.CorporationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.project.zzimccong.model.entity.corp.Corporation;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/corporations")
@@ -31,6 +34,22 @@ public class CorporationController {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Registration failed: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, Object>> login(@RequestBody CorporationDTO corporationDTO) {
+        try {
+            String token = corporationService.authenticate(corporationDTO.getCorpId(), corporationDTO.getPassword());
+            if (token != null) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("token", token);
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(401).body(null);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
         }
     }
 }
