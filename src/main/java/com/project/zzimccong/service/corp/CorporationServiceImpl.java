@@ -112,4 +112,16 @@ public class CorporationServiceImpl implements CorporationService {
         corporationRepository.save(corporation);
     }
 
+    public boolean deleteCorporation(String corpId, String password) {
+        Optional<Corporation> corporationOptional = corporationRepository.findByCorpId(corpId);
+        if (corporationOptional.isPresent()) {
+            Corporation corporation = corporationOptional.get();
+            if (passwordEncoder.matches(password, corporation.getPassword())) {
+                corporationRepository.delete(corporation);
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
