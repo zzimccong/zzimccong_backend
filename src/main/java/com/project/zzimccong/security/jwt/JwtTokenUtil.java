@@ -40,7 +40,7 @@ public class JwtTokenUtil {
         return (String) getClaimsFromToken(token).get("userType");
     }
 
-    private Claims getClaimsFromToken(String token) {
+    public Claims getClaimsFromToken(String token) {
         return Jwts.parser()
                 .setSigningKey(secret)
                 .parseClaimsJws(token)
@@ -54,22 +54,5 @@ public class JwtTokenUtil {
         } catch (Exception e) {
             return false;
         }
-    }
-
-    // Getters and setters for secret and expiration
-    public String getSecret() {
-        return secret;
-    }
-
-    public void setSecret(String secret) {
-        this.secret = secret;
-    }
-
-    public Long getExpiration() {
-        return expiration;
-    }
-
-    public void setExpiration(Long expiration) {
-        this.expiration = expiration;
     }
 }
