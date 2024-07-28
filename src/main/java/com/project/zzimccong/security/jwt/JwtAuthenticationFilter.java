@@ -1,6 +1,7 @@
 package com.project.zzimccong.security.jwt;
 
 import com.project.zzimccong.security.service.corp.CustomCorpDetailsService;
+import com.project.zzimccong.security.service.user.CustomUserDetailsService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,12 +18,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenUtil jwtTokenUtil;
     private final CustomCorpDetailsService corpDetailsService;
-//    private final CustomUserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
 
-    public JwtAuthenticationFilter(JwtTokenUtil jwtTokenUtil, CustomCorpDetailsService corpDetailsService) {
+    public JwtAuthenticationFilter(JwtTokenUtil jwtTokenUtil, CustomCorpDetailsService corpDetailsService, CustomUserDetailsService userDetailsService) {
         this.jwtTokenUtil = jwtTokenUtil;
         this.corpDetailsService = corpDetailsService;
-//        this.userDetailsService = userDetailsService;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -47,18 +48,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             UserDetails userDetails = null;
             if ("corp".equals(userType)) {
                 userDetails = corpDetailsService.loadUserByUsername(userId);
-//            } else if ("user".equals(userType)) {
-//                userDetails = userDetailsService.loadUserByUsername(userId);
-//            }
-
-                if (userDetails != null && jwtTokenUtil.validateToken(token)) {
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
+            } else if ("user".equals(userType)) {
+                userDetails = userDetailsService.loadUserByUsername(userId);
             }
 
-            chain.doFilter(request, response);
+            if (userDetails != null && jwtTokenUtil.validateToken(token)) {
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         }
+
+        chain.doFilter(request, response);
     }
 }
