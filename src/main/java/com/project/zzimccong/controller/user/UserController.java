@@ -1,5 +1,6 @@
 package com.project.zzimccong.controller.user;
 
+import com.project.zzimccong.model.dto.sms.SmsVerificationDTO;
 import com.project.zzimccong.model.dto.user.UserDTO;
 import com.project.zzimccong.model.entity.user.User;
 import com.project.zzimccong.security.jwt.JwtTokenUtil;
@@ -41,7 +42,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ID check failed: " + e.getMessage());
         }
     }
-
 
 
     @GetMapping("/check-email")
@@ -87,6 +87,30 @@ public class UserController {
             return ResponseEntity.ok(user);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @PostMapping("/send-sms")
+    public ResponseEntity<?> sendSmsVerification(@RequestBody SmsVerificationDTO smsVerificationDTO) {
+        try {
+            userService.sendSmsVerification(smsVerificationDTO.getPhone());
+            return ResponseEntity.ok("SMS sent successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send SMS: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/verify-sms")
+    public ResponseEntity<?> verifySmsCode(@RequestBody SmsVerificationDTO smsVerificationDTO) {
+        try {
+            boolean isValid = userService.verifySmsCode(smsVerificationDTO.getPhone(), smsVerificationDTO.getVerificationCode());
+            if (isValid) {
+                return ResponseEntity.ok("Verification successful");
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid verification code");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Verification failed: " + e.getMessage());
         }
     }
 }

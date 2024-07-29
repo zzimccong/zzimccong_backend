@@ -4,6 +4,7 @@ import com.project.zzimccong.security.jwt.JwtAuthenticationFilter;
 import com.project.zzimccong.security.jwt.JwtTokenUtil;
 import com.project.zzimccong.security.service.corp.CustomCorpDetailsService;
 import com.project.zzimccong.security.service.user.CustomUserDetailsService;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -41,9 +42,9 @@ public class SecurityConfig {
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
-            public void addCorsMappings(CorsRegistry registry) {
+            public void addCorsMappings(@NotNull CorsRegistry registry) {
                 // 모든 경로에 대해 http://localhost:3000에서 오는 요청을 허용
-                registry.addMapping("/**").allowedOrigins("http://localhost:3000", "http://10.10.10.199:3000").allowedMethods("*");
+                registry.addMapping("/**").allowedOrigins("http://localhost:3000", "http://10.10.10.164:3000").allowedMethods("*");
             }
         };
     }

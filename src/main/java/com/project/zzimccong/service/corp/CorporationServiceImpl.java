@@ -7,6 +7,7 @@ import com.project.zzimccong.security.jwt.JwtTokenUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -123,5 +124,11 @@ public class CorporationServiceImpl implements CorporationService {
         }
         return false;
     }
+
+    @Override
+    public List<Corporation> getAllCorporations() {
+        return corporationRepository.findAll();
+    }
+
 
 }
