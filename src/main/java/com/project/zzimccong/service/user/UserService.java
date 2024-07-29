@@ -10,4 +10,6 @@ public interface UserService {
     boolean isEmailExists(String email);
     boolean isLoginIdExists(String loginId);
     User getUserById(String loginId); // 수정된 부분
+    void sendSmsVerification(String phoneNum);
+    boolean verifySmsCode(String phoneNum, String verificationCode);
 }

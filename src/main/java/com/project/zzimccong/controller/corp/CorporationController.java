@@ -46,8 +46,10 @@ public class CorporationController {
         try {
             String token = corporationService.authenticate(corporationDTO.getCorpId(), corporationDTO.getPassword());
             if (token != null) {
+                Corporation corporation = corporationService.getCorporationById(corporationDTO.getCorpId());
                 Map<String, Object> response = new HashMap<>();
                 response.put("token", token);
+                response.put("user", corporation);
                 return ResponseEntity.ok(response);
             } else {
                 return ResponseEntity.status(401).body(null);
