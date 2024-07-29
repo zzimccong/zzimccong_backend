@@ -4,9 +4,12 @@ package com.project.zzimccong.service.user;
 import com.project.zzimccong.model.dto.user.UserDTO;
 import com.project.zzimccong.model.entity.user.User;
 import com.project.zzimccong.repository.user.UserRepository;
+import com.project.zzimccong.service.sms.SMSTemporaryStorageService;
+import com.project.zzimccong.sms.SmsUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -15,10 +18,14 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SmsUtil smsUtil;
+    private final SMSTemporaryStorageService smsTemporaryStorageService;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, SmsUtil smsUtil, SMSTemporaryStorageService smsTemporaryStorageService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.smsUtil = smsUtil;
+        this.smsTemporaryStorageService = smsTemporaryStorageService;
     }
 
     @Override
@@ -61,5 +68,23 @@ public class UserServiceImpl implements UserService {
     public User getUserById(String loginId) {
         return userRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + loginId));
+    }
+
+    @Override
+    public void sendSmsVerification(String phoneNum) {
+        String verificationCode = generateVerificationCode();
+        smsUtil.sendOne(phoneNum, verificationCode);
+        smsTemporaryStorageService.saveVerificationCode(phoneNum, verificationCode);
+    }
+
+    @Override
+    public boolean verifySmsCode(String phoneNum, String verificationCode) {
+        return smsTemporaryStorageService.verifyCode(phoneNum, verificationCode);
+    }
+
+    private String generateVerificationCode() {
+        SecureRandom random = new SecureRandom();
+        int code = random.nextInt(8999) + 1000; // 1000 ~ 9999 범위의 숫자 생성
+        return String.valueOf(code);
     }
 }
