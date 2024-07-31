@@ -22,4 +22,6 @@ public interface CorporationService {
     void changePassword(String corpId, String oldPassword, String newPassword);
 
     boolean deleteCorporation(String corpId, String password);
+
+    Corporation getCorporationByNameAndEmail(String name, String email);
 }

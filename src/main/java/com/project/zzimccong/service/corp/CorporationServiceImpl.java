@@ -130,5 +130,9 @@ public class CorporationServiceImpl implements CorporationService {
         return corporationRepository.findAll();
     }
 
+    @Override
+    public Corporation getCorporationByNameAndEmail(String name, String email) {
+        return corporationRepository.findByCorpNameAndCorpEmail(name, email).orElse(null);
+    }
 
 }
