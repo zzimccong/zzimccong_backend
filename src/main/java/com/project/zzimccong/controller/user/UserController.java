@@ -113,4 +113,15 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Verification failed: " + e.getMessage());
         }
     }
+
+    @PutMapping("/{loginId}")
+    public ResponseEntity<String> updateUser(@PathVariable String loginId, @RequestBody UserDTO userDTO) {
+        try {
+            userDTO.setLoginId(loginId);
+            userService.updateUser(userDTO);
+            return ResponseEntity.ok("Update successful");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
