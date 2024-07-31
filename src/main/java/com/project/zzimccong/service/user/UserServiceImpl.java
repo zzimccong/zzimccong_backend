@@ -124,4 +124,17 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
+
+    @Override
+    public boolean deleteUser(String loginId, String password) {
+        Optional<User> userOptional = userRepository.findByLoginId(loginId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            if (passwordEncoder.matches(password, user.getPassword())) {
+                userRepository.delete(user);
+                return true;
+            }
+        }
+        return false;
+    }
 }
