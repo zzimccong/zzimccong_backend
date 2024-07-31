@@ -11,4 +11,6 @@ public interface CorporationRepository extends JpaRepository<Corporation, Intege
     Optional<Corporation> findByCorpId(String corpId);
     boolean existsByCorpId(String corpId);
     Optional<Corporation> findByCorpIdAndPassword(String corpId, String password);
+    Optional<Corporation> findByCorpNameAndCorpEmail(String corpName, String corpEmail);
+
 }
