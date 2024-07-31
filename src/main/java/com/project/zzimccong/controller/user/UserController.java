@@ -139,4 +139,19 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PostMapping("/{loginId}/delete")
+    public ResponseEntity<String> deleteUser(@PathVariable String loginId, @RequestBody Map<String, String> request) {
+        String password = request.get("password");
+        try {
+            boolean isDeleted = userService.deleteUser(loginId, password);
+            if (isDeleted) {
+                return ResponseEntity.ok("Account deleted successfully");
+            } else {
+                return ResponseEntity.status(401).body("Invalid password");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to delete account");
+        }
+    }
 }
