@@ -14,4 +14,8 @@ public interface UserService {
     boolean verifySmsCode(String phoneNum, String verificationCode);
 
     User updateUser(UserDTO userDTO);
+
+    void changePassword(String loginId, String oldPassword, String newPassword);
+
+
 }
