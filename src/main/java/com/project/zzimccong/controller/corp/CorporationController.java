@@ -4,6 +4,7 @@ package com.project.zzimccong.controller.corp;
 import com.project.zzimccong.model.dto.corp.CorporationDTO;
 import com.project.zzimccong.model.dto.email.EmailDTO;
 import com.project.zzimccong.service.corp.CorporationService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.project.zzimccong.model.entity.corp.Corporation;
@@ -132,6 +133,20 @@ public class CorporationController {
             }
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Failed to delete account");
+        }
+    }
+
+    @PostMapping("/find-id")
+    public ResponseEntity<?> findCorpId(@RequestBody CorporationDTO corporationDTO) {
+        try {
+            Corporation corp = corporationService.getCorporationByNameAndEmail(corporationDTO.getCorpName(), corporationDTO.getCorpEmail());
+            if (corp != null) {
+                return ResponseEntity.ok(corp.getCorpId());
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Corporation not found");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to find corporation ID: " + e.getMessage());
         }
     }
 }
