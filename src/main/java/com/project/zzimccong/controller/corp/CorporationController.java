@@ -149,4 +149,14 @@ public class CorporationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to find corporation ID: " + e.getMessage());
         }
     }
+
+    @PostMapping("/find-password")
+    public ResponseEntity<?> findPassword(@RequestBody CorporationDTO corporationDTO) {
+        try {
+            corporationService.sendTemporaryPassword(corporationDTO.getCorpId(), corporationDTO.getCorpEmail());
+            return ResponseEntity.ok("Temporary password sent to your email.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send temporary password: " + e.getMessage());
+        }
+    }
 }

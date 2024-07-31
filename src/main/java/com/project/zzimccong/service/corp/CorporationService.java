@@ -24,4 +24,6 @@ public interface CorporationService {
     boolean deleteCorporation(String corpId, String password);
 
     Corporation getCorporationByNameAndEmail(String name, String email);
+
+    void sendTemporaryPassword(String corpId, String email);
 }
