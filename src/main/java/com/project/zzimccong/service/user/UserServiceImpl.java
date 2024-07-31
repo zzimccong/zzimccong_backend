@@ -4,6 +4,7 @@ package com.project.zzimccong.service.user;
 import com.project.zzimccong.model.dto.user.UserDTO;
 import com.project.zzimccong.model.entity.user.User;
 import com.project.zzimccong.repository.user.UserRepository;
+import com.project.zzimccong.service.email.EmailVerificationService;
 import com.project.zzimccong.service.sms.SMSTemporaryStorageService;
 import com.project.zzimccong.sms.SmsUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,12 +21,14 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final SmsUtil smsUtil;
     private final SMSTemporaryStorageService smsTemporaryStorageService;
+    private final EmailVerificationService emailVerificationService;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, SmsUtil smsUtil, SMSTemporaryStorageService smsTemporaryStorageService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, SmsUtil smsUtil, SMSTemporaryStorageService smsTemporaryStorageService, EmailVerificationService emailVerificationService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.smsUtil = smsUtil;
         this.smsTemporaryStorageService = smsTemporaryStorageService;
+        this.emailVerificationService = emailVerificationService;
     }
 
     @Override
@@ -146,5 +149,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByNameAndEmail(String name, String email) {
         return userRepository.findByNameAndEmail(name, email).orElse(null);
+    }
+
+    @Override
+    public void sendTemporaryPassword(String loginId, String email) {
+        emailVerificationService.sendTemporaryPassword(null, loginId, email);
     }
 }
