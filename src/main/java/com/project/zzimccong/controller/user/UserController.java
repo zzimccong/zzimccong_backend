@@ -124,4 +124,19 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PutMapping("/{loginId}/change-password")
+    public ResponseEntity<String> changePassword(
+            @PathVariable String loginId,
+            @RequestBody Map<String, String> passwordMap) {
+        String oldPassword = passwordMap.get("oldPassword");
+        String newPassword = passwordMap.get("newPassword");
+
+        try {
+            userService.changePassword(loginId, oldPassword, newPassword);
+            return ResponseEntity.ok("Password changed successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
