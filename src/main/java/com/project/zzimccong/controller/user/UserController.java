@@ -169,4 +169,14 @@ public class UserController {
         }
     }
 
+    @PostMapping("/find-password")
+    public ResponseEntity<?> findPassword(@RequestBody UserDTO userDTO) {
+        try {
+            userService.sendTemporaryPassword(userDTO.getLoginId(), userDTO.getEmail());
+            return ResponseEntity.ok("Temporary password sent to your email.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send temporary password: " + e.getMessage());
+        }
+    }
+
 }

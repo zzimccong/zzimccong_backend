@@ -22,4 +22,6 @@ public interface UserService {
     boolean deleteUser(String loginId, String password);
 
     User getUserByNameAndEmail(String name, String email);
+
+    void sendTemporaryPassword(String loginId, String email);
 }
