@@ -154,4 +154,19 @@ public class UserController {
             return ResponseEntity.status(500).body("Failed to delete account");
         }
     }
+
+    @PostMapping("/find-id")
+    public ResponseEntity<?> findUserId(@RequestBody UserDTO userDTO) {
+        try {
+            User user = userService.getUserByNameAndEmail(userDTO.getName(), userDTO.getEmail());
+            if (user != null) {
+                return ResponseEntity.ok(user.getLoginId());
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to find user ID: " + e.getMessage());
+        }
+    }
+
 }
