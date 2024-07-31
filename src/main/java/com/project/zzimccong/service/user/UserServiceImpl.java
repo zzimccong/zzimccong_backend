@@ -87,4 +87,28 @@ public class UserServiceImpl implements UserService {
         int code = random.nextInt(8999) + 1000; // 1000 ~ 9999 범위의 숫자 생성
         return String.valueOf(code);
     }
+
+    @Override
+    public User updateUser(UserDTO userDTO) {
+        User user = userRepository.findByLoginId(userDTO.getLoginId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (userDTO.getName() != null) {
+            user.setName(userDTO.getName());
+        }
+        if (userDTO.getBirth() != null) {
+            user.setBirth(LocalDate.parse(userDTO.getBirth()));
+        }
+        if (userDTO.getEmail() != null) {
+            user.setEmail(userDTO.getEmail());
+        }
+        if (userDTO.getPhone() != null) {
+            user.setPhone(userDTO.getPhone());
+        }
+        if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        }
+
+        return userRepository.save(user);
+    }
 }
