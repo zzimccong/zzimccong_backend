@@ -71,6 +71,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean isPhoneExists(String phone) {
+        return userRepository.existsByPhone(phone);
+    }
+
+    @Override
     public void sendSmsVerification(String phoneNum) {
         String verificationCode = generateVerificationCode();
         smsUtil.sendOne(phoneNum, verificationCode);
@@ -136,5 +141,10 @@ public class UserServiceImpl implements UserService {
             }
         }
         return false;
+    }
+
+    @Override
+    public User getUserByNameAndEmail(String name, String email) {
+        return userRepository.findByNameAndEmail(name, email).orElse(null);
     }
 }
