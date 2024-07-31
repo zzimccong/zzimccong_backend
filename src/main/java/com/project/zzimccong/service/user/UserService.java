@@ -10,6 +10,8 @@ public interface UserService {
     boolean isEmailExists(String email);
     boolean isLoginIdExists(String loginId);
     User getUserById(String loginId);
+
+    boolean isPhoneExists(String phone);
     void sendSmsVerification(String phoneNum);
     boolean verifySmsCode(String phoneNum, String verificationCode);
 
@@ -18,4 +20,6 @@ public interface UserService {
     void changePassword(String loginId, String oldPassword, String newPassword);
 
     boolean deleteUser(String loginId, String password);
+
+    User getUserByNameAndEmail(String name, String email);
 }
