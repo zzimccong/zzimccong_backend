@@ -5,7 +5,7 @@ import com.project.zzimccong.model.dto.user.UserDTO;
 import com.project.zzimccong.model.entity.user.User;
 import com.project.zzimccong.repository.user.UserRepository;
 import com.project.zzimccong.service.email.EmailVerificationService;
-import com.project.zzimccong.service.sms.SMSTemporaryStorageService;
+import com.project.zzimccong.service.redis.TemporaryStorageService;
 import com.project.zzimccong.sms.SmsUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,14 +20,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final SmsUtil smsUtil;
-    private final SMSTemporaryStorageService smsTemporaryStorageService;
+    private final TemporaryStorageService temporaryStorageService;
     private final EmailVerificationService emailVerificationService;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, SmsUtil smsUtil, SMSTemporaryStorageService smsTemporaryStorageService, EmailVerificationService emailVerificationService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, SmsUtil smsUtil, TemporaryStorageService temporaryStorageService, EmailVerificationService emailVerificationService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.smsUtil = smsUtil;
-        this.smsTemporaryStorageService = smsTemporaryStorageService;
+        this.temporaryStorageService = temporaryStorageService;
         this.emailVerificationService = emailVerificationService;
     }
 
@@ -82,12 +82,12 @@ public class UserServiceImpl implements UserService {
     public void sendSmsVerification(String phoneNum) {
         String verificationCode = generateVerificationCode();
         smsUtil.sendOne(phoneNum, verificationCode);
-        smsTemporaryStorageService.saveVerificationCode(phoneNum, verificationCode);
+        temporaryStorageService.saveSMSVerificationCode(phoneNum, verificationCode);
     }
 
     @Override
     public boolean verifySmsCode(String phoneNum, String verificationCode) {
-        return smsTemporaryStorageService.verifyCode(phoneNum, verificationCode);
+        return temporaryStorageService.verifySMSCode(phoneNum, verificationCode);
     }
 
     private String generateVerificationCode() {
