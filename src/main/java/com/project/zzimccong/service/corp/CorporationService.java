@@ -12,7 +12,7 @@ public interface CorporationService {
 
     boolean isCorpIdExists(String corpId);
 
-    String authenticate(String corpId, String password);
+    Corporation authenticate(String corpId, String password);
 
     List<Corporation> getAllCorporations();
 
