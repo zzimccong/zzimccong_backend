@@ -5,6 +5,10 @@ import com.project.zzimccong.model.dto.email.EmailDTO;
 
 public interface EmailVerificationService {
     void sendVerificationEmail(EmailDTO emailDTO);
+
+    void resendVerificationEmail(EmailDTO emailDTO);
+
     boolean verifyCode(EmailDTO emailDTO);
+
     void sendTemporaryPassword(String corpId, String userId, String email);
 }
