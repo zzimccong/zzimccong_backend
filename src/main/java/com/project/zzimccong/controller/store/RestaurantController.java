@@ -1,11 +1,14 @@
 package com.project.zzimccong.controller.store;
 
+
+import com.project.zzimccong.model.dto.store.RestaurantDTO;
 import com.project.zzimccong.model.entity.store.Restaurant;
 import com.project.zzimccong.repository.store.RestaurantRepository;
 import com.project.zzimccong.service.store.RestaurantService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 //@Controller
@@ -26,6 +29,13 @@ public class RestaurantController {
     public String fetchRestaurants() {
         restaurantService.testChromeDriverWithCSSSelector();
         return "Restaurants fetched and saved successfully!";
+    }
+    //1차 검색어로 가게 찾기
+    @PostMapping("/search")
+    public List<RestaurantDTO> findByKeyword(@RequestBody Map<String,Object> Keyword){
+        String keyword = (String) Keyword.get("searchWord");
+        System.out.println(keyword);
+        return restaurantService.findByKeyword(keyword);
     }
 
     @CrossOrigin(origins = "http://localhost:3000")

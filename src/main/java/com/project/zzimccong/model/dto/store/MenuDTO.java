@@ -1,7 +1,15 @@
 package com.project.zzimccong.model.dto.store;
 
+import com.project.zzimccong.model.entity.store.Menu;
 import com.project.zzimccong.model.entity.store.Restaurant;
+import lombok.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+ //빌더패턴 적용한 클래스
+@Getter
+@Setter
 public class MenuDTO {
 
     private Long id; // 기본키
@@ -13,6 +21,7 @@ public class MenuDTO {
 
     public MenuDTO() {}
 
+    @Builder
     public MenuDTO(Long id, Restaurant restaurant, String name, String price, String description, String photoUrl) {
         this.id = id;
         this.restaurant = restaurant;
@@ -22,9 +31,21 @@ public class MenuDTO {
         this.photoUrl = photoUrl;
     }
 
-    public Long getId() {
-        return id;
+    // menu --> menuDTO
+    private static MenuDTO toMenuDTO(Menu menu) {
+        return MenuDTO.builder()
+                .id(menu.getId())
+                .restaurant(menu.getRestaurant())
+                .name(menu.getName())
+                .price(menu.getPrice())
+                .description(menu.getDescription())
+                .photoUrl(menu.getPhotoUrl())
+                .build();
     }
+
+     public Long getId() {
+         return id;
+     }
 
     public void setId(Long id) {
         this.id = id;
@@ -80,5 +101,8 @@ public class MenuDTO {
                 ", description='" + description + '\'' +
                 ", photoUrl='" + photoUrl + '\'' +
                 '}';
+    }
+    public static List<MenuDTO> toMenuDTO(List<Menu> menuList) {
+        return menuList.stream().map(MenuDTO::toMenuDTO).collect(Collectors.toList());
     }
 }
