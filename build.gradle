@@ -60,6 +60,8 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	// JUnit 플랫폼 런처 의존성 추가 (테스트 실행 시 사용)
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	// selenium 웹 브라우저 자동화 (크롤링)
+	implementation 'org.seleniumhq.selenium:selenium-java:4.1.4'
 }
 
 tasks.named('test') {
