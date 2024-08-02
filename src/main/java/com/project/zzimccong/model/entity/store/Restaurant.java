@@ -1,6 +1,8 @@
 package com.project.zzimccong.model.entity.store;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.project.zzimccong.model.dto.store.RestaurantDTO;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -44,7 +46,7 @@ public class Restaurant {
     private String seats;  // 좌석 정보를
 
     public Restaurant() {}
-
+    @Builder
     public Restaurant(long id, String name, String category, String roadAddress, String numberAddress, String phoneNumber, String detailInfo, String businessHours, String link, List<Menu> menus, String facilities, String parkingInfo, String mainPhotoUrl, String photo1Url, String photo2Url, String photo3Url, String photo4Url, String photo5Url, double latitude, double longitude, String seats) {
         this.id = id;
         this.name = name;
@@ -237,7 +239,7 @@ public class Restaurant {
         this.seats = seats;
     }
 
-    @Override
+    /*@Override
     public String toString() {
         return "Restaurant{" +
                 "id=" + id +
@@ -262,5 +264,5 @@ public class Restaurant {
                 ", longitude=" + longitude +
                 ", seats='" + seats + '\'' +
                 '}';
-    }
+    }*/
 }

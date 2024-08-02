@@ -1,8 +1,10 @@
 package com.project.zzimccong.model.dto.store;
 
-import com.project.zzimccong.model.entity.store.Menu;
+import com.project.zzimccong.model.entity.store.Restaurant;
+import lombok.Builder;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RestaurantDTO {
 
@@ -15,7 +17,9 @@ public class RestaurantDTO {
     private String detailInfo;
     private String businessHours;
     private String link; // 링크
-    private List<Menu> menus;
+
+    private List<MenuDTO> menus;
+
     private String facilities;
     private String parkingInfo;
     private String mainPhotoUrl;
@@ -29,8 +33,8 @@ public class RestaurantDTO {
     private String seats;
 
     public RestaurantDTO() {}
-
-    public RestaurantDTO(long id, String name, String category, String roadAddress, String numberAddress, String phoneNumber, String detailInfo, String businessHours, String link, List<Menu> menus, String facilities, String parkingInfo, String mainPhotoUrl, String photo1Url, String photo2Url, String photo3Url, String photo4Url, String photo5Url, double latitude, double longitude, String seats) {
+    @Builder
+    public RestaurantDTO(long id, String name, String category, String roadAddress, String numberAddress, String phoneNumber, String detailInfo, String businessHours, String link, List<MenuDTO> menus, String facilities, String parkingInfo, String mainPhotoUrl, String photo1Url, String photo2Url, String photo3Url, String photo4Url, String photo5Url, double latitude, double longitude, String seats) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -105,9 +109,39 @@ public class RestaurantDTO {
     public String getDetailInfo() {
         return detailInfo;
     }
+    public static RestaurantDTO toRestaurantDTO(Restaurant restaurant) {
+        return RestaurantDTO.builder()
+                .id(restaurant.getId())
+                .name(restaurant.getName())
+                .category(restaurant.getCategory())
+                .roadAddress(restaurant.getRoadAddress())
+                .numberAddress(restaurant.getNumberAddress())
+                .phoneNumber(restaurant.getPhoneNumber())
+                .detailInfo(restaurant.getDetailInfo())
+                .businessHours(restaurant.getBusinessHours())
+                .link(restaurant.getLink())
+                .menus(MenuDTO.toMenuDTO(restaurant.getMenus())) //타입 변환
+                .facilities(restaurant.getFacilities())
+                .parkingInfo(restaurant.getParkingInfo())
+                .mainPhotoUrl(restaurant.getMainPhotoUrl())
+                .photo1Url(restaurant.getPhoto1Url())
+                .photo2Url(restaurant.getPhoto2Url())
+                .photo3Url(restaurant.getPhoto3Url())
+                .photo4Url(restaurant.getPhoto4Url())
+                .photo5Url(restaurant.getPhoto5Url())
+                .latitude(restaurant.getLatitude())
+                .longitude(restaurant.getLongitude())
+                .seats(restaurant.getSeats())
+                .build();
+    }
 
     public void setDetailInfo(String detailInfo) {
         this.detailInfo = detailInfo;
+    }
+    public static List<RestaurantDTO> toRestaurantDTOList(List<Restaurant> restaurants) {
+        return restaurants.stream()
+                .map(RestaurantDTO::toRestaurantDTO)
+                .collect(Collectors.toList());
     }
 
     public String getBusinessHours() {
@@ -126,11 +160,11 @@ public class RestaurantDTO {
         this.link = link;
     }
 
-    public List<Menu> getMenus() {
+    public List<MenuDTO> getMenus() {
         return menus;
     }
 
-    public void setMenus(List<Menu> menus) {
+    public void setMenus(List<MenuDTO> menus) {
         this.menus = menus;
     }
 

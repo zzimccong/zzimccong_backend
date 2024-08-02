@@ -1,7 +1,10 @@
 package com.project.zzimccong.service.store;
 
+
+import com.project.zzimccong.model.dto.store.RestaurantDTO;
 import com.project.zzimccong.model.entity.store.Menu;
 import com.project.zzimccong.model.entity.store.Restaurant;
+import com.project.zzimccong.repository.store.RestaurantDSLRepository;
 import com.project.zzimccong.repository.store.MenuRepository;
 import com.project.zzimccong.repository.store.RestaurantRepository;
 import org.openqa.selenium.*;
@@ -12,6 +15,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,13 +24,27 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class RestaurantServiceImpl implements RestaurantService {
 
     @Autowired
     private RestaurantRepository restaurantRepository;
+    @Autowired
+    private RestaurantDSLRepository restaurantDSLRepository;
+
 
     @Autowired
     private MenuRepository menuRepository;
+
+    @Override
+    public List<RestaurantDTO> findByKeyword(String keyword) {
+
+        List<Restaurant> restaurant = restaurantDSLRepository.findByKeyword(keyword);
+        List<RestaurantDTO> dtoList = RestaurantDTO.toRestaurantDTOList(restaurant);
+
+        return dtoList;
+    }
+
 
     @Override
     public void testChromeDriverWithCSSSelector() {
@@ -380,3 +398,4 @@ public class RestaurantServiceImpl implements RestaurantService {
         return restaurant;
     }
 }
+
