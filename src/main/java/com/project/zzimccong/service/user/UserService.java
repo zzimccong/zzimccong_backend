@@ -5,11 +5,22 @@ import com.project.zzimccong.model.dto.user.UserDTO;
 import com.project.zzimccong.model.entity.user.User;
 
 public interface UserService {
+
     User registerUser(UserDTO userDTO);
-    User authenticate(String loginId, String password); // 수정된 부분
+    User authenticate(String loginId, String password);
     boolean isEmailExists(String email);
     boolean isLoginIdExists(String loginId);
-    User getUserById(String loginId); // 수정된 부분
+    User getUserById(String loginId);
+    boolean isPhoneExists(String phone);
+
     void sendSmsVerification(String phoneNum);
     boolean verifySmsCode(String phoneNum, String verificationCode);
+
+    User updateUser(UserDTO userDTO);
+    void changePassword(String loginId, String oldPassword, String newPassword);
+
+    boolean deleteUser(String loginId, String password);
+
+    User getUserByNameAndEmail(String name, String email);
+    void sendTemporaryPassword(String loginId, String email);
 }

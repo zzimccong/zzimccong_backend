@@ -3,7 +3,8 @@ package com.project.zzimccong.service.corp;
 import com.project.zzimccong.model.dto.corp.CorporationDTO;
 import com.project.zzimccong.model.entity.corp.Corporation;
 import com.project.zzimccong.repository.corp.CorporationRepository;
-import com.project.zzimccong.security.jwt.JwtTokenUtil;
+
+import com.project.zzimccong.service.email.EmailVerificationService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,13 +15,14 @@ import java.util.Optional;
 public class CorporationServiceImpl implements CorporationService {
 
     private final CorporationRepository corporationRepository;
-    private final JwtTokenUtil jwtTokenUtil;
-    private final PasswordEncoder passwordEncoder;
 
-    public CorporationServiceImpl(CorporationRepository corporationRepository, JwtTokenUtil jwtTokenUtil, PasswordEncoder passwordEncoder) {
+    private final PasswordEncoder passwordEncoder;
+    private final EmailVerificationService emailVerificationService;
+
+    public CorporationServiceImpl(CorporationRepository corporationRepository, PasswordEncoder passwordEncoder, EmailVerificationService emailVerificationService) {
         this.corporationRepository = corporationRepository;
-        this.jwtTokenUtil = jwtTokenUtil;
         this.passwordEncoder = passwordEncoder;
+        this.emailVerificationService = emailVerificationService;
     }
 
     @Override
@@ -50,6 +52,18 @@ public class CorporationServiceImpl implements CorporationService {
     }
 
     @Override
+    public Corporation authenticate(String corpId, String password) { // 수정
+        Optional<Corporation> corporationOptional = corporationRepository.findByCorpId(corpId);
+        if (corporationOptional.isPresent()) {
+            Corporation corporation = corporationOptional.get();
+            if (passwordEncoder.matches(password, corporation.getPassword())) {
+                return corporation;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public boolean isCorpEmailExists(String corpEmail) {
         return corporationRepository.findByCorpEmail(corpEmail).isPresent();
     }
@@ -60,20 +74,14 @@ public class CorporationServiceImpl implements CorporationService {
     }
 
     @Override
-    public String authenticate(String corpId, String password) {
-        Optional<Corporation> corporationOptional = corporationRepository.findByCorpId(corpId);
-        if (corporationOptional.isPresent()) {
-            Corporation corporation = corporationOptional.get();
-            if (passwordEncoder.matches(password, corporation.getPassword())) {
-                return jwtTokenUtil.generateToken(corpId, "corp");
-            }
-        }
-        return null;
+    public List<Corporation> getAllCorporations() {
+        return corporationRepository.findAll();
     }
 
     @Override
     public Corporation getCorporationById(String corpId) {
-        return corporationRepository.findByCorpId(corpId).orElseThrow(() -> new IllegalArgumentException("Corporation not found"));
+        return corporationRepository.findByCorpId(corpId)
+                .orElseThrow(() -> new IllegalArgumentException("Corporation not found"));
     }
 
     @Override
@@ -113,6 +121,7 @@ public class CorporationServiceImpl implements CorporationService {
         corporationRepository.save(corporation);
     }
 
+    @Override
     public boolean deleteCorporation(String corpId, String password) {
         Optional<Corporation> corporationOptional = corporationRepository.findByCorpId(corpId);
         if (corporationOptional.isPresent()) {
@@ -126,9 +135,13 @@ public class CorporationServiceImpl implements CorporationService {
     }
 
     @Override
-    public List<Corporation> getAllCorporations() {
-        return corporationRepository.findAll();
+    public Corporation getCorporationByNameAndEmail(String name, String email) {
+        return corporationRepository.findByCorpNameAndCorpEmail(name, email).orElse(null);
     }
 
+    @Override
+    public void sendTemporaryPassword(String corpId, String email) {
+        emailVerificationService.sendTemporaryPassword(corpId, null, email);
+    }
 
 }

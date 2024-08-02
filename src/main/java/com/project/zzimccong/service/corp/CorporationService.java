@@ -12,7 +12,7 @@ public interface CorporationService {
 
     boolean isCorpIdExists(String corpId);
 
-    String authenticate(String corpId, String password);
+    Corporation authenticate(String corpId, String password);
 
     List<Corporation> getAllCorporations();
 
@@ -22,4 +22,8 @@ public interface CorporationService {
     void changePassword(String corpId, String oldPassword, String newPassword);
 
     boolean deleteCorporation(String corpId, String password);
+
+    Corporation getCorporationByNameAndEmail(String name, String email);
+
+    void sendTemporaryPassword(String corpId, String email);
 }

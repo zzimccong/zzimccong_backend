@@ -36,6 +36,8 @@ public class QRestaurant extends EntityPathBase<Restaurant> {
 
     public final NumberPath<Double> longitude = createNumber("longitude", Double.class);
 
+    public final StringPath mainPhotoUrl = createString("mainPhotoUrl");
+
     public final ListPath<Menu, QMenu> menus = this.<Menu, QMenu>createList("menus", Menu.class, QMenu.class, PathInits.DIRECT2);
 
     public final StringPath name = createString("name");
