@@ -1,6 +1,6 @@
 package com.project.zzimccong.model.dto.store;
 
-import com.project.zzimccong.model.entity.restaurant.Menu;
+import com.project.zzimccong.model.entity.store.Menu;
 
 import java.util.List;
 

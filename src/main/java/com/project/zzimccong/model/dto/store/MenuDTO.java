@@ -1,6 +1,6 @@
 package com.project.zzimccong.model.dto.store;
 
-import com.project.zzimccong.model.entity.restaurant.Restaurant;
+import com.project.zzimccong.model.entity.store.Restaurant;
 
 public class MenuDTO {
 
