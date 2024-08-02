@@ -9,17 +9,16 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/search")
-public class StoreController {
+public class RestaurantController {
 
     RestaurantService restaurantService;
 
-    public StoreController(RestaurantService restaurantService) {
+    public RestaurantController(RestaurantService restaurantService) {
         this.restaurantService = restaurantService;
     }
 
     //1차 검색어로 가게 찾기
-    @PostMapping()
+    @PostMapping("/search")
     public List<RestaurantDTO> findByKeyword(@RequestBody Map<String,Object> Keyword){
         String keyword = (String) Keyword.get("searchWord");
         System.out.println(keyword);
@@ -27,3 +26,7 @@ public class StoreController {
     }
 
 }
+
+
+
+
