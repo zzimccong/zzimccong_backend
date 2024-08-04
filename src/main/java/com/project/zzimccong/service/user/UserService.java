@@ -28,5 +28,7 @@ public interface UserService {
 
     List<User> getAllUsers();
 
+    User getFindById(Integer id);
+
 
 }
