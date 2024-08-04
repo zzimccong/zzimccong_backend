@@ -4,6 +4,8 @@ package com.project.zzimccong.service.user;
 import com.project.zzimccong.model.dto.user.UserDTO;
 import com.project.zzimccong.model.entity.user.User;
 
+import java.util.List;
+
 public interface UserService {
 
     User registerUser(UserDTO userDTO);
@@ -23,4 +25,8 @@ public interface UserService {
 
     User getUserByNameAndEmail(String name, String email);
     void sendTemporaryPassword(String loginId, String email);
+
+    List<User> getAllUsers();
+
+
 }
