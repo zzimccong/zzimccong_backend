@@ -14,8 +14,6 @@ public interface CorporationService {
 
     Corporation authenticate(String corpId, String password);
 
-    List<Corporation> getAllCorporations();
-
     Corporation getCorporationById(String corpId);
     Corporation updateCorporation(CorporationDTO corporationDTO);
 
@@ -26,4 +24,6 @@ public interface CorporationService {
     Corporation getCorporationByNameAndEmail(String name, String email);
 
     void sendTemporaryPassword(String corpId, String email);
+
+    List<Corporation> getAllCorps();
 }
