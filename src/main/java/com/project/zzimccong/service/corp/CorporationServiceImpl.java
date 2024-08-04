@@ -144,4 +144,9 @@ public class CorporationServiceImpl implements CorporationService {
         return corporationRepository.findAll(); // JpaRepository의 findAll 메소드 사용
     }
 
+    @Override
+    public Corporation getFindById(Integer id) {
+        return corporationRepository.findById(id).orElse(null);
+    }
+
 }
