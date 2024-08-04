@@ -12,7 +12,7 @@ public class Corporation implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(name = "corp_name")
     private String corpName;
@@ -41,9 +41,10 @@ public class Corporation implements Serializable {
     @OneToMany(mappedBy = "corporation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EmailVerification> emailVerifications;
 
-    public Corporation() {}
+    public Corporation() {
+    }
 
-    public Corporation(int id, String corpName, String corpDept, String corpId, String password, String corpEmail, boolean emailVerified, String corpAddress, String role, List<EmailVerification> emailVerifications) {
+    public Corporation(Integer id, String corpName, String corpDept, String corpId, String password, String corpEmail, boolean emailVerified, String corpAddress, String role, List<EmailVerification> emailVerifications) {
         this.id = id;
         this.corpName = corpName;
         this.corpDept = corpDept;
@@ -56,13 +57,14 @@ public class Corporation implements Serializable {
         this.emailVerifications = emailVerifications;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
+
 
     public String getCorpName() {
         return corpName;

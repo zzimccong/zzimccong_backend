@@ -74,11 +74,6 @@ public class CorporationServiceImpl implements CorporationService {
     }
 
     @Override
-    public List<Corporation> getAllCorporations() {
-        return corporationRepository.findAll();
-    }
-
-    @Override
     public Corporation getCorporationById(String corpId) {
         return corporationRepository.findByCorpId(corpId)
                 .orElseThrow(() -> new IllegalArgumentException("Corporation not found"));
@@ -142,6 +137,11 @@ public class CorporationServiceImpl implements CorporationService {
     @Override
     public void sendTemporaryPassword(String corpId, String email) {
         emailVerificationService.sendTemporaryPassword(corpId, null, email);
+    }
+
+    @Override
+    public List<Corporation> getAllCorps() {
+        return corporationRepository.findAll(); // JpaRepository의 findAll 메소드 사용
     }
 
 }

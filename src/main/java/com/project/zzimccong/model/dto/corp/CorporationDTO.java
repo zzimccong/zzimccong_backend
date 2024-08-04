@@ -2,6 +2,7 @@ package com.project.zzimccong.model.dto.corp;
 
 public class CorporationDTO {
 
+    private Integer id;
     private String corpName;
     private String corpDept;
     private String corpId;
@@ -13,7 +14,8 @@ public class CorporationDTO {
 
     public CorporationDTO() {}
 
-    public CorporationDTO(String corpName, String corpDept, String corpId, String password, String corpEmail, String corpAddress, boolean emailVerified, String role) {
+    public CorporationDTO(Integer id, String corpName, String corpDept, String corpId, String password, String corpEmail, String corpAddress, boolean emailVerified, String role) {
+        this.id = id;
         this.corpName = corpName;
         this.corpDept = corpDept;
         this.corpId = corpId;
@@ -23,6 +25,12 @@ public class CorporationDTO {
         this.emailVerified = emailVerified;
         this.role = role;
     }
+
+    public Integer getId() {
+        return id;
+    }
+
+
 
     public String getCorpName() {
         return corpName;
