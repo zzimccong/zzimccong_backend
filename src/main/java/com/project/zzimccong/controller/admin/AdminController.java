@@ -2,14 +2,12 @@ package com.project.zzimccong.controller.admin;
 
 import com.project.zzimccong.model.entity.corp.Corporation;
 import com.project.zzimccong.model.entity.user.User;
+import com.project.zzimccong.model.dto.user.UserDTO;
 import com.project.zzimccong.service.corp.CorporationService;
 import com.project.zzimccong.service.user.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -66,6 +64,18 @@ public class AdminController {
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    // 일반 사용자 정보 업데이트 엔드포인트 (관리자용)
+    @PutMapping("/edit-user/{id}")
+    public ResponseEntity<String> adminUpdateUser(@PathVariable Integer id, @RequestBody UserDTO userDTO) {
+        try {
+            userDTO.setId(id);
+            userService.updateUser(userDTO);
+            return ResponseEntity.ok("업데이트 성공");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("업데이트 실패: " + e.getMessage());
         }
     }
 
