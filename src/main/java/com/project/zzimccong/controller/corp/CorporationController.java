@@ -110,6 +110,7 @@ public class CorporationController {
     @NotNull
     private static Map<String, Object> getStringObjectMap(Corporation corporation, String token) {
         CorporationDTO responseCorpDTO = new CorporationDTO(
+                corporation.getId(),
                 corporation.getCorpName(),
                 corporation.getCorpDept(),
                 corporation.getCorpId(),
