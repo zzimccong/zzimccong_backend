@@ -54,5 +54,20 @@ public class AdminController {
         }
     }
 
+    // 기업 사용자 상세 정보 조회 엔드포인트 (관리자용)
+    @GetMapping("/edit-corp/{id}")
+    public ResponseEntity<Corporation> getCorpByIdForAdmin(@PathVariable Integer id) {
+        try {
+            Corporation corp = corporationService.getFindById(id);
+            if (corp != null) {
+                return ResponseEntity.ok(corp);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
 
 }
