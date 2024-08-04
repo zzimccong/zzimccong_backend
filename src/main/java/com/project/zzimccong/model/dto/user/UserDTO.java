@@ -1,6 +1,8 @@
 package com.project.zzimccong.model.dto.user;
 
 public class UserDTO {
+
+    private Integer id;
     private String loginId;
     private String password;
     private String name;
@@ -12,7 +14,8 @@ public class UserDTO {
     public UserDTO() {
     }
 
-    public UserDTO(String loginId, String password, String name, String birth, String email, String phone, String role) {
+    public UserDTO(Integer id, String loginId, String password, String name, String birth, String email, String phone, String role) {
+        this.id = id;
         this.loginId = loginId;
         this.password = password;
         this.name = name;
@@ -20,6 +23,10 @@ public class UserDTO {
         this.email = email;
         this.phone = phone;
         this.role = role;
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     public String getLoginId() {
@@ -81,6 +88,7 @@ public class UserDTO {
     @Override
     public String toString() {
         return "UserDTO{" +
+                "id='" + id + '\'' +
                 "loginId='" + loginId + '\'' +
                 ", password='" + password + '\'' +
                 ", name='" + name + '\'' +

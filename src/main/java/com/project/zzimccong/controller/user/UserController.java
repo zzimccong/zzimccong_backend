@@ -80,6 +80,7 @@ public class UserController {
 
     private Map<String, Object> createLoginResponse(String token, User user) {
         UserDTO responseUserDTO = new UserDTO(
+                user.getId(),
                 user.getLoginId(),
                 null, // 비밀번호는 반환되지 않음
                 user.getName(),

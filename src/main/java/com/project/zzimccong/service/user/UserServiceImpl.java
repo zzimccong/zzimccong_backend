@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -154,5 +155,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public void sendTemporaryPassword(String loginId, String email) {
         emailVerificationService.sendTemporaryPassword(null, loginId, email);
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userRepository.findAll(); // JpaRepository의 findAll 메소드 사용
     }
 }
