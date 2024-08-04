@@ -3,6 +3,7 @@ package com.project.zzimccong.controller.admin;
 import com.project.zzimccong.model.entity.corp.Corporation;
 import com.project.zzimccong.model.entity.user.User;
 import com.project.zzimccong.model.dto.user.UserDTO;
+import com.project.zzimccong.model.dto.corp.CorporationDTO;
 import com.project.zzimccong.service.corp.CorporationService;
 import com.project.zzimccong.service.user.UserService;
 import org.springframework.http.HttpStatus;
@@ -79,5 +80,17 @@ public class AdminController {
         }
     }
 
+    // 기업 사용자 정보 업데이트 엔드포인트 (관리자용)
+    @PutMapping("/edit-corp/{id}")
+    public ResponseEntity<String> adminUpdateCorp(@PathVariable Integer id, @RequestBody CorporationDTO corpDTO) {
+        try {
+            corpDTO.setId(id);
+            corporationService.updateCorporation(corpDTO);
+            return ResponseEntity.ok("업데이트 성공");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("업데이트 실패: " + e.getMessage());
+        }
 
+
+    }
 }

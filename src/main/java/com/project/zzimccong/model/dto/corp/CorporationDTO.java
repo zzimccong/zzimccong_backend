@@ -31,6 +31,9 @@ public class CorporationDTO {
     }
 
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getCorpName() {
         return corpName;
