@@ -1,8 +1,6 @@
 package com.project.zzimccong.model.entity.store;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.project.zzimccong.model.dto.store.RestaurantDTO;
-import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -30,15 +28,22 @@ public class Restaurant {
 
     @Column(length = 10000)
     private String facilities; // 편의 시설
+
+    @Column(length = 1000)
     private String parkingInfo; // 주차 정보
 
     @Column(length = 1000)
     private String mainPhotoUrl; // 메인 사진
 
+    @Column(length = 1000)
     private String photo1Url; // 사진1
+    @Column(length = 1000)
     private String photo2Url; // 사진2
+    @Column(length = 1000)
     private String photo3Url; // 사진3
+    @Column(length = 1000)
     private String photo4Url; // 사진4
+    @Column(length = 1000)
     private String photo5Url; // 사진5
 
     private double latitude; // 위도
@@ -46,7 +51,7 @@ public class Restaurant {
     private String seats;  // 좌석 정보를
 
     public Restaurant() {}
-    @Builder
+
     public Restaurant(long id, String name, String category, String roadAddress, String numberAddress, String phoneNumber, String detailInfo, String businessHours, String link, List<Menu> menus, String facilities, String parkingInfo, String mainPhotoUrl, String photo1Url, String photo2Url, String photo3Url, String photo4Url, String photo5Url, double latitude, double longitude, String seats) {
         this.id = id;
         this.name = name;
@@ -239,7 +244,7 @@ public class Restaurant {
         this.seats = seats;
     }
 
-    /*@Override
+    @Override
     public String toString() {
         return "Restaurant{" +
                 "id=" + id +
@@ -264,5 +269,5 @@ public class Restaurant {
                 ", longitude=" + longitude +
                 ", seats='" + seats + '\'' +
                 '}';
-    }*/
+    }
 }

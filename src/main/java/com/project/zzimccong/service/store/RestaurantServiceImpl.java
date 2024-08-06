@@ -137,9 +137,11 @@ public class RestaurantServiceImpl implements RestaurantService {
 
                         WebElement roadAddressElement = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='nQ7Lh'][span[text()='도로명']]")));
                         roadAddress = roadAddressElement.getText().replace("도로명", "").trim();
+                        roadAddress = roadAddress.replaceAll("복사", "").trim();
 
                         WebElement numberAddressElement = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='nQ7Lh'][span[text()='지번']]")));
                         numberAddress = numberAddressElement.getText().replace("지번", "").trim();
+                        numberAddress = numberAddress.replaceAll("복사", "").trim();
                     } catch (Exception e) {
                         System.out.println("주소 정보를 가져오는 데 실패했습니다: " + e.getMessage());
                     }
@@ -260,6 +262,10 @@ public class RestaurantServiceImpl implements RestaurantService {
                                 } catch (Exception e) {
                                     System.out.println("메뉴 사진 정보를 가져오는 데 실패했습니다: " + e.getMessage());
                                 }
+                                // 메뉴 사진이 없는 경우 기본 이미지 설정
+                                if (menuPhotoUrl == null || menuPhotoUrl.isEmpty()) {
+                                    menuPhotoUrl = "https://g-place.pstatic.net/assets/shared/images/menu_icon_noimg_food.png";
+                                }
 
                                 Menu menu = new Menu();
                                 menu.setRestaurant(restaurant);
@@ -313,10 +319,21 @@ public class RestaurantServiceImpl implements RestaurantService {
                     try {
                         WebElement parkingElement = driver.findElement(By.cssSelector("div.TZ6eS"));
                         String parkingAvailable = parkingElement.getText();
+                        String parkingSvg = "";
 
                         try {
+                            // G9rSN 클래스 안에 있는 첫 번째 SVG 요소 선택
+                            WebElement svgContainer = driver.findElement(By.cssSelector("div.G9rSN"));
+                            WebElement svgElement = svgContainer.findElement(By.tagName("svg"));
+                            parkingSvg = svgElement.getAttribute("outerHTML");
+                        } catch (org.openqa.selenium.NoSuchElementException e) {
+                            System.out.println("주차 SVG 정보를 가져오는 데 실패했습니다: " + e.getMessage());
+                        }
+
+                        String parkingDetail = "";
+                        try {
                             WebElement parkingDetailElement = driver.findElement(By.cssSelector("span.zPfVt"));
-                            String parkingDetail = parkingDetailElement.getText();
+                            parkingDetail = parkingDetailElement.getText();
 
                             try {
                                 WebElement moreButton = driver.findElement(By.cssSelector("div.MStrC a.xHaT3"));
@@ -326,16 +343,17 @@ public class RestaurantServiceImpl implements RestaurantService {
                                     parkingDetail = parkingDetailElement.getText();
                                 }
                             } catch (org.openqa.selenium.NoSuchElementException e) {
+                                System.out.println("추가 주차 세부 정보를 가져오는 데 실패했습니다: " + e.getMessage());
                             }
-
-                            parkingInfo = parkingAvailable + "\n" + parkingDetail;
                         } catch (org.openqa.selenium.NoSuchElementException e) {
-                            parkingInfo = parkingAvailable;
+                            System.out.println("주차 세부 정보를 가져오는 데 실패했습니다: " + e.getMessage());
                         }
 
+                        parkingInfo = parkingSvg + " " + parkingAvailable + (parkingDetail.isEmpty() ? "" : "\n" + parkingDetail);
                     } catch (org.openqa.selenium.NoSuchElementException e) {
                         System.out.println("주차 정보를 가져오는 데 실패했습니다: " + e.getMessage());
                     }
+
 
                     try {
                         List<WebElement> seatElements = driver.findElements(By.cssSelector("ul.GXptY li.Lw5L1"));
@@ -398,4 +416,5 @@ public class RestaurantServiceImpl implements RestaurantService {
         return restaurant;
     }
 }
+
 
