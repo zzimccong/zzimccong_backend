@@ -61,4 +61,20 @@ public class AdminServiceImpl implements AdminService{
         // 일반 회원 삭제
         userRepository.deleteById(userId);
     }
+
+    // 기업 회원 삭제 메소드
+    @Override
+    public void deleteCorp(Integer corpId, String adminPassword) throws Exception {
+        // role이 'admin'인 관리자를 찾음
+        User admin = userRepository.findFirstByRole("admin")
+                .orElseThrow(() -> new Exception("Admin not found"));
+
+        // 관리자 비밀번호 검증
+        if (!passwordEncoder.matches(adminPassword, admin.getPassword())) {
+            throw new Exception("Invalid admin credentials");
+        }
+
+        // 기업 회원 삭제
+        corpRepository.deleteById(corpId);
+    }
 }
