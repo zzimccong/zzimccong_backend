@@ -1,13 +1,11 @@
 package com.project.zzimccong.model.entity.store;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.*;
 
 import javax.persistence.*;
 
 
 @Entity
-@Table(name = "menu")
 public class Menu {
 
     @Id
@@ -17,7 +15,7 @@ public class Menu {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
     @JsonBackReference
-    private Restaurant restaurant;
+    private Restaurant restaurant; // 레스토랑
 
     private String name; // 메뉴 이름
     private String price; // 메뉴 가격
@@ -27,7 +25,6 @@ public class Menu {
 
     public Menu() {}
 
-    @Builder            //빌더패턴 적용한 클래스
     public Menu(Long id, Restaurant restaurant, String name, String price, String description, String photoUrl) {
         this.id = id;
         this.restaurant = restaurant;
@@ -69,7 +66,6 @@ public class Menu {
         this.price = price;
     }
 
-
     public String getDescription() {
         return description;
     }
@@ -85,7 +81,7 @@ public class Menu {
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
     }
-/*
+
     @Override
     public String toString() {
         return "Menu{" +
@@ -96,5 +92,5 @@ public class Menu {
                 ", description='" + description + '\'' +
                 ", photoUrl='" + photoUrl + '\'' +
                 '}';
-    }*/
+    }
 }
