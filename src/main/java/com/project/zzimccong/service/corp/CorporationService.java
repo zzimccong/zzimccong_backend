@@ -25,7 +25,5 @@ public interface CorporationService {
 
     void sendTemporaryPassword(String corpId, String email);
 
-    List<Corporation> getAllCorps();
 
-    Corporation getFindById(Integer id);
 }
