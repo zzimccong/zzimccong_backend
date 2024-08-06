@@ -2,7 +2,9 @@
 package com.project.zzimccong.service.user;
 
 import com.project.zzimccong.model.dto.user.UserDTO;
+import com.project.zzimccong.model.entity.coupon.Coupon;
 import com.project.zzimccong.model.entity.user.User;
+import com.project.zzimccong.repository.coupon.CouponRepository;
 import com.project.zzimccong.repository.user.UserRepository;
 import com.project.zzimccong.service.email.EmailVerificationService;
 import com.project.zzimccong.service.redis.TemporaryStorageService;
@@ -23,13 +25,15 @@ public class UserServiceImpl implements UserService {
     private final SmsUtil smsUtil;
     private final TemporaryStorageService temporaryStorageService;
     private final EmailVerificationService emailVerificationService;
+    private CouponRepository couponRepository;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, SmsUtil smsUtil, TemporaryStorageService temporaryStorageService, EmailVerificationService emailVerificationService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, SmsUtil smsUtil, TemporaryStorageService temporaryStorageService, EmailVerificationService emailVerificationService, CouponRepository couponRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.smsUtil = smsUtil;
         this.temporaryStorageService = temporaryStorageService;
         this.emailVerificationService = emailVerificationService;
+        this.couponRepository=couponRepository;
     }
 
     @Override
@@ -42,8 +46,23 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDTO.getEmail());
         user.setPhone(userDTO.getPhone());
         user.setRole(userDTO.getRole());
+        User savedUser = userRepository.save(user);
 
-        return userRepository.save(user);
+        Coupon reservationCoupon = new Coupon();
+        reservationCoupon.setUser(savedUser);
+        reservationCoupon.setType("예약권");
+        reservationCoupon.setDiscountPrice(null);
+        reservationCoupon.setCnt(10);
+        couponRepository.save(reservationCoupon);
+
+        Coupon lotteryCoupon = new Coupon();
+        lotteryCoupon.setUser(savedUser);
+        lotteryCoupon.setType("추첨권");
+        lotteryCoupon.setDiscountPrice(null);
+        lotteryCoupon.setCnt(2);
+        couponRepository.save(lotteryCoupon);
+
+        return savedUser;
     }
 
     @Override
