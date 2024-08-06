@@ -13,4 +13,5 @@ public interface AdminService {
 
     List<Corporation> getAllCorps();
     Corporation getFindByCorpId(Integer id);
+    void deleteUser(Integer userId, String adminPassword) throws Exception;
 }
