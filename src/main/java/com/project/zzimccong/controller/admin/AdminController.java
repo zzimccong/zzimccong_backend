@@ -111,5 +111,17 @@ public class AdminController {
         }
     }
 
+    // 기업 사용자 삭제 엔드포인트 (관리자용)
+    @DeleteMapping("/delete-corp/{id}")
+    public ResponseEntity<String> deleteCorp(@PathVariable Integer id, @RequestBody Map<String, String> request) {
+        try {
+            String adminPassword = request.get("password");
+            adminService.deleteCorp(id, adminPassword);
+            return ResponseEntity.ok("삭제 성공");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("삭제 실패: " + e.getMessage());
+        }
+    }
+
 
 }
