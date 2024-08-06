@@ -45,7 +45,7 @@ public class RestaurantController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @GetMapping("/restaurants/{id}")
+    @GetMapping("/restaurant/{id}")
     public Restaurant getRestaurantById(@PathVariable Long id) {
         Optional<Restaurant> restaurant = restaurantService.getRestaurantById(id);
         return restaurant.orElse(null);
