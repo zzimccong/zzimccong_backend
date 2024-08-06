@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 
 @Slf4j
@@ -95,6 +96,18 @@ public class AdminController {
             return ResponseEntity.ok("업데이트 성공");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("업데이트 실패: " + e.getMessage());
+        }
+    }
+
+    // 일반 사용자 삭제 엔드포인트 (관리자용)
+    @DeleteMapping("/delete-user/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable Integer id, @RequestBody Map<String, String> request) {
+        try {
+            String adminPassword = request.get("password");
+            adminService.deleteUser(id, adminPassword);
+            return ResponseEntity.ok("삭제 성공");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("삭제 실패: " + e.getMessage());
         }
     }
 
