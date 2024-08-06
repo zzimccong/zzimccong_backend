@@ -176,14 +176,4 @@ public class UserServiceImpl implements UserService {
         emailVerificationService.sendTemporaryPassword(null, loginId, email);
     }
 
-    @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll(); // JpaRepository의 findAll 메소드 사용
-    }
-
-    @Override
-    public User getFindById(Integer id) {
-        return userRepository.findById(id).orElse(null);
-    }
-
 }
