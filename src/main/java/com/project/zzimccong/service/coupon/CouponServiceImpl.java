@@ -11,4 +11,9 @@ public class CouponServiceImpl implements CouponService{
     public CouponServiceImpl(CouponRepository couponRepository) {
         this.couponRepository = couponRepository;
     }
+
+    @Override
+    public Integer findCntByUserIdAndType(Integer userId, String type) {
+        return couponRepository.findCntByUserIdAndType(userId, type);
+    }
 }
