@@ -1,5 +1,6 @@
 package com.project.zzimccong.controller.coupon;
 
+import com.project.zzimccong.model.entity.coupon.Coupon;
 import com.project.zzimccong.service.coupon.CouponService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,4 +29,9 @@ public class CouponController {
         return couponService.findCntByUserIdAndType(userId, "추첨권");
     }
 
+    // 사용자의 '할인권' 쿠폰 조회
+    @GetMapping("/{userId}/discount-coupon")
+    public Coupon getDiscountCouponByUserId(@PathVariable Integer userId) {
+        return couponService.findDiscountCouponByUserId(userId);
+    }
 }

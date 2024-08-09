@@ -1,5 +1,6 @@
 package com.project.zzimccong.model.entity.coupon;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.zzimccong.model.entity.user.User;
 
 import javax.persistence.*;
@@ -12,6 +13,7 @@ public class Coupon {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
