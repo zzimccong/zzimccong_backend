@@ -176,4 +176,9 @@ public class UserServiceImpl implements UserService {
         emailVerificationService.sendTemporaryPassword(null, loginId, email);
     }
 
+    @Override
+    public User FindById(Integer id) {
+        return userRepository.findById(id).orElse(null);
+    }
+
 }

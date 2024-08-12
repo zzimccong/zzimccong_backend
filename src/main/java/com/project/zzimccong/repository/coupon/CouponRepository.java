@@ -12,4 +12,6 @@ public interface CouponRepository extends JpaRepository<Coupon, Integer> {
     @Query("SELECT c.cnt FROM Coupon c WHERE c.user.id = :userId AND c.type = :type")
     Integer findCntByUserIdAndType(@Param("userId") Integer userId, @Param("type") String type);
 
+    @Query("SELECT c FROM Coupon c WHERE c.user.id = :userId AND c.type = '할인권'")
+    Coupon findDiscountCouponByUserId(@Param("userId") Integer userId);
 }

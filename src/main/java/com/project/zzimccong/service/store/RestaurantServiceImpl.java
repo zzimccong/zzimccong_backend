@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+//@Transactional
 public class RestaurantServiceImpl implements RestaurantService {
 
     @Autowired
