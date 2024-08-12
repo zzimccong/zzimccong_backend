@@ -26,6 +26,7 @@ public interface UserService {
     User getUserByNameAndEmail(String name, String email);
     void sendTemporaryPassword(String loginId, String email);
 
+    User FindById(Integer id);
 
 
 
