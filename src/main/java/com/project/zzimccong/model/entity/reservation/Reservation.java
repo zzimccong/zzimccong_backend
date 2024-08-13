@@ -2,6 +2,7 @@ package com.project.zzimccong.model.entity.reservation;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.zzimccong.model.entity.store.Restaurant;
 import com.project.zzimccong.model.entity.user.User;
@@ -16,14 +17,15 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     @JsonBackReference(value = "user-reservations")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "restaurant_id")
-    @JsonBackReference(value = "restaurant-reservations")
+//    @JsonBackReference(value = "restaurant-reservations")
+    @JsonManagedReference
     private Restaurant restaurant;
 
     private LocalDateTime reservationTime; //예약 시간
