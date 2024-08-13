@@ -17,10 +17,14 @@ public class ReservationController {
 
     @PostMapping
     public Reservation createReservation(@RequestBody Reservation reservation) {
-        System.out.println("Received restaurantId: " + reservation.getRestaurant());
-
         return reservationService.saveReservation(reservation);
     }
+
+    @PutMapping("/{id}/status")
+    public Reservation updateReservationStatus(@PathVariable Long id, @RequestBody String status) {
+        return reservationService.updateReservationStatus(id, status);
+    }
+
 
     @GetMapping
     public List<Reservation> getAllReservations() {
