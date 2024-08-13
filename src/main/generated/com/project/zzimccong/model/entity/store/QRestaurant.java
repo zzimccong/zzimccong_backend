@@ -18,6 +18,8 @@ public class QRestaurant extends EntityPathBase<Restaurant> {
 
     private static final long serialVersionUID = -568519452L;
 
+    private static final PathInits INITS = PathInits.DIRECT2;
+
     public static final QRestaurant restaurant = new QRestaurant("restaurant");
 
     public final StringPath businessHours = createString("businessHours");
@@ -35,6 +37,8 @@ public class QRestaurant extends EntityPathBase<Restaurant> {
     public final StringPath link = createString("link");
 
     public final NumberPath<Double> longitude = createNumber("longitude", Double.class);
+
+    public final StringPath lotteryEvent = createString("lotteryEvent");
 
     public final StringPath mainPhotoUrl = createString("mainPhotoUrl");
 
@@ -58,20 +62,35 @@ public class QRestaurant extends EntityPathBase<Restaurant> {
 
     public final StringPath photo5Url = createString("photo5Url");
 
+    public final ListPath<com.project.zzimccong.model.entity.reservation.Reservation, com.project.zzimccong.model.entity.reservation.QReservation> reservations = this.<com.project.zzimccong.model.entity.reservation.Reservation, com.project.zzimccong.model.entity.reservation.QReservation>createList("reservations", com.project.zzimccong.model.entity.reservation.Reservation.class, com.project.zzimccong.model.entity.reservation.QReservation.class, PathInits.DIRECT2);
+
     public final StringPath roadAddress = createString("roadAddress");
 
     public final StringPath seats = createString("seats");
 
+    public final StringPath state = createString("state");
+
+    public final com.project.zzimccong.model.entity.user.QUser user;
+
     public QRestaurant(String variable) {
-        super(Restaurant.class, forVariable(variable));
+        this(Restaurant.class, forVariable(variable), INITS);
     }
 
     public QRestaurant(Path<? extends Restaurant> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QRestaurant(PathMetadata metadata) {
-        super(Restaurant.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QRestaurant(PathMetadata metadata, PathInits inits) {
+        this(Restaurant.class, metadata, inits);
+    }
+
+    public QRestaurant(Class<? extends Restaurant> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.user = inits.isInitialized("user") ? new com.project.zzimccong.model.entity.user.QUser(forProperty("user")) : null;
     }
 
 }

@@ -14,7 +14,7 @@ public class Menu {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
-    @JsonBackReference
+    @JsonBackReference(value = "restaurant-menus")
     private Restaurant restaurant; // 레스토랑
 
     private String name; // 메뉴 이름
@@ -82,15 +82,15 @@ public class Menu {
         this.photoUrl = photoUrl;
     }
 
-    @Override
-    public String toString() {
-        return "Menu{" +
-                "id=" + id +
-                ", restaurant=" + restaurant +
-                ", name='" + name + '\'' +
-                ", price='" + price + '\'' +
-                ", description='" + description + '\'' +
-                ", photoUrl='" + photoUrl + '\'' +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "Menu{" +
+//                "id=" + id +
+//                ", restaurant=" + restaurant +
+//                ", name='" + name + '\'' +
+//                ", price='" + price + '\'' +
+//                ", description='" + description + '\'' +
+//                ", photoUrl='" + photoUrl + '\'' +
+//                '}';
+//    }
 }
