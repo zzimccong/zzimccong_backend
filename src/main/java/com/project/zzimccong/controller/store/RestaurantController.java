@@ -98,4 +98,23 @@ public class RestaurantController {
 
         return response.getBody();
     }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PutMapping("/restaurant/{id}/state")
+    public Restaurant updateRestaurantState(@PathVariable Long id, @RequestBody Map<String, String> updates) {
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(id);
+        if (!optionalRestaurant.isPresent()) {
+            throw new RuntimeException("Restaurant not found with id: " + id);
+        }
+
+        Restaurant restaurant = optionalRestaurant.get();
+
+        if (updates.containsKey("state")) {
+            restaurant.setState(updates.get("state"));
+        } else {
+            throw new IllegalArgumentException("State field is required");
+        }
+
+        return restaurantRepository.save(restaurant);
+    }
 }
