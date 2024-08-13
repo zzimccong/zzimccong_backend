@@ -1,7 +1,12 @@
 package com.project.zzimccong.model.entity.user;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.project.zzimccong.model.entity.reservation.Reservation;
+import com.project.zzimccong.model.entity.store.Restaurant;
+
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "TB_USER")
@@ -32,10 +37,19 @@ public class User {
     @Column(name = "role", nullable = false)
     private String role;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "user-restaurants")
+    private List<Restaurant> restaurants;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "user-reservations")
+    private List<Reservation> reservations;
+
+
     public User() {
     }
 
-    public User(Integer id, String loginId, String password, String name, LocalDate birth, String email, String phone, String role) {
+    public User(Integer id, String loginId, String password, String name, LocalDate birth, String email, String phone, String role, List<Restaurant> restaurants, List<Reservation> reservations) {
         this.id = id;
         this.loginId = loginId;
         this.password = password;
@@ -44,6 +58,8 @@ public class User {
         this.email = email;
         this.phone = phone;
         this.role = role;
+        this.restaurants = restaurants;
+        this.reservations = reservations;
     }
 
     public Integer getId() {
@@ -108,5 +124,37 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public List<Restaurant> getRestaurants() {
+        return restaurants;
+    }
+
+    public void setRestaurants(List<Restaurant> restaurants) {
+        this.restaurants = restaurants;
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", loginId='" + loginId + '\'' +
+                ", password='" + password + '\'' +
+                ", name='" + name + '\'' +
+                ", birth=" + birth +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", role='" + role + '\'' +
+                ", restaurants=" + restaurants +
+                ", reservations=" + reservations +
+                '}';
     }
 }

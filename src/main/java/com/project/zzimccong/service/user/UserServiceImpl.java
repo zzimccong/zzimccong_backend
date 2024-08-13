@@ -181,4 +181,21 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id).orElse(null);
     }
 
+    @Override
+    public User createManagerUser(String loginId, String password, String name, LocalDate birth, String email, String phone) throws Exception {
+        if (userRepository.existsByLoginId(loginId) || userRepository.existsByEmail(email)) {
+            throw new Exception("Username or Email already exists");
+        }
+
+        User user = new User();
+        user.setLoginId(loginId);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setName(name);
+        user.setBirth(birth);
+        user.setEmail(email);
+        user.setPhone(phone);
+        user.setRole("MANAGER");
+
+        return userRepository.save(user);
+    }
 }

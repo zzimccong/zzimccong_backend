@@ -1,21 +1,31 @@
 package com.project.zzimccong.model.entity.reservation;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.zzimccong.model.entity.store.Restaurant;
+import com.project.zzimccong.model.entity.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})  // 이 부분 추가
 public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonBackReference(value = "user-reservations")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
-    @JsonBackReference
+    @JsonBackReference(value = "restaurant-reservations")
     private Restaurant restaurant;
+
     private LocalDateTime reservationTime; //예약 시간
     private LocalDateTime reservationRegistrationTime; // 예약등록 시간
     private int count; // 인원 수
@@ -24,8 +34,9 @@ public class Reservation {
 
     public Reservation() {}
 
-    public Reservation(Long id, Restaurant restaurant, LocalDateTime reservationTime, LocalDateTime reservationRegistrationTime, int count, String state, String request) {
+    public Reservation(Long id, User user, Restaurant restaurant, LocalDateTime reservationTime, LocalDateTime reservationRegistrationTime, int count, String state, String request) {
         this.id = id;
+        this.user = user;
         this.restaurant = restaurant;
         this.reservationTime = reservationTime;
         this.reservationRegistrationTime = reservationRegistrationTime;
@@ -40,6 +51,14 @@ public class Reservation {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Restaurant getRestaurant() {
@@ -94,8 +113,9 @@ public class Reservation {
     public String toString() {
         return "Reservation{" +
                 "id=" + id +
+                ", user=" + user +
                 ", restaurant=" + restaurant +
-                ", reservationtime=" + reservationTime +
+                ", reservationTime=" + reservationTime +
                 ", reservationRegistrationTime=" + reservationRegistrationTime +
                 ", count=" + count +
                 ", state='" + state + '\'' +
