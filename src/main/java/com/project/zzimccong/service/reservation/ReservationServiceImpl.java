@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,6 +24,17 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public List<Reservation> getAllReservations() {
         return reservationRepository.findAll();
+    }
+
+    @Override
+    public Reservation updateReservationStatus(Long id, String status) {
+        Optional<Reservation> optionalReservation = reservationRepository.findById(id);
+        if (optionalReservation.isPresent()) {
+            Reservation reservation = optionalReservation.get();
+            reservation.setState(status);
+            return reservationRepository.save(reservation);
+        }
+        throw new RuntimeException("Reservation not found");
     }
 
     @Override

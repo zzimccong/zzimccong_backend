@@ -9,6 +9,7 @@ import java.util.List;
 public interface ReservationService {
     Reservation saveReservation(Reservation reservation);
     List<Reservation> getAllReservations();
+    Reservation updateReservationStatus(Long id, String status);
     List<ReservationDTO> getReservationsByUserId(Integer userId);
 
 
