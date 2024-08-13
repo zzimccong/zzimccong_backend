@@ -1,6 +1,9 @@
 package com.project.zzimccong.model.entity.store;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.project.zzimccong.model.entity.reservation.Reservation;
+import com.project.zzimccong.model.entity.user.User;
 
 import javax.persistence.*;
 import java.util.List;
@@ -23,7 +26,7 @@ public class Restaurant {
     private String link; // 링크
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @JsonManagedReference(value = "restaurant-menus")
     private List<Menu> menus; // 메뉴
 
     @Column(length = 10000)
@@ -34,7 +37,6 @@ public class Restaurant {
 
     @Column(length = 1000)
     private String mainPhotoUrl; // 메인 사진
-
     @Column(length = 1000)
     private String photo1Url; // 사진1
     @Column(length = 1000)
@@ -50,9 +52,23 @@ public class Restaurant {
     private double longitude; // 경도
     private String seats;  // 좌석 정보를
 
+    private String state; // 영업 상태
+
+    private String lotteryEvent; // 추첨 상태
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonBackReference(value = "user-restaurants")
+    private User user;
+
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    @JsonManagedReference(value = "restaurant-reservations")
+    @JsonBackReference
+    private List<Reservation> reservations;
+
     public Restaurant() {}
 
-    public Restaurant(long id, String name, String category, String roadAddress, String numberAddress, String phoneNumber, String detailInfo, String businessHours, String link, List<Menu> menus, String facilities, String parkingInfo, String mainPhotoUrl, String photo1Url, String photo2Url, String photo3Url, String photo4Url, String photo5Url, double latitude, double longitude, String seats) {
+    public Restaurant(long id, String name, String category, String roadAddress, String numberAddress, String phoneNumber, String detailInfo, String businessHours, String link, List<Menu> menus, String facilities, String parkingInfo, String mainPhotoUrl, String photo1Url, String photo2Url, String photo3Url, String photo4Url, String photo5Url, double latitude, double longitude, String seats, String state, String lotteryEvent, User user, List<Reservation> reservations) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -74,6 +90,10 @@ public class Restaurant {
         this.latitude = latitude;
         this.longitude = longitude;
         this.seats = seats;
+        this.state = state;
+        this.lotteryEvent = lotteryEvent;
+        this.user = user;
+        this.reservations = reservations;
     }
 
     public long getId() {
@@ -244,30 +264,66 @@ public class Restaurant {
         this.seats = seats;
     }
 
-    @Override
-    public String toString() {
-        return "Restaurant{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", category='" + category + '\'' +
-                ", roadAddress='" + roadAddress + '\'' +
-                ", numberAddress='" + numberAddress + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", detailInfo='" + detailInfo + '\'' +
-                ", businessHours='" + businessHours + '\'' +
-                ", link='" + link + '\'' +
-                ", menus=" + menus +
-                ", facilities='" + facilities + '\'' +
-                ", parkingInfo='" + parkingInfo + '\'' +
-                ", mainPhotoUrl='" + mainPhotoUrl + '\'' +
-                ", photo1Url='" + photo1Url + '\'' +
-                ", photo2Url='" + photo2Url + '\'' +
-                ", photo3Url='" + photo3Url + '\'' +
-                ", photo4Url='" + photo4Url + '\'' +
-                ", photo5Url='" + photo5Url + '\'' +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
-                ", seats='" + seats + '\'' +
-                '}';
+    public String getState() {
+        return state;
     }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getLotteryEvent() {
+        return lotteryEvent;
+    }
+
+    public void setLotteryEvent(String lotteryEvent) {
+        this.lotteryEvent = lotteryEvent;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
+    }
+
+//    @Override
+//    public String toString() {
+//        return "Restaurant{" +
+//                "id=" + id +
+//                ", name='" + name + '\'' +
+//                ", category='" + category + '\'' +
+//                ", roadAddress='" + roadAddress + '\'' +
+//                ", numberAddress='" + numberAddress + '\'' +
+//                ", phoneNumber='" + phoneNumber + '\'' +
+//                ", detailInfo='" + detailInfo + '\'' +
+//                ", businessHours='" + businessHours + '\'' +
+//                ", link='" + link + '\'' +
+//                ", menus=" + menus +
+//                ", facilities='" + facilities + '\'' +
+//                ", parkingInfo='" + parkingInfo + '\'' +
+//                ", mainPhotoUrl='" + mainPhotoUrl + '\'' +
+//                ", photo1Url='" + photo1Url + '\'' +
+//                ", photo2Url='" + photo2Url + '\'' +
+//                ", photo3Url='" + photo3Url + '\'' +
+//                ", photo4Url='" + photo4Url + '\'' +
+//                ", photo5Url='" + photo5Url + '\'' +
+//                ", latitude=" + latitude +
+//                ", longitude=" + longitude +
+//                ", seats='" + seats + '\'' +
+//                ", state='" + state + '\'' +
+//                ", lotteryEvent='" + lotteryEvent + '\'' +
+//                ", user=" + user +
+//                ", reservations=" + reservations +
+//                '}';
+//    }
 }

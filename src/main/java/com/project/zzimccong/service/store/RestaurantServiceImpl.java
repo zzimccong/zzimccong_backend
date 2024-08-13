@@ -4,10 +4,13 @@ package com.project.zzimccong.service.store;
 import com.project.zzimccong.model.dto.store.RestaurantDTO;
 import com.project.zzimccong.model.entity.store.Menu;
 import com.project.zzimccong.model.entity.store.Restaurant;
+import com.project.zzimccong.model.entity.user.User;
 import com.project.zzimccong.repository.store.RestaurantDSLRepository;
 import com.project.zzimccong.repository.store.MenuRepository;
 import com.project.zzimccong.repository.store.RestaurantRepository;
+import com.project.zzimccong.service.user.UserService;
 import org.openqa.selenium.*;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -17,34 +20,28 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-//@Transactional
 public class RestaurantServiceImpl implements RestaurantService {
 
     @Autowired
     private RestaurantRepository restaurantRepository;
     @Autowired
     private RestaurantDSLRepository restaurantDSLRepository;
-
-
     @Autowired
     private MenuRepository menuRepository;
+    @Autowired
+    private UserService userService;
 
     @Override
     public List<RestaurantDTO> findByKeyword(String keyword) {
-
         List<Restaurant> restaurant = restaurantDSLRepository.findByKeyword(keyword);
         List<RestaurantDTO> dtoList = RestaurantDTO.toRestaurantDTOList(restaurant);
-
         return dtoList;
     }
-
 
     @Override
     public void testChromeDriverWithCSSSelector() {
@@ -197,6 +194,24 @@ public class RestaurantServiceImpl implements RestaurantService {
                         System.out.println("사진 정보를 가져오는 데 실패했습니다: " + e.getMessage());
                     }
 
+                    // 임의의 사용자 정보 생성
+                    String loginId = UUID.randomUUID().toString().substring(0, 8);
+                    String password = "abcd1234"; // 지정된 비밀번호
+                    String name = restaurantName; // 가게명으로 설정
+                    LocalDate birth = LocalDate.of(1980, 1, 1); // 임의의 생일
+                    String email = loginId + "@example.com";
+                    String phone = "010-1234-5678"; // 임의의 전화번호
+
+                    User managerUser;
+                    try {
+                        // 사용자를 먼저 생성합니다.
+                        managerUser = userService.createManagerUser(loginId, password, name, birth, email, phone);
+                    } catch (Exception e) {
+                        // 사용자 생성에 실패하면 다음 가게로 넘어감
+                        continue;
+                    }
+
+                    // 가게 생성 로직
                     Restaurant restaurant = new Restaurant();
                     restaurant.setName(restaurantName);
                     restaurant.setCategory(category);
@@ -215,6 +230,9 @@ public class RestaurantServiceImpl implements RestaurantService {
                     if (photoUrls.size() > 2) restaurant.setPhoto3Url(photoUrls.get(2));
                     if (photoUrls.size() > 3) restaurant.setPhoto4Url(photoUrls.get(3));
                     if (photoUrls.size() > 4) restaurant.setPhoto5Url(photoUrls.get(4));
+
+                    // 사용자를 가게의 소유자로 설정합니다.
+                    restaurant.setUser(managerUser);
 
                     restaurantRepository.save(restaurant);
 
@@ -354,7 +372,6 @@ public class RestaurantServiceImpl implements RestaurantService {
                         System.out.println("주차 정보를 가져오는 데 실패했습니다: " + e.getMessage());
                     }
 
-
                     try {
                         List<WebElement> seatElements = driver.findElements(By.cssSelector("ul.GXptY li.Lw5L1"));
                         StringBuilder seatsBuilder = new StringBuilder();
@@ -377,6 +394,8 @@ public class RestaurantServiceImpl implements RestaurantService {
 
                     restaurant.setParkingInfo(parkingInfo);
                     restaurant.setSeats(seats);
+                    restaurant.setState("영업 중");
+                    restaurant.setLotteryEvent("off");
 
                     restaurantRepository.save(restaurant);
 
@@ -415,6 +434,50 @@ public class RestaurantServiceImpl implements RestaurantService {
         }
         return restaurant;
     }
+
+    @Override
+    public Restaurant createRestaurant(Restaurant restaurant) {
+        return restaurantRepository.save(restaurant);
+    }
+
+    @Override
+    public Restaurant updateRestaurant(Long id, Restaurant restaurantDetails) {
+        Optional<Restaurant> restaurantOptional = restaurantRepository.findById(id);
+
+        if (restaurantOptional.isPresent()) {
+            Restaurant restaurant = restaurantOptional.get();
+            restaurant.setName(restaurantDetails.getName());
+            restaurant.setCategory(restaurantDetails.getCategory());
+            restaurant.setRoadAddress(restaurantDetails.getRoadAddress());
+            restaurant.setNumberAddress(restaurantDetails.getNumberAddress());
+            restaurant.setPhoneNumber(restaurantDetails.getPhoneNumber());
+            restaurant.setDetailInfo(restaurantDetails.getDetailInfo());
+            restaurant.setBusinessHours(restaurantDetails.getBusinessHours());
+            restaurant.setLink(restaurantDetails.getLink());
+            restaurant.setFacilities(restaurantDetails.getFacilities());
+            restaurant.setParkingInfo(restaurantDetails.getParkingInfo());
+            restaurant.setMainPhotoUrl(restaurantDetails.getMainPhotoUrl());
+            restaurant.setPhoto1Url(restaurantDetails.getPhoto1Url());
+            restaurant.setPhoto2Url(restaurantDetails.getPhoto2Url());
+            restaurant.setPhoto3Url(restaurantDetails.getPhoto3Url());
+            restaurant.setPhoto4Url(restaurantDetails.getPhoto4Url());
+            restaurant.setPhoto5Url(restaurantDetails.getPhoto5Url());
+            restaurant.setLatitude(restaurantDetails.getLatitude());
+            restaurant.setLongitude(restaurantDetails.getLongitude());
+            restaurant.setSeats(restaurantDetails.getSeats());
+
+            return restaurantRepository.save(restaurant);
+        } else {
+            throw new RuntimeException("Restaurant not found with id " + id);
+        }
+    }
+    @Override
+    public List<Restaurant> getRestaurantsByUserId(Integer user_id) {
+        return restaurantRepository.findByUserId(user_id);
+    }
+
 }
+
+
 
 

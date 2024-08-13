@@ -10,5 +10,8 @@ import java.util.List;
 @Repository
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     List<Restaurant> findByNameContaining(String name);
+    List<Restaurant> findByUserId(Integer user_id);
+
+
 
 }

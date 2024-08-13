@@ -4,6 +4,7 @@ package com.project.zzimccong.service.user;
 import com.project.zzimccong.model.dto.user.UserDTO;
 import com.project.zzimccong.model.entity.user.User;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface UserService {
@@ -27,7 +28,7 @@ public interface UserService {
     void sendTemporaryPassword(String loginId, String email);
 
     User FindById(Integer id);
-
+    User createManagerUser(String loginId, String password, String name, LocalDate birth, String email, String phone) throws Exception;
 
 
 }
