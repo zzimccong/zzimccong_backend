@@ -435,6 +435,12 @@ public class RestaurantServiceImpl implements RestaurantService {
         return restaurant;
     }
 
+    @Override
+    public Restaurant createRestaurant(Restaurant restaurant) {
+        return restaurantRepository.save(restaurant);
+    }
+
+
 }
 
 
