@@ -27,6 +27,12 @@ public class ReservationController {
         return reservationService.getAllReservations();
     }
 
+    @PutMapping("/{id}/status")
+    public Reservation updateReservationStatus(@PathVariable Long id, @RequestBody String status) {
+        return reservationService.updateReservationStatus(id, status);
+    }
+
+
     @GetMapping("/user/{userId}")
     public List<ReservationDTO> getUserReservations(@PathVariable Integer userId) {
         return reservationService.getReservationsByUserId(userId);
