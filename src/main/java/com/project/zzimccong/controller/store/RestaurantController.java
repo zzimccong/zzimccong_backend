@@ -71,6 +71,12 @@ public class RestaurantController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
+    @PutMapping("/restaurantUpdate/{id}")
+    public Restaurant updateRestaurant(@PathVariable Long id, @RequestBody Restaurant restaurantDetails) {
+        return restaurantService.updateRestaurant(id, restaurantDetails);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/geocode")
     public Map<String, Object> getGeocode(@RequestParam String query) {
         String url = "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=" + query;
