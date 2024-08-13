@@ -13,6 +13,7 @@ public interface RestaurantService {
     Optional<Restaurant> getRestaurantById(Long id);
     Restaurant createRestaurant(Restaurant restaurant);
     Restaurant updateRestaurant(Long id, Restaurant restaurantDetails);
+    List<Restaurant> getRestaurantsByUserId(Integer user_id);
 
     //1차 검색어로 가게 찾기
     public List<RestaurantDTO> findByKeyword(String keyword);

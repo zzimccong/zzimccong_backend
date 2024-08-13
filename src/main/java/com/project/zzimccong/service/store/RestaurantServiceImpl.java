@@ -471,6 +471,10 @@ public class RestaurantServiceImpl implements RestaurantService {
             throw new RuntimeException("Restaurant not found with id " + id);
         }
     }
+    @Override
+    public List<Restaurant> getRestaurantsByUserId(Integer user_id) {
+        return restaurantRepository.findByUserId(user_id);
+    }
 
 }
 

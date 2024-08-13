@@ -64,6 +64,12 @@ public class RestaurantController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping("/restaurants/user/{user_id}")
+    public List<Restaurant> getRestaurantsByUserId(@PathVariable Integer user_id) {
+        return restaurantService.getRestaurantsByUserId(user_id);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/restaurantCreate")
     public Restaurant createRestaurant(@RequestBody Restaurant restaurant) {
         restaurant.setState("승인 대기 중");
