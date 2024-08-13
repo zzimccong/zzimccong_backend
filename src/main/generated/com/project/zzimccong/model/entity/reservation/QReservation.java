@@ -36,6 +36,8 @@ public class QReservation extends EntityPathBase<Reservation> {
 
     public final StringPath state = createString("state");
 
+    public final com.project.zzimccong.model.entity.user.QUser user;
+
     public QReservation(String variable) {
         this(Reservation.class, forVariable(variable), INITS);
     }
@@ -54,7 +56,8 @@ public class QReservation extends EntityPathBase<Reservation> {
 
     public QReservation(Class<? extends Reservation> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.restaurant = inits.isInitialized("restaurant") ? new com.project.zzimccong.model.entity.store.QRestaurant(forProperty("restaurant")) : null;
+        this.restaurant = inits.isInitialized("restaurant") ? new com.project.zzimccong.model.entity.store.QRestaurant(forProperty("restaurant"), inits.get("restaurant")) : null;
+        this.user = inits.isInitialized("user") ? new com.project.zzimccong.model.entity.user.QUser(forProperty("user")) : null;
     }
 
 }

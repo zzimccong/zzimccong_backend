@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -32,6 +33,10 @@ public class QUser extends EntityPathBase<User> {
     public final StringPath password = createString("password");
 
     public final StringPath phone = createString("phone");
+
+    public final ListPath<com.project.zzimccong.model.entity.reservation.Reservation, com.project.zzimccong.model.entity.reservation.QReservation> reservations = this.<com.project.zzimccong.model.entity.reservation.Reservation, com.project.zzimccong.model.entity.reservation.QReservation>createList("reservations", com.project.zzimccong.model.entity.reservation.Reservation.class, com.project.zzimccong.model.entity.reservation.QReservation.class, PathInits.DIRECT2);
+
+    public final ListPath<com.project.zzimccong.model.entity.store.Restaurant, com.project.zzimccong.model.entity.store.QRestaurant> restaurants = this.<com.project.zzimccong.model.entity.store.Restaurant, com.project.zzimccong.model.entity.store.QRestaurant>createList("restaurants", com.project.zzimccong.model.entity.store.Restaurant.class, com.project.zzimccong.model.entity.store.QRestaurant.class, PathInits.DIRECT2);
 
     public final StringPath role = createString("role");
 
