@@ -64,10 +64,22 @@ public class RestaurantController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping("/restaurants/user/{user_id}")
+    public List<Restaurant> getRestaurantsByUserId(@PathVariable Integer user_id) {
+        return restaurantService.getRestaurantsByUserId(user_id);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/restaurantCreate")
     public Restaurant createRestaurant(@RequestBody Restaurant restaurant) {
         restaurant.setState("승인 대기 중");
         return restaurantService.createRestaurant(restaurant);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PutMapping("/restaurantUpdate/{id}")
+    public Restaurant updateRestaurant(@PathVariable Long id, @RequestBody Restaurant restaurantDetails) {
+        return restaurantService.updateRestaurant(id, restaurantDetails);
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
@@ -85,5 +97,24 @@ public class RestaurantController {
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
 
         return response.getBody();
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PutMapping("/restaurant/{id}/state")
+    public Restaurant updateRestaurantState(@PathVariable Long id, @RequestBody Map<String, String> updates) {
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(id);
+        if (!optionalRestaurant.isPresent()) {
+            throw new RuntimeException("Restaurant not found with id: " + id);
+        }
+
+        Restaurant restaurant = optionalRestaurant.get();
+
+        if (updates.containsKey("state")) {
+            restaurant.setState(updates.get("state"));
+        } else {
+            throw new IllegalArgumentException("State field is required");
+        }
+
+        return restaurantRepository.save(restaurant);
     }
 }

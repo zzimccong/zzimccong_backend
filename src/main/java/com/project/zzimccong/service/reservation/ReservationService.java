@@ -11,6 +11,6 @@ public interface ReservationService {
     List<Reservation> getAllReservations();
     Reservation updateReservationStatus(Long id, String status);
     List<ReservationDTO> getReservationsByUserId(Integer userId);
-
+    List<Reservation> findByUserAndState(User userId, String state);
 
 }

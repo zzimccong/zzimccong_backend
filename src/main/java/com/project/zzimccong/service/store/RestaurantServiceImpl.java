@@ -440,6 +440,41 @@ public class RestaurantServiceImpl implements RestaurantService {
         return restaurantRepository.save(restaurant);
     }
 
+    @Override
+    public Restaurant updateRestaurant(Long id, Restaurant restaurantDetails) {
+        Optional<Restaurant> restaurantOptional = restaurantRepository.findById(id);
+
+        if (restaurantOptional.isPresent()) {
+            Restaurant restaurant = restaurantOptional.get();
+            restaurant.setName(restaurantDetails.getName());
+            restaurant.setCategory(restaurantDetails.getCategory());
+            restaurant.setRoadAddress(restaurantDetails.getRoadAddress());
+            restaurant.setNumberAddress(restaurantDetails.getNumberAddress());
+            restaurant.setPhoneNumber(restaurantDetails.getPhoneNumber());
+            restaurant.setDetailInfo(restaurantDetails.getDetailInfo());
+            restaurant.setBusinessHours(restaurantDetails.getBusinessHours());
+            restaurant.setLink(restaurantDetails.getLink());
+            restaurant.setFacilities(restaurantDetails.getFacilities());
+            restaurant.setParkingInfo(restaurantDetails.getParkingInfo());
+            restaurant.setMainPhotoUrl(restaurantDetails.getMainPhotoUrl());
+            restaurant.setPhoto1Url(restaurantDetails.getPhoto1Url());
+            restaurant.setPhoto2Url(restaurantDetails.getPhoto2Url());
+            restaurant.setPhoto3Url(restaurantDetails.getPhoto3Url());
+            restaurant.setPhoto4Url(restaurantDetails.getPhoto4Url());
+            restaurant.setPhoto5Url(restaurantDetails.getPhoto5Url());
+            restaurant.setLatitude(restaurantDetails.getLatitude());
+            restaurant.setLongitude(restaurantDetails.getLongitude());
+            restaurant.setSeats(restaurantDetails.getSeats());
+
+            return restaurantRepository.save(restaurant);
+        } else {
+            throw new RuntimeException("Restaurant not found with id " + id);
+        }
+    }
+    @Override
+    public List<Restaurant> getRestaurantsByUserId(Integer user_id) {
+        return restaurantRepository.findByUserId(user_id);
+    }
 
 }
 

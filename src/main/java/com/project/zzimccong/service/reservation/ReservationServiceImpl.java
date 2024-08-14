@@ -2,6 +2,7 @@ package com.project.zzimccong.service.reservation;
 
 import com.project.zzimccong.model.dto.reservation.ReservationDTO;
 import com.project.zzimccong.model.entity.reservation.Reservation;
+import com.project.zzimccong.model.entity.user.User;
 import com.project.zzimccong.repository.reservation.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,5 +55,10 @@ public class ReservationServiceImpl implements ReservationService {
                 reservation.getState(),
                 reservation.getRequest()
         );
+    }
+
+    @Override
+    public List<Reservation> findByUserAndState(User user, String state) {
+        return reservationRepository.findByUserAndState(user, state);
     }
 }
