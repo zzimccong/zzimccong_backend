@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.project.zzimccong.model.entity.corp.Corporation;
 import com.project.zzimccong.model.entity.store.Restaurant;
 import com.project.zzimccong.model.entity.user.User;
 
@@ -24,9 +25,14 @@ public class Reservation {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "restaurant_id")
-//    @JsonBackReference(value = "restaurant-reservations")
-    @JsonManagedReference
+    @JsonBackReference(value = "restaurant-reservations")
+//    @JsonManagedReference
     private Restaurant restaurant;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "corp_id")
+    @JsonBackReference(value = "corp-reservations")
+    private Corporation corporation;
 
     private LocalDateTime reservationTime; //예약 시간
     private LocalDateTime reservationRegistrationTime; // 예약등록 시간
@@ -36,10 +42,11 @@ public class Reservation {
 
     public Reservation() {}
 
-    public Reservation(Long id, User user, Restaurant restaurant, LocalDateTime reservationTime, LocalDateTime reservationRegistrationTime, int count, String state, String request) {
+    public Reservation(Long id, User user, Restaurant restaurant, Corporation corporation, LocalDateTime reservationTime, LocalDateTime reservationRegistrationTime, int count, String state, String request) {
         this.id = id;
         this.user = user;
         this.restaurant = restaurant;
+        this.corporation = corporation;
         this.reservationTime = reservationTime;
         this.reservationRegistrationTime = reservationRegistrationTime;
         this.count = count;
@@ -69,6 +76,14 @@ public class Reservation {
 
     public void setRestaurant(Restaurant restaurant) {
         this.restaurant = restaurant;
+    }
+
+    public Corporation getCorporation() {
+        return corporation;
+    }
+
+    public void setCorporation(Corporation corporation) {
+        this.corporation = corporation;
     }
 
     public LocalDateTime getReservationTime() {
@@ -117,6 +132,7 @@ public class Reservation {
                 "id=" + id +
                 ", user=" + user +
                 ", restaurant=" + restaurant +
+                ", corporation=" + corporation +
                 ", reservationTime=" + reservationTime +
                 ", reservationRegistrationTime=" + reservationRegistrationTime +
                 ", count=" + count +

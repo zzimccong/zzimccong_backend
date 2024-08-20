@@ -38,6 +38,8 @@ public class QCorporation extends EntityPathBase<Corporation> {
 
     public final StringPath password = createString("password");
 
+    public final ListPath<com.project.zzimccong.model.entity.reservation.Reservation, com.project.zzimccong.model.entity.reservation.QReservation> reservations = this.<com.project.zzimccong.model.entity.reservation.Reservation, com.project.zzimccong.model.entity.reservation.QReservation>createList("reservations", com.project.zzimccong.model.entity.reservation.Reservation.class, com.project.zzimccong.model.entity.reservation.QReservation.class, PathInits.DIRECT2);
+
     public final StringPath role = createString("role");
 
     public QCorporation(String variable) {

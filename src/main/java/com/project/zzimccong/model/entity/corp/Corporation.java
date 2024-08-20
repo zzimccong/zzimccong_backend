@@ -1,6 +1,8 @@
 package com.project.zzimccong.model.entity.corp;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.zzimccong.model.entity.email.EmailVerification;
+import com.project.zzimccong.model.entity.reservation.Reservation;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -41,10 +43,14 @@ public class Corporation implements Serializable {
     @OneToMany(mappedBy = "corporation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EmailVerification> emailVerifications;
 
+    @OneToMany(mappedBy = "corporation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "corp-reservations")
+    private List<Reservation> reservations;
+
     public Corporation() {
     }
 
-    public Corporation(Integer id, String corpName, String corpDept, String corpId, String password, String corpEmail, boolean emailVerified, String corpAddress, String role, List<EmailVerification> emailVerifications) {
+    public Corporation(Integer id, String corpName, String corpDept, String corpId, String password, String corpEmail, boolean emailVerified, String corpAddress, String role, List<EmailVerification> emailVerifications, List<Reservation> reservations) {
         this.id = id;
         this.corpName = corpName;
         this.corpDept = corpDept;
@@ -55,6 +61,7 @@ public class Corporation implements Serializable {
         this.corpAddress = corpAddress;
         this.role = role;
         this.emailVerifications = emailVerifications;
+        this.reservations = reservations;
     }
 
     public Integer getId() {
@@ -64,7 +71,6 @@ public class Corporation implements Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
-
 
     public String getCorpName() {
         return corpName;
@@ -138,6 +144,14 @@ public class Corporation implements Serializable {
         this.emailVerifications = emailVerifications;
     }
 
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
+    }
+
     @Override
     public String toString() {
         return "Corporation{" +
@@ -151,6 +165,7 @@ public class Corporation implements Serializable {
                 ", corpAddress='" + corpAddress + '\'' +
                 ", role='" + role + '\'' +
                 ", emailVerifications=" + emailVerifications +
+                ", reservations=" + reservations +
                 '}';
     }
 }
