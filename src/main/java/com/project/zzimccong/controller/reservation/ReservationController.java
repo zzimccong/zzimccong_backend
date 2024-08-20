@@ -2,7 +2,7 @@ package com.project.zzimccong.controller.reservation;
 
 import com.project.zzimccong.model.dto.reservation.ReservationDTO;
 import com.project.zzimccong.model.entity.reservation.Reservation;
-import com.project.zzimccong.model.entity.user.User;
+import com.project.zzimccong.security.jwt.JwtTokenUtil;
 import com.project.zzimccong.service.reservation.ReservationService;
 import com.project.zzimccong.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +20,13 @@ public class ReservationController {
     @Autowired
     private UserService userService;
 
-    @PostMapping
-    public Reservation createReservation(@RequestBody Reservation reservation) {
-        System.out.println("Received restaurantId: " + reservation.getRestaurant());
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
-        return reservationService.saveReservation(reservation);
+    @PostMapping
+    public Reservation createReservation(@RequestBody Reservation reservation, @RequestHeader("Authorization") String tokenHeader) {
+        String token = tokenHeader.replace("Bearer ", "");
+        return reservationService.saveReservation(reservation, token);
     }
 
     @GetMapping
@@ -38,15 +40,9 @@ public class ReservationController {
     }
 
 
-    @GetMapping("/user/{userId}")
-    public List<ReservationDTO> getUserReservations(@PathVariable Integer userId) {
-        return reservationService.getReservationsByUserId(userId);
-    }
-
-    @GetMapping("/{userId}/visited")
-    public List<Reservation> getVisitedReservation(@PathVariable Integer userId) {
-        User user = userService.FindById(userId);
-        return reservationService.findByUserAndState(user, "방문완료");
+    @GetMapping("/user")
+    public List<ReservationDTO> getUserReservations(@RequestParam("userId") Integer userId, @RequestParam("userType") String userType) {
+        return reservationService.getReservationsByUserId(userId, userType);
     }
 
 }
