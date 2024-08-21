@@ -64,6 +64,8 @@ public class QRestaurant extends EntityPathBase<Restaurant> {
 
     public final ListPath<com.project.zzimccong.model.entity.reservation.Reservation, com.project.zzimccong.model.entity.reservation.QReservation> reservations = this.<com.project.zzimccong.model.entity.reservation.Reservation, com.project.zzimccong.model.entity.reservation.QReservation>createList("reservations", com.project.zzimccong.model.entity.reservation.Reservation.class, com.project.zzimccong.model.entity.reservation.QReservation.class, PathInits.DIRECT2);
 
+    public final ListPath<com.project.zzimccong.model.entity.cart.Cart, com.project.zzimccong.model.entity.cart.QCart> restaurantLists = this.<com.project.zzimccong.model.entity.cart.Cart, com.project.zzimccong.model.entity.cart.QCart>createList("restaurantLists", com.project.zzimccong.model.entity.cart.Cart.class, com.project.zzimccong.model.entity.cart.QCart.class, PathInits.DIRECT2);
+
     public final StringPath roadAddress = createString("roadAddress");
 
     public final StringPath seats = createString("seats");

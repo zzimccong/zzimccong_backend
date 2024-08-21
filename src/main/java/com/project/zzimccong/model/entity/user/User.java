@@ -1,6 +1,7 @@
 package com.project.zzimccong.model.entity.user;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.project.zzimccong.model.entity.cart.Cart;
 import com.project.zzimccong.model.entity.reservation.Reservation;
 import com.project.zzimccong.model.entity.store.Restaurant;
 
@@ -49,7 +50,7 @@ public class User {
     public User() {
     }
 
-    public User(Integer id, String loginId, String password, String name, LocalDate birth, String email, String phone, String role, List<Restaurant> restaurants, List<Reservation> reservations) {
+    public User(Integer id, String loginId, String password, String name, LocalDate birth, String email, String phone, String role, List<Restaurant> restaurants, List<Reservation> reservations, List<Cart> restaurantLists) {
         this.id = id;
         this.loginId = loginId;
         this.password = password;

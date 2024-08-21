@@ -20,7 +20,7 @@ public class CouponController {
     // 사용자의 '예약권' 쿠폰 개수 조회
     @GetMapping("/{userId}/reservation/cnt")
     public Integer getReservationCouponsCnt(@PathVariable Integer userId) {
-        return couponService.findCntByUserIdAndType(userId, "예약권");
+        return couponService.findCntByUserIdAndType(userId, "예약쿠폰");
     }
 
     // 사용자의 '추첨권' 쿠폰 개수 조회

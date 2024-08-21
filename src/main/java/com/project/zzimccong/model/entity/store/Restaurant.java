@@ -2,6 +2,7 @@ package com.project.zzimccong.model.entity.store;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.project.zzimccong.model.entity.cart.Cart;
 import com.project.zzimccong.model.entity.reservation.Reservation;
 import com.project.zzimccong.model.entity.user.User;
 
@@ -29,10 +30,10 @@ public class Restaurant {
     @JsonManagedReference(value = "restaurant-menus")
     private List<Menu> menus; // 메뉴
 
-    @Column(length = 10000)
+    @Column(columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     private String facilities; // 편의 시설
 
-    @Column(length = 1000)
+    @Column(columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     private String parkingInfo; // 주차 정보
 
     @Column(length = 1000)
@@ -62,13 +63,18 @@ public class Restaurant {
     private User user;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @JsonManagedReference(value = "restaurant-reservations")
-    @JsonBackReference
+    @JsonManagedReference(value = "restaurant-reservations")
+//    @JsonBackReference
     private List<Reservation> reservations;
+
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "restaurant-lists")
+    private List<Cart> restaurantLists;
+
 
     public Restaurant() {}
 
-    public Restaurant(long id, String name, String category, String roadAddress, String numberAddress, String phoneNumber, String detailInfo, String businessHours, String link, List<Menu> menus, String facilities, String parkingInfo, String mainPhotoUrl, String photo1Url, String photo2Url, String photo3Url, String photo4Url, String photo5Url, double latitude, double longitude, String seats, String state, String lotteryEvent, User user, List<Reservation> reservations) {
+    public Restaurant(long id, String name, String category, String roadAddress, String numberAddress, String phoneNumber, String detailInfo, String businessHours, String link, List<Menu> menus, String facilities, String parkingInfo, String mainPhotoUrl, String photo1Url, String photo2Url, String photo3Url, String photo4Url, String photo5Url, double latitude, double longitude, String seats, String state, String lotteryEvent, User user, List<Reservation> reservations, List<Cart> restaurantLists) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -94,6 +100,7 @@ public class Restaurant {
         this.lotteryEvent = lotteryEvent;
         this.user = user;
         this.reservations = reservations;
+        this.restaurantLists = restaurantLists;
     }
 
     public long getId() {
@@ -264,6 +271,14 @@ public class Restaurant {
         this.seats = seats;
     }
 
+    public List<Cart> getRestaurantLists() {
+        return restaurantLists;
+    }
+
+    public void setRestaurantLists(List<Cart> restaurantLists) {
+        this.restaurantLists = restaurantLists;
+    }
+
     public String getState() {
         return state;
     }
@@ -296,34 +311,4 @@ public class Restaurant {
         this.reservations = reservations;
     }
 
-//    @Override
-//    public String toString() {
-//        return "Restaurant{" +
-//                "id=" + id +
-//                ", name='" + name + '\'' +
-//                ", category='" + category + '\'' +
-//                ", roadAddress='" + roadAddress + '\'' +
-//                ", numberAddress='" + numberAddress + '\'' +
-//                ", phoneNumber='" + phoneNumber + '\'' +
-//                ", detailInfo='" + detailInfo + '\'' +
-//                ", businessHours='" + businessHours + '\'' +
-//                ", link='" + link + '\'' +
-//                ", menus=" + menus +
-//                ", facilities='" + facilities + '\'' +
-//                ", parkingInfo='" + parkingInfo + '\'' +
-//                ", mainPhotoUrl='" + mainPhotoUrl + '\'' +
-//                ", photo1Url='" + photo1Url + '\'' +
-//                ", photo2Url='" + photo2Url + '\'' +
-//                ", photo3Url='" + photo3Url + '\'' +
-//                ", photo4Url='" + photo4Url + '\'' +
-//                ", photo5Url='" + photo5Url + '\'' +
-//                ", latitude=" + latitude +
-//                ", longitude=" + longitude +
-//                ", seats='" + seats + '\'' +
-//                ", state='" + state + '\'' +
-//                ", lotteryEvent='" + lotteryEvent + '\'' +
-//                ", user=" + user +
-//                ", reservations=" + reservations +
-//                '}';
-//    }
 }
