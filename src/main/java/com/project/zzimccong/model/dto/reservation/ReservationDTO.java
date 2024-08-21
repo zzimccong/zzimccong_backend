@@ -5,7 +5,8 @@ import java.time.LocalDateTime;
 public class ReservationDTO {
 
     private Long id;
-    private Integer userId;  // User ID 필드 추가
+    private String userId;  // User ID 필드 추가
+    private String corpId;
     private Long restaurantId;
     private LocalDateTime reservationTime; //예약 시간
     private LocalDateTime reservationRegistrationTime; // 예약등록 시간
@@ -15,9 +16,10 @@ public class ReservationDTO {
 
     public ReservationDTO() {}
 
-    public ReservationDTO(Long id, Integer userId, Long restaurantId, LocalDateTime reservationTime, LocalDateTime reservationRegistrationTime, int count, String state, String request) {
+    public ReservationDTO(Long id, String userId, String corpId, Long restaurantId, LocalDateTime reservationTime, LocalDateTime reservationRegistrationTime, int count, String state, String request) {
         this.id = id;
         this.userId = userId;  // User ID 필드 초기화
+        this.corpId = corpId;
         this.restaurantId = restaurantId;
         this.reservationTime = reservationTime;
         this.reservationRegistrationTime = reservationRegistrationTime;
@@ -35,11 +37,11 @@ public class ReservationDTO {
         this.id = id;
     }
 
-    public Integer getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
@@ -89,5 +91,13 @@ public class ReservationDTO {
 
     public void setRequest(String request) {
         this.request = request;
+    }
+
+    public String getCorpId() {
+        return corpId;
+    }
+
+    public void setCorpId(String corpId) {
+        this.corpId = corpId;
     }
 }
