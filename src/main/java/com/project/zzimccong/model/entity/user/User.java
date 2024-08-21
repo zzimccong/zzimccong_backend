@@ -65,7 +65,7 @@ public class User {
         this.role = role;
         this.restaurants = restaurants;
         this.reservations = reservations;
-        this.restaurantLists = restaurantLists;
+//        this.restaurantLists = restaurantLists;
     }
 
     public Integer getId() {
@@ -148,13 +148,13 @@ public class User {
         this.reservations = reservations;
     }
 
-    public List<Cart> getRestaurantLists() {
-        return restaurantLists;
-    }
-
-    public void setRestaurantLists(List<Cart> restaurantLists) {
-        this.restaurantLists = restaurantLists;
-    }
+//    public List<Cart> getRestaurantLists() {
+//        return restaurantLists;
+//    }
+//
+//    public void setRestaurantLists(List<Cart> restaurantLists) {
+//        this.restaurantLists = restaurantLists;
+//    }
 
     @Override
     public String toString() {

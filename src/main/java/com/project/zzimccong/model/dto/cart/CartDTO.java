@@ -74,7 +74,7 @@ public class CartDTO {
 
     public CartDTO(Cart cart) {
         this.id = cart.getId();
-        this.userId = cart.getUser().getId();
+        this.userId = cart.getId();
         this.restaurantId = cart.getRestaurant().getId();
     }
 

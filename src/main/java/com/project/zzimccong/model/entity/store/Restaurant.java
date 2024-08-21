@@ -30,10 +30,10 @@ public class Restaurant {
     @JsonManagedReference(value = "restaurant-menus")
     private List<Menu> menus; // 메뉴
 
-    @Column(length = 10000)
+    @Column(columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     private String facilities; // 편의 시설
 
-    @Column(length = 1000)
+    @Column(columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     private String parkingInfo; // 주차 정보
 
     @Column(length = 1000)
@@ -64,11 +64,11 @@ public class Restaurant {
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference(value = "restaurant-reservations")
-    @JsonBackReference
+//    @JsonBackReference
     private List<Reservation> reservations;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonBackReference(value = "restaurant-users")
+    @JsonManagedReference(value = "restaurant-lists")
     private List<Cart> restaurantLists;
 
 
@@ -310,6 +310,5 @@ public class Restaurant {
     public void setReservations(List<Reservation> reservations) {
         this.reservations = reservations;
     }
-
 
 }
