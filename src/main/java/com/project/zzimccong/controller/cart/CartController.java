@@ -2,12 +2,6 @@ package com.project.zzimccong.controller.cart;
 
 import com.project.zzimccong.model.dto.cart.CartDTO;
 import com.project.zzimccong.model.dto.cart.CartResDTO;
-import com.project.zzimccong.model.entity.cart.Cart;
-import com.project.zzimccong.model.entity.store.Restaurant;
-import com.project.zzimccong.model.entity.user.User;
-import com.project.zzimccong.repository.reservation.RestaurantCartRepository;
-import com.project.zzimccong.repository.store.RestaurantRepository;
-import com.project.zzimccong.repository.user.UserRepository;
 import com.project.zzimccong.service.reservation.RestaurantCartService;
 import com.project.zzimccong.service.store.RestaurantService;
 import com.project.zzimccong.service.user.UserService;
@@ -21,9 +15,6 @@ import java.util.Map;
 @RequestMapping("api/cart")
 public class CartController {
 
-//    private final UserRepository userRepository;
-//    private final RestaurantRepository restaurantRepository;
-//    private final RestaurantCartRepository restaurantListRepository;
     private final UserService userService;
     private final RestaurantCartService restaurantCartService;
     private final RestaurantService restaurantService;
@@ -37,14 +28,7 @@ public class CartController {
     //장바구니추가
     @PostMapping("/add")
     public ResponseEntity<?> saveRestaurantList(@RequestBody CartDTO cartDto){
-        User user = userService.findById(cartDto.getUserId());
-        Restaurant restaurant = restaurantService.findById(cartDto.getRestaurantId());
-
-        Cart cart = new Cart();
-        cart.setUser(user);
-        cart.setRestaurant(restaurant);
-        restaurantCartService.saveRestaurantList(cart);
-
+        restaurantCartService.saveRestaurantList(cartDto);
         return ResponseEntity.ok("장바구니에 추가되었습니다.");
     }
 

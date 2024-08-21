@@ -26,7 +26,7 @@ public class QCart extends EntityPathBase<Cart> {
 
     public final com.project.zzimccong.model.entity.store.QRestaurant restaurant;
 
-    public final com.project.zzimccong.model.entity.user.QUser user;
+    public final NumberPath<Integer> userId = createNumber("userId", Integer.class);
 
     public QCart(String variable) {
         this(Cart.class, forVariable(variable), INITS);
@@ -47,7 +47,6 @@ public class QCart extends EntityPathBase<Cart> {
     public QCart(Class<? extends Cart> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.restaurant = inits.isInitialized("restaurant") ? new com.project.zzimccong.model.entity.store.QRestaurant(forProperty("restaurant"), inits.get("restaurant")) : null;
-        this.user = inits.isInitialized("user") ? new com.project.zzimccong.model.entity.user.QUser(forProperty("user")) : null;
     }
 
 }

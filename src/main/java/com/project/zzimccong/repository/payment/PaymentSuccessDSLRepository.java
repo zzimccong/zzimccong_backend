@@ -20,14 +20,10 @@ public class PaymentSuccessDSLRepository {
     private final JPAQueryFactory queryFactory;
 
     public void AddCouponData(String orderName, Integer userId) {
-        System.out.println("dsl 출력 "+orderName);
         String[] parts = orderName.split(" ");
         String itemName = parts[0];
         String cntString = parts[1].replaceAll("[^0-9]", "");
         int cnt = Integer.parseInt(cntString);
-        System.out.println("dsl 출력 "+itemName);
-        System.out.println("dsl 출력 "+cnt);
-        System.out.println("dsl 출력 "+userId);
 
         Coupon existingCoupon = queryFactory
                 .selectFrom(coupon)

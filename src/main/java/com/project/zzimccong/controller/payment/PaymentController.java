@@ -28,13 +28,11 @@ public class PaymentController {
     //결제 요청
     @PostMapping
     public ResponseEntity requestPayment(@RequestBody PaymentDTO paymentReqDto) {
-//        System.out.println("받은거 " + paymentReqDto.getOrderName() +
-//                paymentReqDto.getUserId());
 
         PaymentResDTO paymentResDto = paymentService.requestPayment(paymentReqDto.toEntity(), paymentReqDto.getUserId()).toPaymentResDTO();
         paymentResDto.setSuccessUrl(paymentReqDto.getYourSuccessUrl() == null ? tossPaymentConfig.getSuccessUrl() : paymentReqDto.getYourSuccessUrl());
         paymentResDto.setFailUrl(paymentReqDto.getYourFailUrl() == null ? tossPaymentConfig.getFailUrl() : paymentReqDto.getYourFailUrl());
-//        System.out.println(paymentResDto.getCustomerName());
+
         return ResponseEntity.ok().body(paymentResDto);
 
     }

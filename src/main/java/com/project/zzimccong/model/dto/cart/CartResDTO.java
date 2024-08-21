@@ -52,9 +52,7 @@
 package com.project.zzimccong.model.dto.cart;
 
 
-import com.project.zzimccong.model.dto.store.MenuDTO;
 import com.project.zzimccong.model.entity.cart.Cart;
-import com.project.zzimccong.model.entity.store.Menu;
 import com.project.zzimccong.model.entity.store.Restaurant;
 import lombok.Builder;
 
@@ -80,7 +78,7 @@ public class CartResDTO {
 
     public CartResDTO(Cart cart) {
         this.id = cart.getId();
-        this.userId = cart.getUser().getId();
+        this.userId = cart.getUserId();
         this.restaurant = cart.getRestaurant();
     }
 
@@ -105,7 +103,7 @@ public class CartResDTO {
     public static CartResDTO toCartResDTO(Cart cart) {
         return CartResDTO.builder()
                 .id(cart.getId())
-                .userId(cart.getUser().getId())
+                .userId(cart.getUserId())
                 .restaurant(cart.getRestaurant())
                 .build();
     }

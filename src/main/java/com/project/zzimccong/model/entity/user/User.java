@@ -46,10 +46,6 @@ public class User {
     @JsonManagedReference(value = "user-reservations")
     private List<Reservation> reservations;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "user-lists")
-    private List<Cart> restaurantLists;
-
 
     public User() {
     }
@@ -65,7 +61,6 @@ public class User {
         this.role = role;
         this.restaurants = restaurants;
         this.reservations = reservations;
-//        this.restaurantLists = restaurantLists;
     }
 
     public Integer getId() {
@@ -147,14 +142,6 @@ public class User {
     public void setReservations(List<Reservation> reservations) {
         this.reservations = reservations;
     }
-
-//    public List<Cart> getRestaurantLists() {
-//        return restaurantLists;
-//    }
-//
-//    public void setRestaurantLists(List<Cart> restaurantLists) {
-//        this.restaurantLists = restaurantLists;
-//    }
 
     @Override
     public String toString() {

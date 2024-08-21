@@ -19,26 +19,24 @@ public class RestaurantCartDSLRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public List<Cart> findByUserIdWithRestaurant(int userid){
+    public List<Cart> findByUserIdWithRestaurant(int userId){
         List<Cart> CartList = queryFactory
                              .selectFrom(cart)
                              .join(cart.restaurant, restaurant).fetchJoin()
-                             .where(cart.user.id.eq(userid))
+                             .where(cart.userId.eq(userId))
                              .fetch();
 
         for (Cart cart : CartList) {
-            String restaurantName = cart.getRestaurant().getName(); // getRestaurant()과 getName()은 상황에 맞게 수정
-            System.out.println("장바구니 항목의 레스토랑 이름: " + restaurantName);
+            String restaurantName = cart.getRestaurant().getName();
         }
         return CartList;
     }
 
     public void deleteByStore(int userId, List<Integer> StoreIds){
-        System.out.println("삭제할 레스토랑  "+StoreIds);
         List<Long> longStoreIds = StoreIds.stream().map(Long::valueOf).collect(Collectors.toList());
         queryFactory
                 .delete(cart)
-                .where(cart.user.id.eq(userId)
+                  .where(cart.userId.eq(userId)
                         .and(cart.restaurant.id.in(longStoreIds)))
                 .execute();
 
