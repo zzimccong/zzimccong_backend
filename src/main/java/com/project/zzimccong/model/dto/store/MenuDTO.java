@@ -31,17 +31,6 @@ public class MenuDTO {
         this.photoUrl = photoUrl;
     }
 
-    // menu --> menuDTO
-    private static MenuDTO toMenuDTO(Menu menu) {
-        return MenuDTO.builder()
-                .id(menu.getId())
-                .restaurant(menu.getRestaurant())
-                .name(menu.getName())
-                .price(menu.getPrice())
-                .description(menu.getDescription())
-                .photoUrl(menu.getPhotoUrl())
-                .build();
-    }
 
      public Long getId() {
          return id;
@@ -102,6 +91,19 @@ public class MenuDTO {
                 ", photoUrl='" + photoUrl + '\'' +
                 '}';
     }
+
+     // menu --> menuDTO
+     private static MenuDTO toMenuDTO(Menu menu) {
+         return MenuDTO.builder()
+                 .id(menu.getId())
+                 .restaurant(menu.getRestaurant())
+                 .name(menu.getName())
+                 .price(menu.getPrice())
+                 .description(menu.getDescription())
+                 .photoUrl(menu.getPhotoUrl())
+                 .build();
+     }
+
     public static List<MenuDTO> toMenuDTO(List<Menu> menuList) {
         return menuList.stream().map(MenuDTO::toMenuDTO).collect(Collectors.toList());
     }

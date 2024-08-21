@@ -27,7 +27,7 @@ public interface UserService {
     User getUserByNameAndEmail(String name, String email);
     void sendTemporaryPassword(String loginId, String email);
 
-    User FindById(Integer id);
+    User findById(Integer id);
     User createManagerUser(String loginId, String password, String name, LocalDate birth, String email, String phone) throws Exception;
 
 

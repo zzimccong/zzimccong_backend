@@ -17,5 +17,6 @@ public interface RestaurantService {
 
     //1차 검색어로 가게 찾기
     public List<RestaurantDTO> findByKeyword(String keyword);
+    public Restaurant findById(Long id);
 
 }
