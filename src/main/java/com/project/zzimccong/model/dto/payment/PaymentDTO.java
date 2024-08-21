@@ -31,4 +31,6 @@ public class PaymentDTO {
                 .paySuccessYN(false)
                 .build();
     }
+
+
 }

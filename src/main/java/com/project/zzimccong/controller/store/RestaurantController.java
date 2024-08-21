@@ -4,6 +4,7 @@ package com.project.zzimccong.controller.store;
 import com.project.zzimccong.model.dto.store.RestaurantDTO;
 import com.project.zzimccong.model.entity.store.Restaurant;
 import com.project.zzimccong.repository.store.RestaurantRepository;
+import com.project.zzimccong.repository.user.UserRepository;
 import com.project.zzimccong.service.store.RestaurantService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -22,6 +23,7 @@ import java.util.Optional;
 @RequestMapping("/api")
 public class RestaurantController {
 
+    private final UserRepository userRepository;
     private RestaurantService restaurantService;
     private RestaurantRepository restaurantRepository;
 
@@ -31,9 +33,11 @@ public class RestaurantController {
     @Value("${naver.client.secret}")
     private String naverClientSecret;
 
-    public RestaurantController(RestaurantService restaurantService, RestaurantRepository restaurantRepository) {
+    public RestaurantController(RestaurantService restaurantService, RestaurantRepository restaurantRepository, UserRepository userRepository) {
         this.restaurantService = restaurantService;
         this.restaurantRepository = restaurantRepository;
+        this.userRepository = userRepository;
+
     }
 
     // 네이버 지도 음식점 크롤링 엔드포인트
@@ -43,11 +47,10 @@ public class RestaurantController {
         return "Restaurants fetched and saved successfully!";
     }
     //1차 검색어로 가게 찾기
-    @PostMapping("/search")
-    public List<RestaurantDTO> findByKeyword(@RequestBody Map<String,Object> Keyword){
-        String keyword = (String) Keyword.get("searchWord");
-        System.out.println(keyword);
-        return restaurantService.findByKeyword(keyword);
+    @GetMapping("/search/{searchWord}")
+    public List<RestaurantDTO> findByKeyword(@PathVariable String searchWord){
+        System.out.println(searchWord);
+        return restaurantService.findByKeyword(searchWord);
     }
 
     @CrossOrigin(origins = "http://localhost:3000")

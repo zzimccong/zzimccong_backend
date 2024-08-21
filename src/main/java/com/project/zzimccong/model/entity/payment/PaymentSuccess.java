@@ -10,21 +10,16 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="tb_payment", indexes = {
-        @Index(name = "idx_payment_member", columnList="customer"),
-        @Index(name = "idx_payment_paymentKey", columnList = "paymentKey"),
-})
-public class Payment {
+@Table(name="tb_paymentsuccess")
+public class PaymentSuccess {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private Long paymentId;
 
     @Enumerated(EnumType.STRING)
@@ -43,17 +38,8 @@ public class Payment {
     @Column(nullable = false)
     private LocalDateTime paymentDate;
 
-    private boolean paySuccessYN;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer")
-    private User customer;
-
-    private String paymentKey;
-
-    public void setCustomer(User customer) {
-        this.customer = customer;
-    }
+    @Column(nullable = false)
+    private Integer customer;
 
     public Long getPaymentId() {
         return paymentId;
@@ -79,26 +65,7 @@ public class Payment {
         return paymentDate;
     }
 
-    public boolean isPaySuccessYN() {
-        return paySuccessYN;
-    }
-
-    public User getCustomer() {
+    public Integer getCustomer() {
         return customer;
-    }
-
-    public String getPaymentKey() {
-        return paymentKey;
-    }
-
-    public PaymentResDTO toPaymentResDTO() {
-        return PaymentResDTO.builder()
-                .payType(payType.getDescription())
-                .amount(amount)
-                .orderName(orderName)
-                .orderId(orderId)
-                .customerEmail(customer.getEmail())
-                .customerName(customer.getName())
-                .build();
     }
 }

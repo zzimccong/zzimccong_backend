@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
 
         Coupon reservationCoupon = new Coupon();
         reservationCoupon.setUser(savedUser);
-        reservationCoupon.setType("예약권");
+        reservationCoupon.setType("예약쿠폰");
         reservationCoupon.setDiscountPrice(null);
         reservationCoupon.setCnt(10);
         couponRepository.save(reservationCoupon);
@@ -177,7 +177,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User FindById(Integer id) {
+    public User findById(Integer id) {
         return userRepository.findById(id).orElse(null);
     }
 

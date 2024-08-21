@@ -1,6 +1,7 @@
 package com.project.zzimccong.model.entity.user;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.project.zzimccong.model.entity.cart.Cart;
 import com.project.zzimccong.model.entity.reservation.Reservation;
 import com.project.zzimccong.model.entity.store.Restaurant;
 
@@ -45,11 +46,15 @@ public class User {
     @JsonManagedReference(value = "user-reservations")
     private List<Reservation> reservations;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "user-lists")
+    private List<Cart> restaurantLists;
+
 
     public User() {
     }
 
-    public User(Integer id, String loginId, String password, String name, LocalDate birth, String email, String phone, String role, List<Restaurant> restaurants, List<Reservation> reservations) {
+    public User(Integer id, String loginId, String password, String name, LocalDate birth, String email, String phone, String role, List<Restaurant> restaurants, List<Reservation> reservations, List<Cart> restaurantLists) {
         this.id = id;
         this.loginId = loginId;
         this.password = password;
@@ -60,6 +65,7 @@ public class User {
         this.role = role;
         this.restaurants = restaurants;
         this.reservations = reservations;
+        this.restaurantLists = restaurantLists;
     }
 
     public Integer getId() {
@@ -140,6 +146,14 @@ public class User {
 
     public void setReservations(List<Reservation> reservations) {
         this.reservations = reservations;
+    }
+
+    public List<Cart> getRestaurantLists() {
+        return restaurantLists;
+    }
+
+    public void setRestaurantLists(List<Cart> restaurantLists) {
+        this.restaurantLists = restaurantLists;
     }
 
     @Override

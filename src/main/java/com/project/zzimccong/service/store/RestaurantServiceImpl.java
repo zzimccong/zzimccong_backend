@@ -44,6 +44,11 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
+    public Restaurant findById(Long id) {
+        return restaurantRepository.findById(id).orElse(null);
+    }
+
+    @Override
     public void testChromeDriverWithCSSSelector() {
         System.setProperty("webdriver.chrome.driver", "src/main/resources/drivers/chromedriver.exe");
 

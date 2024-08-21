@@ -109,6 +109,7 @@ public class RestaurantDTO {
     public String getDetailInfo() {
         return detailInfo;
     }
+    
     public static RestaurantDTO toRestaurantDTO(Restaurant restaurant) {
         return RestaurantDTO.builder()
                 .id(restaurant.getId())
