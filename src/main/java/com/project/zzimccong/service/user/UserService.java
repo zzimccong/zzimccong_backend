@@ -5,7 +5,6 @@ import com.project.zzimccong.model.dto.user.UserDTO;
 import com.project.zzimccong.model.entity.user.User;
 
 import java.time.LocalDate;
-import java.util.List;
 
 public interface UserService {
 
