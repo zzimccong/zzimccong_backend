@@ -130,7 +130,6 @@ public class Reservation {
     public String toString() {
         return "Reservation{" +
                 "id=" + id +
-                ", user=" + user +
                 ", restaurant=" + restaurant +
                 ", corporation=" + corporation +
                 ", reservationTime=" + reservationTime +

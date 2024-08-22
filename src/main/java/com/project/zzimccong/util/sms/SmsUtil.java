@@ -1,9 +1,8 @@
-package com.project.zzimccong.sms;
+package com.project.zzimccong.util.sms;
 
 import net.nurigo.sdk.NurigoApp;
 import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
-import net.nurigo.sdk.message.response.SingleMessageSentResponse;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -32,12 +31,12 @@ public class SmsUtil {
         this.messageService = NurigoApp.INSTANCE.initialize(apiKey, apiSecretKey, "https://api.coolsms.co.kr");
     }
 
-    public SingleMessageSentResponse sendOne(String to, String verificationCode) {
+    public void sendOne(String to, String verificationCode) {
         Message message = new Message();
         message.setFrom(from); // 발신번호 설정
         message.setTo(to);
         message.setText("[찜꽁테이블] 아래의 인증번호를 입력해주세요\n" + verificationCode);
 
-        return this.messageService.sendOne(new SingleMessageSendingRequest(message));
+        this.messageService.sendOne(new SingleMessageSendingRequest(message));
     }
 }
