@@ -8,7 +8,6 @@ import com.project.zzimccong.repository.corp.CorporationRepository;
 import com.project.zzimccong.repository.reservation.ReservationRepository;
 import com.project.zzimccong.repository.user.UserRepository;
 import com.project.zzimccong.security.jwt.JwtTokenUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,17 +17,22 @@ import java.util.stream.Collectors;
 @Service
 public class ReservationServiceImpl implements ReservationService {
 
-    @Autowired
-    private ReservationRepository reservationRepository;
+    private final ReservationRepository reservationRepository;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final UserRepository userRepository;
+    private final CorporationRepository corporationRepository;
 
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private CorporationRepository corporationRepository;
+    public ReservationServiceImpl(
+            ReservationRepository reservationRepository,
+            JwtTokenUtil jwtTokenUtil,
+            UserRepository userRepository,
+            CorporationRepository corporationRepository
+    ) {
+        this.reservationRepository = reservationRepository;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.userRepository = userRepository;
+        this.corporationRepository = corporationRepository;
+    }
 
     @Override
     public Reservation saveReservation(Reservation reservation, String token) {

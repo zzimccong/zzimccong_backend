@@ -7,7 +7,6 @@ import com.project.zzimccong.model.entity.store.Restaurant;
 import com.project.zzimccong.repository.reservation.RestaurantCartDSLRepository;
 import com.project.zzimccong.repository.reservation.RestaurantCartRepository;
 import com.project.zzimccong.service.store.RestaurantServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,12 +14,19 @@ import java.util.List;
 @Service
 public class RestaurantCartServiceImpl implements RestaurantCartService {
 
-    @Autowired
-    private RestaurantCartRepository restaurantCartRepository;
-    @Autowired
-    private RestaurantCartDSLRepository restaurantCartDSLRepository;
-    @Autowired
-    private RestaurantServiceImpl restaurantServiceImpl;
+    private final RestaurantCartRepository restaurantCartRepository;
+    private final RestaurantCartDSLRepository restaurantCartDSLRepository;
+    private final RestaurantServiceImpl restaurantServiceImpl;
+
+    public RestaurantCartServiceImpl(
+            RestaurantCartRepository restaurantCartRepository,
+            RestaurantCartDSLRepository restaurantCartDSLRepository,
+            RestaurantServiceImpl restaurantServiceImpl
+    ) {
+        this.restaurantCartRepository = restaurantCartRepository;
+        this.restaurantCartDSLRepository = restaurantCartDSLRepository;
+        this.restaurantServiceImpl = restaurantServiceImpl;
+    }
 
     @Override
     public Cart saveRestaurantList(CartDTO cartDto) {
