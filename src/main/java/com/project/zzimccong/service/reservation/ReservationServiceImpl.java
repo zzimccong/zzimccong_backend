@@ -5,9 +5,12 @@ import com.project.zzimccong.model.entity.corp.Corporation;
 import com.project.zzimccong.model.entity.reservation.Reservation;
 import com.project.zzimccong.model.entity.user.User;
 import com.project.zzimccong.repository.corp.CorporationRepository;
+import com.project.zzimccong.repository.coupon.CouponDSLRepository;
 import com.project.zzimccong.repository.reservation.ReservationRepository;
 import com.project.zzimccong.repository.user.UserRepository;
 import com.project.zzimccong.security.jwt.JwtTokenUtil;
+import com.project.zzimccong.service.coupon.CouponService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +24,12 @@ public class ReservationServiceImpl implements ReservationService {
     private final JwtTokenUtil jwtTokenUtil;
     private final UserRepository userRepository;
     private final CorporationRepository corporationRepository;
+
+    @Autowired
+    private CouponService couponService;
+
+    @Autowired
+    private CouponDSLRepository couponDSLService;
 
     public ReservationServiceImpl(
             ReservationRepository reservationRepository,
@@ -45,8 +54,12 @@ public class ReservationServiceImpl implements ReservationService {
             // User 조회 시 Optional 처리
             Optional<User> userOptional = userRepository.findByLoginId(userId);
             if (userOptional.isPresent()) {
-                reservation.setUser(userOptional.get()); // userId 설정
+                User user = userOptional.get();
+                reservation.setUser(user); // userId 설정
                 reservation.setCorporation(null); // corpId는 null로 설정
+
+                // 예약 시 쿠폰 차감
+                couponService.decreaseCouponCnt(user.getId());
             } else {
                 throw new RuntimeException("User not found with loginId: " + userId);
             }
@@ -77,6 +90,16 @@ public class ReservationServiceImpl implements ReservationService {
         if (optionalReservation.isPresent()) {
             Reservation reservation = optionalReservation.get();
             reservation.setState(status);
+
+            // 상태가 "예약 확정", "예약 취소", "방문 완료" 중 하나일 경우
+            if ("예약 취소".equals(status) || "방문 완료".equals(status)) {
+                // 예약 테이블에서 userId가 null이 아닐 때만 쿠폰 증가 호출
+                if (reservation.getUser() != null) {
+                    Integer userId = reservation.getUser().getId();
+                    couponDSLService.increaseCntByUserId(userId);
+                }
+            }
+
             return reservationRepository.save(reservation);
         }
         throw new RuntimeException("Reservation not found");
