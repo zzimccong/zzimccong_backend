@@ -2,6 +2,7 @@ package com.project.zzimccong.security.jwt;
 
 import com.project.zzimccong.security.service.corp.CustomCorpDetailsService;
 import com.project.zzimccong.security.service.user.CustomUserDetailsService;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,7 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain chain)
             throws ServletException, IOException {
         String header = request.getHeader("Authorization");
         String token = null;
