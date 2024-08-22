@@ -30,5 +30,6 @@ public interface UserService {
     User findById(Integer id);
     User createManagerUser(String loginId, String password, String name, LocalDate birth, String email, String phone) throws Exception;
 
-
+    // 카카오
+    User registerUserWithoutPassword(UserDTO userDTO);
 }
