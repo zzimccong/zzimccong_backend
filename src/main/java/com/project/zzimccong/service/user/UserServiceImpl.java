@@ -8,7 +8,7 @@ import com.project.zzimccong.repository.coupon.CouponRepository;
 import com.project.zzimccong.repository.user.UserRepository;
 import com.project.zzimccong.service.email.EmailVerificationService;
 import com.project.zzimccong.service.redis.TemporaryStorageService;
-import com.project.zzimccong.sms.SmsUtil;
+import com.project.zzimccong.util.sms.SmsUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -194,6 +194,31 @@ public class UserServiceImpl implements UserService {
         user.setEmail(email);
         user.setPhone(phone);
         user.setRole("MANAGER");
+
+        return userRepository.save(user);
+    }
+
+    // 카카오 회원가입 처리 (비밀번호 없이)
+    @Override
+    public User registerUserWithoutPassword(UserDTO userDTO) {
+        User user = new User();
+        user.setLoginId(userDTO.getLoginId());
+        user.setPassword(null);  // OAuth 사용자는 비밀번호가 필요 없으므로 null로 설정
+        user.setName(userDTO.getName());
+
+        // 생년월일 처리: birth가 null이 아닌 경우에만 설정
+        if (userDTO.getBirth() != null && !userDTO.getBirth().isEmpty()) {
+            user.setBirth(LocalDate.parse(userDTO.getBirth()));
+        }
+
+        user.setEmail(userDTO.getEmail());
+
+        // 전화번호가 null이 아닌 경우 설정
+        if (userDTO.getPhone() != null && !userDTO.getPhone().isEmpty()) {
+            user.setPhone(userDTO.getPhone());
+        }
+
+        user.setRole(userDTO.getRole());  // 기본적으로 "USER" 역할로 설정
 
         return userRepository.save(user);
     }
