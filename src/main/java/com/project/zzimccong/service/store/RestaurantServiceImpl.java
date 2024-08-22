@@ -27,14 +27,22 @@ import java.util.stream.Collectors;
 @Service
 public class RestaurantServiceImpl implements RestaurantService {
 
-    @Autowired
-    private RestaurantRepository restaurantRepository;
-    @Autowired
-    private RestaurantDSLRepository restaurantDSLRepository;
-    @Autowired
-    private MenuRepository menuRepository;
-    @Autowired
-    private UserService userService;
+    private final RestaurantRepository restaurantRepository;
+    private final RestaurantDSLRepository restaurantDSLRepository;
+    private final MenuRepository menuRepository;
+    private final UserService userService;
+
+    public RestaurantServiceImpl(
+            RestaurantRepository restaurantRepository,
+            RestaurantDSLRepository restaurantDSLRepository,
+            MenuRepository menuRepository,
+            UserService userService
+    ) {
+        this.restaurantRepository = restaurantRepository;
+        this.restaurantDSLRepository = restaurantDSLRepository;
+        this.menuRepository = menuRepository;
+        this.userService = userService;
+    }
 
     int phoneNumberCounter = 0; // 전화번호 카운터를 초기화
 
