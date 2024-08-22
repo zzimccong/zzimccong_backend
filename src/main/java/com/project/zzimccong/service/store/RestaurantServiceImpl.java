@@ -2,9 +2,12 @@ package com.project.zzimccong.service.store;
 
 
 import com.project.zzimccong.model.dto.store.RestaurantDTO;
+import com.project.zzimccong.model.dto.store.RestaurantResDTO;
+import com.project.zzimccong.model.entity.review.Review;
 import com.project.zzimccong.model.entity.store.Menu;
 import com.project.zzimccong.model.entity.store.Restaurant;
 import com.project.zzimccong.model.entity.user.User;
+import com.project.zzimccong.repository.review.ReviewDSLRepository;
 import com.project.zzimccong.repository.store.RestaurantDSLRepository;
 import com.project.zzimccong.repository.store.MenuRepository;
 import com.project.zzimccong.repository.store.RestaurantRepository;
@@ -31,26 +34,63 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final RestaurantDSLRepository restaurantDSLRepository;
     private final MenuRepository menuRepository;
     private final UserService userService;
+    private final ReviewDSLRepository reviewDSLRepository;
 
     public RestaurantServiceImpl(
             RestaurantRepository restaurantRepository,
             RestaurantDSLRepository restaurantDSLRepository,
             MenuRepository menuRepository,
-            UserService userService
-    ) {
+            UserService userService,
+            ReviewDSLRepository reviewDSLRepository) {
         this.restaurantRepository = restaurantRepository;
         this.restaurantDSLRepository = restaurantDSLRepository;
         this.menuRepository = menuRepository;
         this.userService = userService;
+        this.reviewDSLRepository = reviewDSLRepository;
     }
 
     int phoneNumberCounter = 0; // 전화번호 카운터를 초기화
 
     @Override
-    public List<RestaurantDTO> findByKeyword(String keyword) {
+    public List<RestaurantResDTO> findByKeyword(String keyword) {
         List<Restaurant> restaurant = restaurantDSLRepository.findByKeyword(keyword);
         List<RestaurantDTO> dtoList = RestaurantDTO.toRestaurantDTOList(restaurant);
-        return dtoList;
+        List<RestaurantResDTO> resDTOList = new ArrayList<>();
+
+        for (RestaurantDTO dto : dtoList) {
+            RestaurantResDTO resDTO = RestaurantResDTO.builder()
+                    .id(dto.getId())
+                    .name(dto.getName())
+                    .category(dto.getCategory())
+                    .roadAddress(dto.getRoadAddress())
+                    .mainPhotoUrl(dto.getMainPhotoUrl())
+                    .photo1Url(dto.getPhoto1Url())
+                    .grade(reviewDSLRepository.rateByRestaurant(dto.getId()))
+                    .build();
+            resDTOList.add(resDTO);
+        }
+        return resDTOList;
+    }
+
+    @Override
+    public List<RestaurantResDTO> findByFilter(Map<String, Object> filters) {
+        List<Restaurant> restaurant = restaurantDSLRepository.findByFilter(filters);
+        List<RestaurantDTO> dtoList = RestaurantDTO.toRestaurantDTOList(restaurant);
+        List<RestaurantResDTO> resDTOList = new ArrayList<>();
+
+        for (RestaurantDTO dto : dtoList) {
+            RestaurantResDTO resDTO = RestaurantResDTO.builder()
+                    .id(dto.getId())
+                    .name(dto.getName())
+                    .category(dto.getCategory())
+                    .roadAddress(dto.getRoadAddress())
+                    .mainPhotoUrl(dto.getMainPhotoUrl())
+                    .photo1Url(dto.getPhoto1Url())
+                    .grade(reviewDSLRepository.rateByRestaurant(dto.getId()))
+                    .build();
+            resDTOList.add(resDTO);
+        }
+        return resDTOList;
     }
 
     @Override

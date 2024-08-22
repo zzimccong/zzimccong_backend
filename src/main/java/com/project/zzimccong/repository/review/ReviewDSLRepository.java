@@ -8,12 +8,23 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.project.zzimccong.model.entity.review.QReview.review;
+import static com.project.zzimccong.model.entity.reservation.QReservation.reservation;
 
 @Repository
 @RequiredArgsConstructor
 public class ReviewDSLRepository {
 
     private final JPAQueryFactory queryFactory;
+
+    public double rateByRestaurant(long restaurantId) {
+        Double averageRate = queryFactory
+                .select(review.rate.avg())
+                .from(review)
+                .join(review.reservation, reservation)
+                .where(reservation.restaurant.id.eq(restaurantId))
+                .fetchOne();
+        return (averageRate == null ? 0.0 : averageRate);
+    }
 
     public Double getAverageRateByUserRoleAndRestaurant(String role, Long restaurantId) {
         return queryFactory
