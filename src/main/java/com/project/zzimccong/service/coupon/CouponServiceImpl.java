@@ -1,7 +1,9 @@
 package com.project.zzimccong.service.coupon;
 
 import com.project.zzimccong.model.entity.coupon.Coupon;
+import com.project.zzimccong.repository.coupon.CouponDSLRepository;
 import com.project.zzimccong.repository.coupon.CouponRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -9,7 +11,11 @@ import java.util.Optional;
 @Service
 public class CouponServiceImpl implements CouponService{
 
+    @Autowired
     private CouponRepository couponRepository;
+
+    @Autowired
+    private CouponDSLRepository couponDSLRepository;
 
     public CouponServiceImpl(CouponRepository couponRepository) {
         this.couponRepository = couponRepository;
@@ -28,5 +34,10 @@ public class CouponServiceImpl implements CouponService{
 
         Optional<Coupon> coupon = Optional.ofNullable(couponRepository.findDiscountCouponByUserId(userId));
         return coupon.orElse(null);
+    }
+
+    @Override
+    public void decreaseCouponCnt(Integer userId) {
+        couponDSLRepository.decreaseCntByUserId(userId);
     }
 }

@@ -5,4 +5,5 @@ import com.project.zzimccong.model.entity.coupon.Coupon;
 public interface CouponService {
     Integer findCntByUserIdAndType(Integer userId, String type);
     Coupon findDiscountCouponByUserId(Integer userId);
+    void decreaseCouponCnt(Integer userId);
 }
