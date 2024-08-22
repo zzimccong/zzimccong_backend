@@ -14,14 +14,8 @@ public class Review {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "reservation_id", nullable = false)
-    @JsonBackReference
+    @JsonBackReference(value = "review-reservation")
     private Reservation reservation;
-
-    @Column(name = "user_id")
-    private Integer userId;
-
-    @Column(name = "corp_id")
-    private Integer corpId;
 
     @Column(name = "content", nullable = false)
     private String content;
@@ -41,12 +35,9 @@ public class Review {
     // 기본 생성자
     public Review() {}
 
-    // 생성자
-    public Review(Long id, Reservation reservation, Integer userId, Integer corpId, String content, Integer taste, Integer mood, Integer convenient, Double rate) {
+    public Review(Long id, Reservation reservation, String content, Integer taste, Integer mood, Integer convenient, Double rate) {
         this.id = id;
         this.reservation = reservation;
-        this.userId = userId;
-        this.corpId = corpId;
         this.content = content;
         this.taste = taste;
         this.mood = mood;
@@ -54,7 +45,6 @@ public class Review {
         this.rate = rate;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -69,22 +59,6 @@ public class Review {
 
     public void setReservation(Reservation reservation) {
         this.reservation = reservation;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public Integer getCorpId() {
-        return corpId;
-    }
-
-    public void setCorpId(Integer corpId) {
-        this.corpId = corpId;
     }
 
     public String getContent() {

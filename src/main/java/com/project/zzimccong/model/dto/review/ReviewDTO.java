@@ -1,39 +1,30 @@
 package com.project.zzimccong.model.dto.review;
 
 public class ReviewDTO {
-    private Long id;
     private Long reservationId;
-    private Integer userId;
-    private Integer corpId;
     private String content;
     private Integer taste;
     private Integer mood;
     private Integer convenient;
     private Double rate;
+    private String restaurantName;
+    private String userName;
+    private String corpName;
 
     // 기본 생성자
     public ReviewDTO() {}
 
     // 생성자
-    public ReviewDTO(Long id, Long reservationId, Integer userId, Integer corpId, String content, Integer taste, Integer mood, Integer convenient, Double rate) {
-        this.id = id;
+    public ReviewDTO(Long reservationId, String content, Integer taste, Integer mood, Integer convenient, Double rate, String restaurantName, String userName, String corpName) {
         this.reservationId = reservationId;
-        this.userId = userId;
-        this.corpId = corpId;
         this.content = content;
         this.taste = taste;
         this.mood = mood;
         this.convenient = convenient;
-        this.rate = rate;
-    }
-
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+        this.rate=rate;
+        this.restaurantName=restaurantName;
+        this.userName=userName;
+        this.corpName=corpName;
     }
 
     public Long getReservationId() {
@@ -42,22 +33,6 @@ public class ReviewDTO {
 
     public void setReservationId(Long reservationId) {
         this.reservationId = reservationId;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public Integer getCorpId() {
-        return corpId;
-    }
-
-    public void setCorpId(Integer corpId) {
-        this.corpId = corpId;
     }
 
     public String getContent() {
@@ -98,5 +73,29 @@ public class ReviewDTO {
 
     public void setRate(Double rate) {
         this.rate = rate;
+    }
+
+    public String getRestaurantName() {
+        return restaurantName;
+    }
+
+    public void setRestaurantName(String restaurantName) {
+        this.restaurantName = restaurantName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getCorpName() {
+        return corpName;
+    }
+
+    public void setCorpName(String corpName) {
+        this.corpName = corpName;
     }
 }
