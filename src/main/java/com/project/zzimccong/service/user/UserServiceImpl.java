@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,7 +24,7 @@ public class UserServiceImpl implements UserService {
     private final SmsUtil smsUtil;
     private final TemporaryStorageService temporaryStorageService;
     private final EmailVerificationService emailVerificationService;
-    private CouponRepository couponRepository;
+    private final CouponRepository couponRepository;
 
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, SmsUtil smsUtil, TemporaryStorageService temporaryStorageService, EmailVerificationService emailVerificationService, CouponRepository couponRepository) {
         this.userRepository = userRepository;

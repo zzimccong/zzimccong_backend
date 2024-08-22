@@ -5,6 +5,7 @@ import com.project.zzimccong.model.dto.corp.CorporationDTO;
 import com.project.zzimccong.model.dto.email.EmailDTO;
 import com.project.zzimccong.security.jwt.JwtTokenUtil;
 import com.project.zzimccong.service.corp.CorporationService;
+import com.project.zzimccong.service.redis.RedisTokenService;
 import com.project.zzimccong.service.redis.TemporaryStorageService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
@@ -23,12 +24,13 @@ public class CorporationController {
     private final EmailVerificationService emailVerificationService;
     private final JwtTokenUtil jwtTokenUtil;
     private final TemporaryStorageService temporaryStorageService;
-
-    public CorporationController(CorporationService corporationService, EmailVerificationService emailVerificationService, JwtTokenUtil jwtTokenUtil, TemporaryStorageService temporaryStorageService) {
+    private final RedisTokenService redisTokenService;
+    public CorporationController(CorporationService corporationService, EmailVerificationService emailVerificationService, JwtTokenUtil jwtTokenUtil, TemporaryStorageService temporaryStorageService, RedisTokenService redisTokenService) {
         this.corporationService = corporationService;
         this.emailVerificationService = emailVerificationService;
         this.jwtTokenUtil = jwtTokenUtil;
         this.temporaryStorageService = temporaryStorageService;
+        this.redisTokenService = redisTokenService;
     }
 
     // 회사 등록 엔드포인트
@@ -97,7 +99,9 @@ public class CorporationController {
             Corporation corporation = corporationService.authenticate(corporationDTO.getCorpId(), corporationDTO.getPassword());
             if (corporation != null) {
                 String token = jwtTokenUtil.generateToken(corporation.getCorpId(), "corp");
-                Map<String, Object> response = getStringObjectMap(corporation, token);
+                String refreshToken = jwtTokenUtil.generateRefreshToken(corporation.getCorpId());
+                redisTokenService.saveRefreshToken(corporation.getCorpId(), refreshToken); // 리프레시 토큰 저장
+                Map<String, Object> response = getStringObjectMap(corporation, token, refreshToken);
                 return ResponseEntity.ok(response);
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
@@ -107,8 +111,39 @@ public class CorporationController {
         }
     }
 
+    @PostMapping("/refresh-token")
+    public ResponseEntity<Map<String, Object>> refreshToken(@RequestBody Map<String, String> tokenRequest) {
+        String refreshToken = tokenRequest.get("refreshToken");
+        if (jwtTokenUtil.validateToken(refreshToken)) {
+            String corpId = jwtTokenUtil.getUserIdFromToken(refreshToken);
+            String storedToken = redisTokenService.getRefreshToken(corpId);
+            if (refreshToken.equals(storedToken)) {
+                String newAccessToken = jwtTokenUtil.generateToken(corpId, "corp");
+                Map<String, Object> response = new HashMap<>();
+                response.put("token", newAccessToken);
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutCorporation(@RequestBody Map<String, String> tokenRequest) {
+        String refreshToken = tokenRequest.get("refreshToken");
+        if (jwtTokenUtil.validateToken(refreshToken)) {
+            String corpId = jwtTokenUtil.getUserIdFromToken(refreshToken);
+            redisTokenService.deleteRefreshToken(corpId); // Redis에서 리프레시 토큰 삭제
+            return ResponseEntity.ok("로그아웃 성공");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("유효하지 않은 토큰입니다.");
+        }
+    }
+
     @NotNull
-    private static Map<String, Object> getStringObjectMap(Corporation corporation, String token) {
+    private Map<String, Object> getStringObjectMap(Corporation corporation, String token, String refreshToken) {
         CorporationDTO responseCorpDTO = new CorporationDTO(
                 corporation.getId(),
                 corporation.getCorpName(),
@@ -122,6 +157,7 @@ public class CorporationController {
         );
         Map<String, Object> response = new HashMap<>();
         response.put("token", token);
+        response.put("refreshToken", refreshToken);
         response.put("user", responseCorpDTO); // CorporationDTO로 응답
         return response;
     }
