@@ -26,8 +26,6 @@ public class QReview extends EntityPathBase<Review> {
 
     public final NumberPath<Integer> convenient = createNumber("convenient", Integer.class);
 
-    public final NumberPath<Integer> corpId = createNumber("corpId", Integer.class);
-
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final NumberPath<Integer> mood = createNumber("mood", Integer.class);
@@ -37,8 +35,6 @@ public class QReview extends EntityPathBase<Review> {
     public final com.project.zzimccong.model.entity.reservation.QReservation reservation;
 
     public final NumberPath<Integer> taste = createNumber("taste", Integer.class);
-
-    public final NumberPath<Integer> userId = createNumber("userId", Integer.class);
 
     public QReview(String variable) {
         this(Review.class, forVariable(variable), INITS);
