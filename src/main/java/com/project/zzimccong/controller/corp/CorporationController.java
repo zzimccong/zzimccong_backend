@@ -5,17 +5,26 @@ import com.project.zzimccong.model.dto.corp.CorporationDTO;
 import com.project.zzimccong.model.dto.email.EmailDTO;
 import com.project.zzimccong.security.jwt.JwtTokenUtil;
 import com.project.zzimccong.service.corp.CorporationService;
+import com.project.zzimccong.service.notification.NotificationService;
 import com.project.zzimccong.service.redis.RefreshTokenService;
 import com.project.zzimccong.service.redis.TemporaryStorageService;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 import com.project.zzimccong.model.entity.corp.Corporation;
 import com.project.zzimccong.service.email.EmailVerificationService;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/corporations")
 public class CorporationController {
@@ -25,12 +34,14 @@ public class CorporationController {
     private final JwtTokenUtil jwtTokenUtil;
     private final TemporaryStorageService temporaryStorageService;
     private final RefreshTokenService refreshTokenService;
-    public CorporationController(CorporationService corporationService, EmailVerificationService emailVerificationService, JwtTokenUtil jwtTokenUtil, TemporaryStorageService temporaryStorageService, RefreshTokenService refreshTokenService) {
+    private final NotificationService notificationService;
+    public CorporationController(CorporationService corporationService, EmailVerificationService emailVerificationService, JwtTokenUtil jwtTokenUtil, TemporaryStorageService temporaryStorageService, RefreshTokenService refreshTokenService, NotificationService notificationService) {
         this.corporationService = corporationService;
         this.emailVerificationService = emailVerificationService;
         this.jwtTokenUtil = jwtTokenUtil;
         this.temporaryStorageService = temporaryStorageService;
         this.refreshTokenService = refreshTokenService;
+        this.notificationService = notificationService;
     }
 
     // 회사 등록 엔드포인트
@@ -248,6 +259,30 @@ public class CorporationController {
             return ResponseEntity.ok("임시 비밀번호가 이메일로 전송되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("임시 비밀번호 전송 실패: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logoutCorp(
+            @RequestParam Integer id,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+        try {
+            // FCM 토큰 삭제
+            notificationService.deleteCorpToken(id);
+
+            // 세션 무효화
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null) {
+                new SecurityContextLogoutHandler().logout(request, response, auth);
+            }
+
+            log.info("기업 ID: {}에 대한 로그아웃 처리가 완료되었습니다.", id);
+
+            return ResponseEntity.ok("로그아웃 성공 및 토큰 삭제 완료");
+        } catch (Exception e) {
+            log.error("기업 ID: {}에 대한 로그아웃 처리 중 오류 발생: {}", id, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("로그아웃 실패: " + e.getMessage());
         }
     }
 }

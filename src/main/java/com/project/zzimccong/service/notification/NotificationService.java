@@ -16,5 +16,7 @@ public interface NotificationService {
     void sendMessage(String token, String title, String message) throws Exception;
     void sendMessages(List<String> tokens, String title, String message) throws Exception;
 
+    List<String> getUserNotificationHistory(Integer userId);
+    List<String> getCorpNotificationHistory(Integer corpId);
 
 }
