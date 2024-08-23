@@ -238,7 +238,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/logout")
+    @PostMapping("/logout2")
     public ResponseEntity<String> logoutUser(
             @RequestBody Map<String, String> tokenRequest,
             HttpServletRequest request,
