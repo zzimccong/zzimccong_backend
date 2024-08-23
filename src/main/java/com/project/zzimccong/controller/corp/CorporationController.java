@@ -252,7 +252,7 @@ public class CorporationController {
         }
     }
 
-    @PostMapping("/logout")
+    @PostMapping("/logout2")
     public ResponseEntity<String> logoutCorp(
             @RequestBody Map<String, String> tokenRequest,
             HttpServletRequest request,
