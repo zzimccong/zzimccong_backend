@@ -109,18 +109,6 @@ public class UserController {
         }
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<?> logoutUser(@RequestBody Map<String, String> tokenRequest) {
-        String refreshToken = tokenRequest.get("refreshToken");
-        if (jwtTokenUtil.validateToken(refreshToken)) {
-            String userId = jwtTokenUtil.getUserIdFromToken(refreshToken);
-            refreshTokenService.deleteRefreshToken(userId); // Redis에서 리프레시 토큰 삭제
-            return ResponseEntity.ok("로그아웃 성공");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("유효하지 않은 토큰입니다.");
-        }
-    }
-
     private Map<String, Object> createLoginResponse(String token, String refreshToken, User user) {
         UserDTO responseUserDTO = new UserDTO(
                 user.getId(),
@@ -252,24 +240,36 @@ public class UserController {
 
     @PostMapping("/logout")
     public ResponseEntity<String> logoutUser(
-            @RequestParam Integer id,
+            @RequestBody Map<String, String> tokenRequest,
             HttpServletRequest request,
             HttpServletResponse response) {
         try {
-            // FCM 토큰 삭제
-            notificationService.deleteUserToken(id);
+            String refreshToken = tokenRequest.get("refreshToken");
 
-            // 세션 무효화
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if (auth != null) {
-                new SecurityContextLogoutHandler().logout(request, response, auth);
+            // 리프레시 토큰 유효성 검증
+            if (jwtTokenUtil.validateToken(refreshToken)) {
+                String loginId = jwtTokenUtil.getUserIdFromToken(refreshToken);
+
+                // 리프레시 토큰 삭제
+                refreshTokenService.deleteRefreshToken(loginId);
+
+                // FCM 토큰 삭제
+                notificationService.deleteUserToken(Integer.parseInt(loginId));
+
+                // 세션 무효화
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                if (auth != null) {
+                    new SecurityContextLogoutHandler().logout(request, response, auth);
+                }
+
+                log.info("사용자 ID: {}에 대한 로그아웃 처리가 완료되었습니다.", loginId);
+
+                return ResponseEntity.ok("로그아웃 성공 및 토큰 삭제 완료");
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("유효하지 않은 토큰입니다.");
             }
-
-            log.info("사용자 ID: {}에 대한 로그아웃 처리가 완료되었습니다.", id);
-
-            return ResponseEntity.ok("로그아웃 성공 및 토큰 삭제 완료");
         } catch (Exception e) {
-            log.error("사용자 ID: {}에 대한 로그아웃 처리 중 오류 발생: {}", id, e.getMessage());
+            log.error("사용자 로그아웃 처리 중 오류 발생: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("로그아웃 실패: " + e.getMessage());
         }
     }
