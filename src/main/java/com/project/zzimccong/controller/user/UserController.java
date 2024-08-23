@@ -4,7 +4,7 @@ import com.project.zzimccong.model.dto.sms.SmsVerificationDTO;
 import com.project.zzimccong.model.dto.user.UserDTO;
 import com.project.zzimccong.model.entity.user.User;
 import com.project.zzimccong.security.jwt.JwtTokenUtil;
-import com.project.zzimccong.service.redis.RedisTokenService;
+import com.project.zzimccong.service.redis.RefreshTokenService;
 import com.project.zzimccong.service.redis.TemporaryStorageService;
 import com.project.zzimccong.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -21,13 +21,13 @@ import java.util.Map;
 public class UserController {
     private final TemporaryStorageService temporaryStorageService;
 
-    private final RedisTokenService redisTokenService;
+    private final RefreshTokenService refreshTokenService;
     private final UserService userService;
     private final JwtTokenUtil jwtTokenUtil;
 
-    public UserController(TemporaryStorageService temporaryStorageService, RedisTokenService redisTokenService, UserService userService, JwtTokenUtil jwtTokenUtil) {
+    public UserController(TemporaryStorageService temporaryStorageService, RefreshTokenService refreshTokenService, UserService userService, JwtTokenUtil jwtTokenUtil) {
         this.temporaryStorageService = temporaryStorageService;
-        this.redisTokenService = redisTokenService;
+        this.refreshTokenService = refreshTokenService;
         this.userService = userService;
         this.jwtTokenUtil = jwtTokenUtil;
     }
@@ -69,7 +69,7 @@ public class UserController {
             if (user != null) {
                 String token = jwtTokenUtil.generateToken(user.getLoginId(), "user");
                 String refreshToken = jwtTokenUtil.generateRefreshToken(user.getLoginId());
-                redisTokenService.saveRefreshToken(user.getLoginId(), refreshToken); // 리프레시 토큰 저장
+                refreshTokenService.saveRefreshToken(user.getLoginId(), refreshToken); // 리프레시 토큰 저장
 
                 Map<String, Object> response = createLoginResponse(token, refreshToken, user);
                 return ResponseEntity.ok(response);
@@ -86,7 +86,7 @@ public class UserController {
         String refreshToken = tokenRequest.get("refreshToken");
         if (jwtTokenUtil.validateToken(refreshToken)) {
             String userId = jwtTokenUtil.getUserIdFromToken(refreshToken);
-            String storedToken = redisTokenService.getRefreshToken(userId);
+            String storedToken = refreshTokenService.getRefreshToken(userId);
             if (refreshToken.equals(storedToken)) {
                 String newAccessToken = jwtTokenUtil.generateToken(userId, "user");
                 Map<String, Object> response = new HashMap<>();
@@ -105,7 +105,7 @@ public class UserController {
         String refreshToken = tokenRequest.get("refreshToken");
         if (jwtTokenUtil.validateToken(refreshToken)) {
             String userId = jwtTokenUtil.getUserIdFromToken(refreshToken);
-            redisTokenService.deleteRefreshToken(userId); // Redis에서 리프레시 토큰 삭제
+            refreshTokenService.deleteRefreshToken(userId); // Redis에서 리프레시 토큰 삭제
             return ResponseEntity.ok("로그아웃 성공");
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("유효하지 않은 토큰입니다.");
