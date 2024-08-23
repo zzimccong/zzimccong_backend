@@ -39,4 +39,32 @@ public class NotificationServiceImpl implements NotificationService {
         log.info("Redis에서 기업 ID: {}의 토큰을 조회 중...", corpId);
         return fcmTokenService.getFcmToken("corp:" + corpId);
     }
+
+    @Override
+    public void deleteUserToken(Integer userId) {
+        deleteToken("user:" + userId, "user");
+        // 삭제 후 검증 (테스트용 코드)
+        if (fcmTokenService.getFcmToken("user:" + userId) == null) {
+            log.info("토큰이 성공적으로 삭제되었습니다.");
+        } else {
+            log.error("토큰 삭제 실패!");
+        }
+    }
+
+    @Override
+    public void deleteCorpToken(Integer corpId) {
+        deleteToken("corp:" + corpId, "corp");
+        // 삭제 후 검증 (테스트용 코드)
+        if (fcmTokenService.getFcmToken("corp:" + corpId) == null) {
+            log.info("토큰이 성공적으로 삭제되었습니다.");
+        } else {
+            log.error("토큰 삭제 실패!");
+        }
+    }
+
+    private void deleteToken(String key, String entityType) {
+        log.info("{} ID: {}에 대한 FCM 토큰을 Redis에서 삭제 요청 중...", entityType, key);
+        fcmTokenService.deleteFcmToken(key);
+        log.info("{} ID: {}의 FCM 토큰이 Redis에서 성공적으로 삭제되었습니다.", entityType, key);
+    }
 }
