@@ -120,4 +120,16 @@ public class NotificationServiceImpl implements NotificationService {
             notificationHistoryService.saveCorpNotificationHistory(corpDetails.getCorporation().getId(), title, message, currentTime);
         }
     }
+
+    @Override
+    public List<String> getUserNotificationHistory(Integer userId) {
+        log.info("사용자 ID {}의 알림 기록을 조회합니다.", userId);
+        return notificationHistoryService.getUserNotificationHistory(userId);
+    }
+
+    @Override
+    public List<String> getCorpNotificationHistory(Integer corpId) {
+        log.info("기업 ID {}의 알림 기록을 조회합니다.", corpId);
+        return notificationHistoryService.getCorpNotificationHistory(corpId);
+    }
 }

@@ -9,11 +9,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -97,6 +102,44 @@ public class NotificationController {
             log.error("알림 전송 중 오류 발생: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("알림 전송 중 오류가 발생했습니다: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/history/user")
+    public ResponseEntity<List<String>> getUserNotificationHistory() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            log.warn("인증된 사용자 정보가 없습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        Integer userId = userDetails.getUser().getId();
+        List<String> history = notificationService.getUserNotificationHistory(userId);
+
+        if (history.isEmpty()) {
+            log.info("사용자 ID {}에 대한 알림 기록이 없습니다.", userId);
+        }
+
+        return ResponseEntity.ok(history);
+    }
+
+    @GetMapping("/history/corp")
+    public ResponseEntity<List<String>> getCorpNotificationHistory() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            log.warn("인증된 기업 사용자 정보가 없습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        CorpDetails corpDetails = (CorpDetails) authentication.getPrincipal();
+        Integer corpId = corpDetails.getCorporation().getId();
+        List<String> history = notificationService.getCorpNotificationHistory(corpId);
+
+        if (history.isEmpty()) {
+            log.info("기업 ID {}에 대한 알림 기록이 없습니다.", corpId);
+        }
+
+        return ResponseEntity.ok(history);
     }
 
 }

@@ -4,14 +4,20 @@ import com.project.zzimccong.model.dto.sms.SmsVerificationDTO;
 import com.project.zzimccong.model.dto.user.UserDTO;
 import com.project.zzimccong.model.entity.user.User;
 import com.project.zzimccong.security.jwt.JwtTokenUtil;
+import com.project.zzimccong.service.notification.NotificationService;
 import com.project.zzimccong.service.redis.RefreshTokenService;
 import com.project.zzimccong.service.redis.TemporaryStorageService;
 import com.project.zzimccong.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,11 +31,14 @@ public class UserController {
     private final UserService userService;
     private final JwtTokenUtil jwtTokenUtil;
 
-    public UserController(TemporaryStorageService temporaryStorageService, RefreshTokenService refreshTokenService, UserService userService, JwtTokenUtil jwtTokenUtil) {
+    private final NotificationService notificationService;
+
+    public UserController(TemporaryStorageService temporaryStorageService, RefreshTokenService refreshTokenService, UserService userService, JwtTokenUtil jwtTokenUtil, NotificationService notificationService) {
         this.temporaryStorageService = temporaryStorageService;
         this.refreshTokenService = refreshTokenService;
         this.userService = userService;
         this.jwtTokenUtil = jwtTokenUtil;
+        this.notificationService = notificationService;
     }
 
     @PostMapping("/user-register")
@@ -239,5 +248,29 @@ public class UserController {
         String email = request.get("email");
         temporaryStorageService.deleteEmailVerificationCode(email);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logoutUser(
+            @RequestParam Integer id,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+        try {
+            // FCM 토큰 삭제
+            notificationService.deleteUserToken(id);
+
+            // 세션 무효화
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null) {
+                new SecurityContextLogoutHandler().logout(request, response, auth);
+            }
+
+            log.info("사용자 ID: {}에 대한 로그아웃 처리가 완료되었습니다.", id);
+
+            return ResponseEntity.ok("로그아웃 성공 및 토큰 삭제 완료");
+        } catch (Exception e) {
+            log.error("사용자 ID: {}에 대한 로그아웃 처리 중 오류 발생: {}", id, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("로그아웃 실패: " + e.getMessage());
+        }
     }
 }
