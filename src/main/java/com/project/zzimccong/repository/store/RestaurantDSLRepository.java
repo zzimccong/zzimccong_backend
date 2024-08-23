@@ -2,6 +2,7 @@ package com.project.zzimccong.repository.store;
 
 
 import com.project.zzimccong.model.entity.store.Restaurant;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -57,9 +58,11 @@ public class RestaurantDSLRepository {
 
         if (filters.containsKey("편의시설") && !((List<String>) filters.get("편의시설")).isEmpty()) {
             List<String> facilities = (List<String>) filters.get("편의시설");
+            BooleanBuilder facilityPredicate = new BooleanBuilder();
             for (String facility : facilities) {
-                predicate = predicate.and(restaurant.parkingInfo.contains(facility));
+                facilityPredicate.or(restaurant.parkingInfo.contains(facility));
             }
+            predicate = predicate.and(facilityPredicate);
         }
         return predicate;
     }
@@ -86,6 +89,9 @@ public class RestaurantDSLRepository {
             List<String> facilities = (List<String>) filters.get("편의시설");
             facilities.removeAll(Arrays.asList("그릴링 서비스", "콜키지 가능", "반려동물 동반 가능",
                     "장애인 편의시설"));
+            if (facilities.contains("주차 가능")){
+                facilities.add("주차가능");
+            }
         }
         System.out.println("조건 거친 후 DSL: " + filters);
 
