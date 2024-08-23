@@ -5,7 +5,7 @@ import com.project.zzimccong.model.dto.corp.CorporationDTO;
 import com.project.zzimccong.model.dto.email.EmailDTO;
 import com.project.zzimccong.security.jwt.JwtTokenUtil;
 import com.project.zzimccong.service.corp.CorporationService;
-import com.project.zzimccong.service.redis.RedisTokenService;
+import com.project.zzimccong.service.redis.RefreshTokenService;
 import com.project.zzimccong.service.redis.TemporaryStorageService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
@@ -24,13 +24,13 @@ public class CorporationController {
     private final EmailVerificationService emailVerificationService;
     private final JwtTokenUtil jwtTokenUtil;
     private final TemporaryStorageService temporaryStorageService;
-    private final RedisTokenService redisTokenService;
-    public CorporationController(CorporationService corporationService, EmailVerificationService emailVerificationService, JwtTokenUtil jwtTokenUtil, TemporaryStorageService temporaryStorageService, RedisTokenService redisTokenService) {
+    private final RefreshTokenService refreshTokenService;
+    public CorporationController(CorporationService corporationService, EmailVerificationService emailVerificationService, JwtTokenUtil jwtTokenUtil, TemporaryStorageService temporaryStorageService, RefreshTokenService refreshTokenService) {
         this.corporationService = corporationService;
         this.emailVerificationService = emailVerificationService;
         this.jwtTokenUtil = jwtTokenUtil;
         this.temporaryStorageService = temporaryStorageService;
-        this.redisTokenService = redisTokenService;
+        this.refreshTokenService = refreshTokenService;
     }
 
     // 회사 등록 엔드포인트
@@ -100,7 +100,7 @@ public class CorporationController {
             if (corporation != null) {
                 String token = jwtTokenUtil.generateToken(corporation.getCorpId(), "corp");
                 String refreshToken = jwtTokenUtil.generateRefreshToken(corporation.getCorpId());
-                redisTokenService.saveRefreshToken(corporation.getCorpId(), refreshToken); // 리프레시 토큰 저장
+                refreshTokenService.saveRefreshToken(corporation.getCorpId(), refreshToken); // 리프레시 토큰 저장
                 Map<String, Object> response = getStringObjectMap(corporation, token, refreshToken);
                 return ResponseEntity.ok(response);
             } else {
@@ -116,7 +116,7 @@ public class CorporationController {
         String refreshToken = tokenRequest.get("refreshToken");
         if (jwtTokenUtil.validateToken(refreshToken)) {
             String corpId = jwtTokenUtil.getUserIdFromToken(refreshToken);
-            String storedToken = redisTokenService.getRefreshToken(corpId);
+            String storedToken = refreshTokenService.getRefreshToken(corpId);
             if (refreshToken.equals(storedToken)) {
                 String newAccessToken = jwtTokenUtil.generateToken(corpId, "corp");
                 Map<String, Object> response = new HashMap<>();
@@ -135,7 +135,7 @@ public class CorporationController {
         String refreshToken = tokenRequest.get("refreshToken");
         if (jwtTokenUtil.validateToken(refreshToken)) {
             String corpId = jwtTokenUtil.getUserIdFromToken(refreshToken);
-            redisTokenService.deleteRefreshToken(corpId); // Redis에서 리프레시 토큰 삭제
+            refreshTokenService.deleteRefreshToken(corpId); // Redis에서 리프레시 토큰 삭제
             return ResponseEntity.ok("로그아웃 성공");
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("유효하지 않은 토큰입니다.");

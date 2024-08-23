@@ -6,10 +6,11 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class RedisTokenService {
+public class RefreshTokenService {
 
     private final RedisTemplate<String, String> redisTemplate;
-    public RedisTokenService(RedisTemplate<String, String> redisTemplate) {
+
+    public RefreshTokenService(RedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
