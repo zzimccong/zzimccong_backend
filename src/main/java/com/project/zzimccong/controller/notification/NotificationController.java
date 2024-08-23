@@ -1,6 +1,7 @@
 package com.project.zzimccong.controller.notification;
 
 
+import com.project.zzimccong.model.dto.notification.NotificationRequest;
 import com.project.zzimccong.security.service.corp.CorpDetails;
 import com.project.zzimccong.security.service.user.UserDetailsImpl;
 import com.project.zzimccong.service.notification.NotificationService;
@@ -54,6 +55,48 @@ public class NotificationController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 사용자 정보입니다.");
         }
         return ResponseEntity.ok("토큰이 성공적으로 삭제되었습니다.");
+    }
+
+    @PostMapping("/send-notification/user")
+    public ResponseEntity<String> sendUserNotification(@RequestBody NotificationRequest notificationRequest,
+                                                       @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if (userDetails == null) {
+            log.warn("인증된 사용자 정보가 없습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인되지 않은 사용자입니다.");
+        }
+
+        Integer userId = userDetails.getUser().getId();
+
+        try {
+            notificationService.saveUserToken(userId, notificationRequest.getToken());
+
+            // 알림 전송
+            notificationService.sendMessage(notificationRequest.getToken(), notificationRequest.getTitle(), notificationRequest.getMessage());
+            return ResponseEntity.ok("알림이 성공적으로 전송되었습니다.");
+        } catch (Exception e) {
+            log.error("알림 전송 중 오류 발생: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("알림 전송 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/send-notification/corp")
+    public ResponseEntity<String> sendCorpNotification(@RequestBody NotificationRequest notificationRequest,
+                                                       @AuthenticationPrincipal CorpDetails corpDetails) {
+        if (corpDetails == null) {
+            log.warn("인증된 기업 사용자 정보가 없습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자가 인증되지 않았습니다.");
+        }
+
+        Integer corpId = corpDetails.getCorporation().getId();
+
+        try {
+            notificationService.saveCorpToken(corpId, notificationRequest.getToken());
+            notificationService.sendMessage(notificationRequest.getToken(), notificationRequest.getTitle(), notificationRequest.getMessage());
+            return ResponseEntity.ok("알림이 성공적으로 전송되었습니다.");
+        } catch (Exception e) {
+            log.error("알림 전송 중 오류 발생: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("알림 전송 중 오류가 발생했습니다: " + e.getMessage());
+        }
     }
 
 }

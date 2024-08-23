@@ -1,10 +1,20 @@
 package com.project.zzimccong.service.notification;
 
-
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.project.zzimccong.security.service.corp.CorpDetails;
+import com.project.zzimccong.security.service.user.UserDetailsImpl;
+import com.project.zzimccong.service.fcm.FcmMessage;
 import com.project.zzimccong.service.redis.FCMTokenService;
+import com.project.zzimccong.service.redis.NotificationHistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -12,7 +22,9 @@ import org.springframework.stereotype.Service;
 public class NotificationServiceImpl implements NotificationService {
 
 
+    private final FirebaseMessaging firebaseMessaging;
     private final FCMTokenService fcmTokenService;
+    private final NotificationHistoryService notificationHistoryService;
 
     @Override
     public void saveUserToken(Integer userId, String token) {
@@ -66,5 +78,46 @@ public class NotificationServiceImpl implements NotificationService {
         log.info("{} ID: {}에 대한 FCM 토큰을 Redis에서 삭제 요청 중...", entityType, key);
         fcmTokenService.deleteFcmToken(key);
         log.info("{} ID: {}의 FCM 토큰이 Redis에서 성공적으로 삭제되었습니다.", entityType, key);
+    }
+
+    @Override
+    public void sendMessage(String token, String title, String message) throws Exception {
+        log.info("토큰: {}으로 메시지 전송 중...", token);
+        if (isUserLoggedIn()) {
+            firebaseMessaging.send(FcmMessage.makeMessage(token, title, message));
+            log.info("토큰: {}으로 메시지가 전송되었습니다.", token);
+            saveNotificationHistory(title, message);
+        } else {
+            log.info("사용자가 로그인되어 있지 않아 메시지를 전송하지 않았습니다.");
+        }
+    }
+
+    @Override
+    public void sendMessages(List<String> tokens, String title, String message) throws Exception {
+        log.info("여러 토큰으로 메시지 전송 중...");
+        if (isUserLoggedIn()) {
+            firebaseMessaging.sendMulticast(FcmMessage.makeMessages(tokens, title, message));
+            log.info("여러 토큰으로 메시지가 전송되었습니다.");
+        } else {
+            log.info("사용자가 로그인되어 있지 않아 메시지를 전송하지 않았습니다.");
+        }
+    }
+
+    private boolean isUserLoggedIn() {
+        return SecurityContextHolder.getContext().getAuthentication() != null
+                && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
+                && !(SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof String);
+    }
+
+    private void saveNotificationHistory(String title, String message) {
+        String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getPrincipal() instanceof UserDetailsImpl) {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            notificationHistoryService.saveUserNotificationHistory(userDetails.getUser().getId(), title, message, currentTime);
+        } else if (authentication.getPrincipal() instanceof CorpDetails) {
+            CorpDetails corpDetails = (CorpDetails) authentication.getPrincipal();
+            notificationHistoryService.saveCorpNotificationHistory(corpDetails.getCorporation().getId(), title, message, currentTime);
+        }
     }
 }
