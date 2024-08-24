@@ -29,12 +29,11 @@ public class AskServiceImpl implements AskService{
     public Ask createAsk(AskDTO askDTO) {
         Ask ask = new Ask();
 
-        if(askDTO.getRole().equals("USER")){
+        if(askDTO.getRole().equals("USER") || askDTO.getRole().equals("MANAGER")){
             Optional<User> userOptional=userRepository.findById(askDTO.getUserId());
             User user = userOptional.get();
             ask.setUser(user);
             ask.setCorporation(null);
-
         } else{
             Optional<Corporation> corporationOptional=corporationRepository.findById(askDTO.getCorpId());
             Corporation corporation = corporationOptional.get();
@@ -52,7 +51,7 @@ public class AskServiceImpl implements AskService{
 
     @Override
     public List<Ask> getAsksByUser(Integer id, String role) {
-        if ("USER".equals(role)) {
+        if ("USER".equals(role) || "MANAGER".equals(role)) {
             return askRepository.findByUser_Id(id);
         } else if ("CORP".equals(role)) {
             return askRepository.findByCorporation_Id(id);

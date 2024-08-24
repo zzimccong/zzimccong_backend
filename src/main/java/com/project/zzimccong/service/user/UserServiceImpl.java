@@ -220,6 +220,31 @@ public class UserServiceImpl implements UserService {
 
         user.setRole(userDTO.getRole());  // 기본적으로 "USER" 역할로 설정
 
-        return userRepository.save(user);
+        // 회원 정보 저장
+        User savedUser = userRepository.save(user);
+
+        // 쿠폰 발급 로직 추가
+        createCouponsForUser(savedUser);
+
+        return savedUser;
+    }
+
+    // 쿠폰 생성 메서드
+    private void createCouponsForUser(User user) {
+        // 예약 쿠폰 발급
+        Coupon reservationCoupon = new Coupon();
+        reservationCoupon.setUser(user);
+        reservationCoupon.setType("예약쿠폰");
+        reservationCoupon.setDiscountPrice(null); // 할인 금액이 없으면 null
+        reservationCoupon.setCnt(10); // 10개의 쿠폰 발급
+        couponRepository.save(reservationCoupon);
+
+        // 추첨권 발급
+        Coupon lotteryCoupon = new Coupon();
+        lotteryCoupon.setUser(user);
+        lotteryCoupon.setType("추첨권");
+        lotteryCoupon.setDiscountPrice(null); // 할인 금액이 없으면 null
+        lotteryCoupon.setCnt(2); // 2개의 추첨권 발급
+        couponRepository.save(lotteryCoupon);
     }
 }
