@@ -34,6 +34,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	// Spring Security 의존성 추가 (보안 기능 사용)
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+	// AWS S3 지원 (Spring Cloud AWS)
+	implementation platform("software.amazon.awssdk:bom:2.27.9")
+	implementation "software.amazon.awssdk:s3"
+	implementation "software.amazon.awssdk:auth"
 	// JWT (JSON Web Token) 의존성 추가 (토큰 기반 인증)
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 	// OAuth2 JOSE 의존성 추가 (JSON Web Signature, Encryption 사용)
