@@ -12,7 +12,6 @@ import com.project.zzimccong.model.dto.store.RestaurantDTO;
 import java.util.List;
 
 public interface RestaurantService {
-    void testChromeDriverWithCSSSelector();
     Optional<Restaurant> getRestaurantById(Long id);
     Restaurant createRestaurant(Restaurant restaurant);
     Restaurant updateRestaurant(Long id, Restaurant restaurantDetails);
@@ -24,6 +23,8 @@ public interface RestaurantService {
     public List<RestaurantResDTO> findByFilter(Map<String, Object> filters);
     public Restaurant findById(Long id);
     int getAvailableSeats(Long restaurantId, LocalDateTime reservationTime);
+
+    void crawlRestaurants(String url);
 
 
 }

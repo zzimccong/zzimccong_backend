@@ -23,6 +23,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -108,8 +109,8 @@ public class RestaurantServiceImpl implements RestaurantService {
         return restaurantRepository.findById(id).orElse(null);
     }
 
-    @Override
-    public void testChromeDriverWithCSSSelector() {
+    @Async
+    public void crawlRestaurants(String url) {
         System.setProperty("webdriver.chrome.driver", "src/main/resources/drivers/chromedriver.exe");
 
         ChromeOptions options = new ChromeOptions();
@@ -120,7 +121,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         WebDriver driver = new ChromeDriver(options);
 
         try {
-            driver.get("https://map.naver.com/p/search/%EB%B6%80%EC%82%B0%20%EC%9D%8C%EC%8B%9D%EC%A0%90?c=10.00,0,0,0,dh");
+            driver.get(url);
 
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
             WebElement iframe = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("searchIframe")));
