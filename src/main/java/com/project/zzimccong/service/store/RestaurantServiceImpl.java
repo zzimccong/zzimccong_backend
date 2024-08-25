@@ -3,14 +3,18 @@ package com.project.zzimccong.service.store;
 
 import com.project.zzimccong.model.dto.store.RestaurantDTO;
 import com.project.zzimccong.model.dto.store.RestaurantResDTO;
+import com.project.zzimccong.model.entity.reservation.Reservation;
 import com.project.zzimccong.model.entity.review.Review;
 import com.project.zzimccong.model.entity.store.Menu;
 import com.project.zzimccong.model.entity.store.Restaurant;
+import com.project.zzimccong.model.entity.timeSlot.TimeSlot;
 import com.project.zzimccong.model.entity.user.User;
+import com.project.zzimccong.repository.reservation.ReservationRepository;
 import com.project.zzimccong.repository.review.ReviewDSLRepository;
 import com.project.zzimccong.repository.store.RestaurantDSLRepository;
 import com.project.zzimccong.repository.store.MenuRepository;
 import com.project.zzimccong.repository.store.RestaurantRepository;
+import com.project.zzimccong.repository.timeSlot.TimeSlotRepository;
 import com.project.zzimccong.service.user.UserService;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
@@ -24,6 +28,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,18 +41,22 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final MenuRepository menuRepository;
     private final UserService userService;
     private final ReviewDSLRepository reviewDSLRepository;
+    private final TimeSlotRepository timeSlotRepository;
+    private final ReservationRepository reservationRepository;
 
     public RestaurantServiceImpl(
             RestaurantRepository restaurantRepository,
             RestaurantDSLRepository restaurantDSLRepository,
             MenuRepository menuRepository,
             UserService userService,
-            ReviewDSLRepository reviewDSLRepository) {
+            ReviewDSLRepository reviewDSLRepository, TimeSlotRepository timeSlotRepository, ReservationRepository reservationRepository) {
         this.restaurantRepository = restaurantRepository;
         this.restaurantDSLRepository = restaurantDSLRepository;
         this.menuRepository = menuRepository;
         this.userService = userService;
         this.reviewDSLRepository = reviewDSLRepository;
+        this.timeSlotRepository = timeSlotRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     int phoneNumberCounter = 0; // 전화번호 카운터를 초기화
@@ -486,10 +496,27 @@ public class RestaurantServiceImpl implements RestaurantService {
 
                         restaurant.setParkingInfo(parkingInfo);
                         restaurant.setSeats(seats);
+                        restaurant.setReservationSeats(10);
                         restaurant.setState("영업 중");
                         restaurant.setLotteryEvent("off");
 
-                        restaurantRepository.save(restaurant);
+                        // 가게 저장
+                        Restaurant savedRestaurant = restaurantRepository.save(restaurant);
+
+                        // TimeSlot 생성
+                        LocalTime startTime = LocalTime.of(17, 0);
+                        LocalTime endTime = LocalTime.of(19, 30);
+                        while (startTime.isBefore(endTime)) {
+                            TimeSlot timeSlot = new TimeSlot();
+                            timeSlot.setRestaurant(savedRestaurant);
+                            timeSlot.setStartTime(startTime);
+                            timeSlot.setEndTime(startTime.plusMinutes(30));
+                            timeSlot.setTotalSeats(savedRestaurant.getReservationSeats());
+                            timeSlot.setAvailableSeats(savedRestaurant.getReservationSeats());
+                            timeSlotRepository.save(timeSlot);
+
+                            startTime = startTime.plusMinutes(30);
+                        }
 
                         driver.switchTo().defaultContent();
                         iframe = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("searchIframe")));
@@ -552,7 +579,25 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public Restaurant createRestaurant(Restaurant restaurant) {
-        return restaurantRepository.save(restaurant);
+        // 먼저 레스토랑을 저장
+        Restaurant savedRestaurant = restaurantRepository.save(restaurant);
+
+        // 타임 슬롯 생성 로직
+        LocalTime startTime = LocalTime.of(17, 0);
+        LocalTime endTime = LocalTime.of(19, 30);
+        while (startTime.isBefore(endTime)) {
+            TimeSlot timeSlot = new TimeSlot();
+            timeSlot.setRestaurant(savedRestaurant);
+            timeSlot.setStartTime(startTime);
+            timeSlot.setEndTime(startTime.plusMinutes(30));
+            timeSlot.setTotalSeats(savedRestaurant.getReservationSeats());
+            timeSlot.setAvailableSeats(savedRestaurant.getReservationSeats());
+            timeSlotRepository.save(timeSlot);
+
+            startTime = startTime.plusMinutes(30);
+        }
+
+        return savedRestaurant;
     }
 
     @Override
@@ -589,6 +634,22 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public List<Restaurant> getRestaurantsByUserId(Integer user_id) {
         return restaurantRepository.findByUserId(user_id);
+    }
+
+    @Override
+    public int getAvailableSeats(Long restaurantId, LocalDateTime reservationTime) {
+        // 레스토랑의 전체 좌석 수를 가져옴
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new RuntimeException("Restaurant not found with id " + restaurantId));
+
+        int totalSeats = restaurant.getReservationSeats();
+
+        // 특정 시간대에 이미 예약된 좌석 수를 가져옴
+        List<Reservation> reservations = reservationRepository.findByRestaurantIdAndReservationTime(restaurantId, reservationTime);
+        int reservedSeats = reservations.stream().mapToInt(Reservation::getCount).sum();
+
+        // 남은 좌석 수를 계산하여 반환
+        return totalSeats - reservedSeats;
     }
 
 }

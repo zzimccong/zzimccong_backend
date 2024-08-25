@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.zzimccong.model.entity.cart.Cart;
 import com.project.zzimccong.model.entity.reservation.Reservation;
+import com.project.zzimccong.model.entity.timeSlot.TimeSlot;
 import com.project.zzimccong.model.entity.user.User;
 import com.project.zzimccong.model.entity.zzim.Zzim;
 
@@ -56,7 +57,9 @@ public class Restaurant {
 
     private double latitude; // 위도
     private double longitude; // 경도
-    private String seats;  // 좌석 정보를
+    private String seats;  // 좌석 정보
+    private Integer reservationSeats;
+
 
     private String state; // 영업 상태
 
@@ -73,13 +76,17 @@ public class Restaurant {
     private List<Reservation> reservations;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "restaurant-timeslots")
+    private List<TimeSlot> timeSlots;
+
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference(value = "restaurant-lists")
     private List<Cart> restaurantLists;
 
 
     public Restaurant() {}
 
-    public Restaurant(long id, String name, String category, String roadAddress, String numberAddress, String phoneNumber, String detailInfo, String businessHours, String link, List<Menu> menus, List<Zzim> zzims, String facilities, String parkingInfo, String mainPhotoUrl, String photo1Url, String photo2Url, String photo3Url, String photo4Url, String photo5Url, double latitude, double longitude, String seats, String state, String lotteryEvent, User user, List<Reservation> reservations, List<Cart> restaurantLists) {
+    public Restaurant(long id, String name, String category, String roadAddress, String numberAddress, String phoneNumber, String detailInfo, String businessHours, String link, List<Menu> menus, List<Zzim> zzims, String facilities, String parkingInfo, String mainPhotoUrl, String photo1Url, String photo2Url, String photo3Url, String photo4Url, String photo5Url, double latitude, double longitude, String seats, Integer reservationSeats, String state, String lotteryEvent, User user, List<Reservation> reservations, List<TimeSlot> timeSlots, List<Cart> restaurantLists) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -102,10 +109,12 @@ public class Restaurant {
         this.latitude = latitude;
         this.longitude = longitude;
         this.seats = seats;
+        this.reservationSeats = reservationSeats;
         this.state = state;
         this.lotteryEvent = lotteryEvent;
         this.user = user;
         this.reservations = reservations;
+        this.timeSlots = timeSlots;
         this.restaurantLists = restaurantLists;
     }
 
@@ -285,6 +294,14 @@ public class Restaurant {
         this.seats = seats;
     }
 
+    public Integer getReservationSeats() {
+        return reservationSeats;
+    }
+
+    public void setReservationSeats(Integer reservationSeats) {
+        this.reservationSeats = reservationSeats;
+    }
+
     public String getState() {
         return state;
     }
@@ -315,6 +332,14 @@ public class Restaurant {
 
     public void setReservations(List<Reservation> reservations) {
         this.reservations = reservations;
+    }
+
+    public List<TimeSlot> getTimeSlots() {
+        return timeSlots;
+    }
+
+    public void setTimeSlots(List<TimeSlot> timeSlots) {
+        this.timeSlots = timeSlots;
     }
 
     public List<Cart> getRestaurantLists() {
