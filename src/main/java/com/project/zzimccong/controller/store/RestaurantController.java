@@ -6,6 +6,7 @@ import com.project.zzimccong.model.dto.store.RestaurantResDTO;
 import com.project.zzimccong.model.entity.store.Restaurant;
 import com.project.zzimccong.repository.store.RestaurantRepository;
 import com.project.zzimccong.repository.user.UserRepository;
+import com.project.zzimccong.service.s3.S3Service;
 import com.project.zzimccong.service.store.RestaurantService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -14,7 +15,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -27,6 +30,8 @@ public class RestaurantController {
     private final UserRepository userRepository;
     private RestaurantService restaurantService;
     private RestaurantRepository restaurantRepository;
+    private S3Service s3Service;
+
 
     @Value("${naver.client.id}")
     private String naverClientId;
@@ -74,17 +79,89 @@ public class RestaurantController {
         return restaurant.orElse(null);
     }
 
+    // 남은 좌석 수를 반환하는 엔드포인트
+    @GetMapping("/restaurant/{restaurantId}/availability")
+    public ResponseEntity<Map<String, Object>> getAvailableSeats(
+            @PathVariable Long restaurantId,
+            @RequestParam String date,
+            @RequestParam String time) {
+
+        // 요청받은 날짜와 시간을 LocalDateTime으로 변환
+        LocalDateTime reservationTime = LocalDateTime.parse(date + "T" + time);
+
+        // 서비스에서 남은 좌석 수를 계산
+        int availableSeats = restaurantService.getAvailableSeats(restaurantId, reservationTime);
+
+        Map<String, Object> response = Map.of(
+                "restaurantId", restaurantId,
+                "reservationTime", reservationTime,
+                "availableSeats", availableSeats
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/restaurants/user/{user_id}")
     public List<Restaurant> getRestaurantsByUserId(@PathVariable Integer user_id) {
         return restaurantService.getRestaurantsByUserId(user_id);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @PostMapping("/restaurantCreate")
-    public Restaurant createRestaurant(@RequestBody Restaurant restaurant) {
+
+    @PostMapping("/restaurant/create-with-photos")
+    public ResponseEntity<Restaurant> createRestaurantWithPhotos(
+            @RequestPart("restaurant") Restaurant restaurant,
+            @RequestPart("photos") MultipartFile[] photos) {
+
+        // 1. 가게 정보 생성
         restaurant.setState("승인 대기 중");
-        return restaurantService.createRestaurant(restaurant);
+        restaurant.setReservationSeats(20);
+        Restaurant createdRestaurant = restaurantService.createRestaurant(restaurant);
+
+        if (createdRestaurant == null) {
+            throw new RuntimeException("Failed to create restaurant");
+        }
+
+        Long restaurantId = createdRestaurant.getId();
+
+        if (restaurantId == null) {
+            throw new RuntimeException("Restaurant ID is null after creation");
+        }
+
+        // 2. 사진 업로드
+        for (int i = 0; i < photos.length; i++) {
+            MultipartFile photo = photos[i];
+            if (photo != null && !photo.isEmpty()) {
+                String photoUrl = s3Service.uploadRestaurantPhoto(photo, restaurantId);
+
+                // 각 사진 URL을 레스토랑 엔티티에 저장 (예시: photo1Url, photo2Url 등)
+                switch (i) {
+                    case 0:
+                        createdRestaurant.setPhoto1Url(photoUrl);
+                        break;
+                    case 1:
+                        createdRestaurant.setPhoto2Url(photoUrl);
+                        break;
+                    case 2:
+                        createdRestaurant.setPhoto3Url(photoUrl);
+                        break;
+                    case 3:
+                        createdRestaurant.setPhoto4Url(photoUrl);
+                        break;
+                    case 4:
+                        createdRestaurant.setPhoto5Url(photoUrl);
+                        break;
+                }
+            } else {
+                throw new RuntimeException("Photo is null or empty");
+            }
+        }
+
+        // 3. 데이터베이스에 저장
+        restaurantRepository.save(createdRestaurant);
+
+        // 4. 생성된 가게 정보를 반환
+        return ResponseEntity.ok(createdRestaurant);
     }
 
     @CrossOrigin(origins = "http://localhost:3000")

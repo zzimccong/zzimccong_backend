@@ -64,6 +64,8 @@ public class QRestaurant extends EntityPathBase<Restaurant> {
 
     public final ListPath<com.project.zzimccong.model.entity.reservation.Reservation, com.project.zzimccong.model.entity.reservation.QReservation> reservations = this.<com.project.zzimccong.model.entity.reservation.Reservation, com.project.zzimccong.model.entity.reservation.QReservation>createList("reservations", com.project.zzimccong.model.entity.reservation.Reservation.class, com.project.zzimccong.model.entity.reservation.QReservation.class, PathInits.DIRECT2);
 
+    public final NumberPath<Integer> reservationSeats = createNumber("reservationSeats", Integer.class);
+
     public final ListPath<com.project.zzimccong.model.entity.cart.Cart, com.project.zzimccong.model.entity.cart.QCart> restaurantLists = this.<com.project.zzimccong.model.entity.cart.Cart, com.project.zzimccong.model.entity.cart.QCart>createList("restaurantLists", com.project.zzimccong.model.entity.cart.Cart.class, com.project.zzimccong.model.entity.cart.QCart.class, PathInits.DIRECT2);
 
     public final StringPath roadAddress = createString("roadAddress");
@@ -71,6 +73,8 @@ public class QRestaurant extends EntityPathBase<Restaurant> {
     public final StringPath seats = createString("seats");
 
     public final StringPath state = createString("state");
+
+    public final ListPath<com.project.zzimccong.model.entity.timeSlot.TimeSlot, com.project.zzimccong.model.entity.timeSlot.QTimeSlot> timeSlots = this.<com.project.zzimccong.model.entity.timeSlot.TimeSlot, com.project.zzimccong.model.entity.timeSlot.QTimeSlot>createList("timeSlots", com.project.zzimccong.model.entity.timeSlot.TimeSlot.class, com.project.zzimccong.model.entity.timeSlot.QTimeSlot.class, PathInits.DIRECT2);
 
     public final com.project.zzimccong.model.entity.user.QUser user;
 

@@ -49,7 +49,7 @@ public class ReservationServiceImpl implements ReservationService {
         String userType = jwtTokenUtil.getUserTypeFromToken(token);
 
         // 유저 타입에 따라 Reservation 엔터 티의 필드를 설정
-        if ("user".equals(userType)) {
+        if ("user".equals(userType) || "manager".equals(userType)) {
             // User 조회 시 Optional 처리
             Optional<User> userOptional = userRepository.findByLoginId(userId);
             if (userOptional.isPresent()) {
@@ -138,11 +138,12 @@ public class ReservationServiceImpl implements ReservationService {
             reservations = reservationRepository.findByUserId(userId);
         } else if ("CORP".equals(userType)) {
             reservations = reservationRepository.findByCorporationId(userId);
+        } else if ("MANAGER".equals(userType)) {
+            reservations = reservationRepository.findByUserId(userId); // 예시
         } else {
-            throw new IllegalArgumentException("Invalid user type");
+            throw new IllegalArgumentException("Invalid user type: " + userType);
         }
 
-        // convertToDTO에서 유저 타입에 따라 null 값 설정
         return reservations.stream()
                 .map(reservation -> convertToDTO(reservation, userType))
                 .collect(Collectors.toList());
