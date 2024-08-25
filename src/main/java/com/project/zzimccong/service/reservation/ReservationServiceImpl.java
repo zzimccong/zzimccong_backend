@@ -48,7 +48,7 @@ public class ReservationServiceImpl implements ReservationService {
         String userId = jwtTokenUtil.getUserIdFromToken(token);
         String userType = jwtTokenUtil.getUserTypeFromToken(token);
 
-        // 유저 타입에 따라 Reservation 엔터티의 필드를 설정
+        // 유저 타입에 따라 Reservation 엔터 티의 필드를 설정
         if ("user".equals(userType)) {
             // User 조회 시 Optional 처리
             Optional<User> userOptional = userRepository.findByLoginId(userId);

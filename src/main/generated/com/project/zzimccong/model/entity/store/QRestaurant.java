@@ -74,6 +74,8 @@ public class QRestaurant extends EntityPathBase<Restaurant> {
 
     public final com.project.zzimccong.model.entity.user.QUser user;
 
+    public final ListPath<com.project.zzimccong.model.entity.zzim.Zzim, com.project.zzimccong.model.entity.zzim.QZzim> zzims = this.<com.project.zzimccong.model.entity.zzim.Zzim, com.project.zzimccong.model.entity.zzim.QZzim>createList("zzims", com.project.zzimccong.model.entity.zzim.Zzim.class, com.project.zzimccong.model.entity.zzim.QZzim.class, PathInits.DIRECT2);
+
     public QRestaurant(String variable) {
         this(Restaurant.class, forVariable(variable), INITS);
     }
