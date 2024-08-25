@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.zzimccong.model.entity.cart.Cart;
 import com.project.zzimccong.model.entity.reservation.Reservation;
 import com.project.zzimccong.model.entity.user.User;
+import com.project.zzimccong.model.entity.zzim.Zzim;
 
 import javax.persistence.*;
 import java.util.List;
@@ -29,6 +30,10 @@ public class Restaurant {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference(value = "restaurant-menus")
     private List<Menu> menus; // 메뉴
+
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "restaurant-zzims")
+    private List<Zzim> zzims; // 찜
 
     @Column(columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     private String facilities; // 편의 시설
@@ -74,7 +79,7 @@ public class Restaurant {
 
     public Restaurant() {}
 
-    public Restaurant(long id, String name, String category, String roadAddress, String numberAddress, String phoneNumber, String detailInfo, String businessHours, String link, List<Menu> menus, String facilities, String parkingInfo, String mainPhotoUrl, String photo1Url, String photo2Url, String photo3Url, String photo4Url, String photo5Url, double latitude, double longitude, String seats, String state, String lotteryEvent, User user, List<Reservation> reservations, List<Cart> restaurantLists) {
+    public Restaurant(long id, String name, String category, String roadAddress, String numberAddress, String phoneNumber, String detailInfo, String businessHours, String link, List<Menu> menus, List<Zzim> zzims, String facilities, String parkingInfo, String mainPhotoUrl, String photo1Url, String photo2Url, String photo3Url, String photo4Url, String photo5Url, double latitude, double longitude, String seats, String state, String lotteryEvent, User user, List<Reservation> reservations, List<Cart> restaurantLists) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -85,6 +90,7 @@ public class Restaurant {
         this.businessHours = businessHours;
         this.link = link;
         this.menus = menus;
+        this.zzims = zzims;
         this.facilities = facilities;
         this.parkingInfo = parkingInfo;
         this.mainPhotoUrl = mainPhotoUrl;
@@ -183,6 +189,14 @@ public class Restaurant {
         this.menus = menus;
     }
 
+    public List<Zzim> getZzims() {
+        return zzims;
+    }
+
+    public void setZzims(List<Zzim> zzims) {
+        this.zzims = zzims;
+    }
+
     public String getFacilities() {
         return facilities;
     }
@@ -271,14 +285,6 @@ public class Restaurant {
         this.seats = seats;
     }
 
-    public List<Cart> getRestaurantLists() {
-        return restaurantLists;
-    }
-
-    public void setRestaurantLists(List<Cart> restaurantLists) {
-        this.restaurantLists = restaurantLists;
-    }
-
     public String getState() {
         return state;
     }
@@ -311,4 +317,11 @@ public class Restaurant {
         this.reservations = reservations;
     }
 
+    public List<Cart> getRestaurantLists() {
+        return restaurantLists;
+    }
+
+    public void setRestaurantLists(List<Cart> restaurantLists) {
+        this.restaurantLists = restaurantLists;
+    }
 }
