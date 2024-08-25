@@ -18,9 +18,11 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 //@Controller
 @RestController
@@ -47,10 +49,25 @@ public class RestaurantController {
     }
 
     // 네이버 지도 음식점 크롤링 엔드포인트
-    @GetMapping("/fetch-restaurants")
-    public String fetchRestaurants() {
-        restaurantService.testChromeDriverWithCSSSelector();
-        return "Restaurants fetched and saved successfully!";
+    @GetMapping("/fetch-multiple-restaurants")
+    public String fetchMultipleRestaurants() {
+        String[] urls = {
+                "https://map.naver.com/p/search/%EB%B6%80%EC%82%B0%20%EC%9D%8C%EC%8B%9D%EC%A0%90?c=10.00,0,0,0,dh",
+                "https://map.naver.com/p/search/%EC%84%9C%EC%9A%B8%20%EC%9D%8C%EC%8B%9D%EC%A0%90?c=10.00,0,0,0,dh",
+                "https://map.naver.com/p/search/%EB%8C%80%EA%B5%AC%20%EC%9D%8C%EC%8B%9D%EC%A0%90?c=10.00,0,0,0,dh"
+        };
+
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+        for (String url : urls) {
+            futures.add(CompletableFuture.runAsync(() -> {
+                restaurantService.crawlRestaurants(url);
+            }));
+        }
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+        return "Multiple restaurants fetched and saved successfully!";
     }
     //1차 검색어로 가게 찾기
     @GetMapping("/search/{searchWord}")
