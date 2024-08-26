@@ -43,4 +43,10 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event with ID: " + eventId + " not found"));
     }
+
+    @Override
+    public List<Event> findEventsByRestaurantId(Long restaurantId) {
+        // 주어진 레스토랑 ID로 모든 이벤트를 조회
+        return eventRepository.findByRestaurantId(restaurantId);
+    }
 }

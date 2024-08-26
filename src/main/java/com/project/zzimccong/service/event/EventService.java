@@ -10,4 +10,6 @@ public interface EventService {
 
     Event findEventById(Long eventId); // 특정 id 가진 이벤트 조회
 
+    List<Event> findEventsByRestaurantId(Long restaurantId);  // 특정 가게에서 열린 모든 이벤트 조회
+
 }

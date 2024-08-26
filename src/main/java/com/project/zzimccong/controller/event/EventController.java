@@ -39,5 +39,10 @@ public class EventController {
         return ResponseEntity.ok(EventDTO.fromEntity(event));
     }
 
-
+    // 특정 가게에서 열린 모든 이벤트 조회
+    @GetMapping("/restaurant/{restaurantId}")
+    public ResponseEntity<List<EventDTO>> getEventsByRestaurantId(@PathVariable Long restaurantId) {
+        List<Event> events = eventService.findEventsByRestaurantId(restaurantId);
+        return ResponseEntity.ok(EventDTO.toEventDTOList(events));
+    }
 }
