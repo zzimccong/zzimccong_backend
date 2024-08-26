@@ -121,4 +121,13 @@ public class EventParticipationController {
                     .body(Collections.singletonMap("error", "추첨 중 오류가 발생했습니다."));
         }
     }
+
+    // 특정 이벤트에서 사용자가 사용한 쿠폰 수 조회
+    @GetMapping("/{eventId}/users/{userId}/coupons/total-used")
+    public ResponseEntity<Integer> getTotalCouponsUsedByUserInEvent(
+            @PathVariable Integer userId,
+            @PathVariable Long eventId) {
+        Integer totalCouponsUsed = eventParticipationService.getTotalCouponsUsedByUserInEvent(userId, eventId);
+        return ResponseEntity.ok(totalCouponsUsed);
+    }
 }
