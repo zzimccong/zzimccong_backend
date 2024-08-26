@@ -49,4 +49,10 @@ public class EventServiceImpl implements EventService {
         // 주어진 레스토랑 ID로 모든 이벤트를 조회
         return eventRepository.findByRestaurantId(restaurantId);
     }
+
+    @Override
+    public List<Event> findAllEvents() {
+        // 모든 이벤트를 조회
+        return eventRepository.findAll();
+    }
 }
