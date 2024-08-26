@@ -32,5 +32,12 @@ public class EventController {
         return ResponseEntity.ok(EventDTO.fromEntity(createdEvent));
     }
 
+    // 특정 id 가진 이벤트 조회
+    @GetMapping("/{eventId}")
+    public ResponseEntity<EventDTO> getEventById(@PathVariable Long eventId) {
+        Event event = eventService.findEventById(eventId);
+        return ResponseEntity.ok(EventDTO.fromEntity(event));
+    }
+
 
 }

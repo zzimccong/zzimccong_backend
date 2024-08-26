@@ -8,5 +8,6 @@ public interface EventService {
 
     Event createEvent(Event event, Long restaurantId); // 이벤트 생성
 
+    Event findEventById(Long eventId); // 특정 id 가진 이벤트 조회
 
 }
