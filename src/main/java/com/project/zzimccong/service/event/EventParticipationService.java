@@ -14,5 +14,7 @@ public interface EventParticipationService {
     List<EventParticipation> getParticipationsByEventId(Long eventId);
 
 
+    // 특정 유저가 특정 이벤트에 참여한 기록을 조회하는 메서드
+    List<EventParticipation> getParticipationsByUserIdAndEventId(Integer userId, Long eventId);
 
 }
