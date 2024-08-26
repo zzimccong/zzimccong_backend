@@ -28,4 +28,7 @@ public interface EventParticipationService {
     // 사용자가 특정 이벤트에서 사용한 추첨권 수 조회
     Integer getTotalCouponsUsedByUserInEvent(Integer userId, Long eventId);
 
+    // 사용자가 모든 이벤트에서 사용한 총 추첨권 수 조회
+    Integer getTotalCouponsUsedByUserInAllEvents(Integer userId);
+
 }
