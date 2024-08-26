@@ -10,6 +10,8 @@ public interface EventParticipationService {
     // 유저가 특정 이벤트에 참여하면서 쿠폰을 사용하는 메서드
     EventParticipation participateInEvent(Integer userId, Long eventId, int couponCount);
 
+    // 특정 이벤트에 참여한 모든 기록을 조회하는 메서드
+    List<EventParticipation> getParticipationsByEventId(Long eventId);
 
 
 
