@@ -1,0 +1,16 @@
+package com.project.zzimccong.service.event;
+
+import com.project.zzimccong.model.entity.coupon.Coupon;
+import com.project.zzimccong.model.entity.event.EventParticipation;
+
+import java.util.List;
+import java.util.Map;
+
+public interface EventParticipationService {
+    // 유저가 특정 이벤트에 참여하면서 쿠폰을 사용하는 메서드
+    EventParticipation participateInEvent(Integer userId, Long eventId, int couponCount);
+
+
+
+
+}
