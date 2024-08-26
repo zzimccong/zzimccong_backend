@@ -130,4 +130,12 @@ public class EventParticipationController {
         Integer totalCouponsUsed = eventParticipationService.getTotalCouponsUsedByUserInEvent(userId, eventId);
         return ResponseEntity.ok(totalCouponsUsed);
     }
+
+    // 모든 이벤트에서 사용자가 사용한 쿠폰 수 조회
+    @GetMapping("/users/{userId}/coupons/total-used")
+    public ResponseEntity<Integer> getTotalCouponsUsedByUserInAllEvents(
+            @PathVariable Integer userId) {
+        Integer totalCouponsUsed = eventParticipationService.getTotalCouponsUsedByUserInAllEvents(userId);
+        return ResponseEntity.ok(totalCouponsUsed);
+    }
 }

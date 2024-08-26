@@ -202,4 +202,21 @@ public class EventParticipationServiceImpl implements EventParticipationService 
 
         return totalUsed; // 총 사용된 쿠폰 수 반환
     }
+
+    @Override
+    public Integer getTotalCouponsUsedByUserInAllEvents(Integer userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("사용자 ID는 null일 수 없습니다."); // 사용자 ID 유효성 검사
+        }
+
+        Integer totalCouponsUsed = eventParticipationRepository.findTotalUsedCouponsByUserInAllEvents(userId); // 모든 이벤트에서 사용한 쿠폰 수 조회
+
+        if (totalCouponsUsed == null) {
+            totalCouponsUsed = 0; // 쿠폰 사용 내역이 없을 경우 0 반환
+        }
+
+        logger.info("User {} has used {} coupons across all events", userId, totalCouponsUsed); // 로그 기록
+
+        return totalCouponsUsed; // 총 사용된 쿠폰 수 반환
+    }
 }
