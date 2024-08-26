@@ -16,4 +16,5 @@ public interface EventService {
 
     Event updateEvent(Long eventId, Event eventDetails); // 이벤트 업데이트
 
+    void deleteEvent(Long eventId); // 이벤트 삭제
 }

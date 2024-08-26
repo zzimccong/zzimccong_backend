@@ -62,4 +62,10 @@ public class EventController {
         return ResponseEntity.ok(EventDTO.fromEntity(updatedEvent));
     }
 
+    // 특정 이벤트 삭제
+    @DeleteMapping("/{eventId}")
+    public ResponseEntity<String> deleteEvent(@PathVariable Long eventId) {
+        eventService.deleteEvent(eventId);
+        return ResponseEntity.ok("이벤트 삭제가 완료되었습니다.");
+    }
 }
