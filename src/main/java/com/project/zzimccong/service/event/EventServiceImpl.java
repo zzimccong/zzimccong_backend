@@ -37,5 +37,10 @@ public class EventServiceImpl implements EventService {
         return eventRepository.save(event);
     }
 
-
+    @Override
+    public Event findEventById(Long eventId) {
+        // 주어진 이벤트 ID로 이벤트를 조회
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Event with ID: " + eventId + " not found"));
+    }
 }
