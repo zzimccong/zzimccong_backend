@@ -90,4 +90,18 @@ public class EventParticipationController {
             return ResponseEntity.badRequest().body(0);
         }
     }
+
+    // 특정 이벤트에 참가한 모든 사용자의 이름 조회
+    @GetMapping("/{eventId}/participants/names")
+    public ResponseEntity<List<String>> getParticipantNamesByEventId(@PathVariable Long eventId) {
+        try {
+            List<String> participantNames = eventParticipationService.getParticipantNamesByEventId(eventId);
+            if (participantNames == null) {
+                participantNames = new ArrayList<>(); // 참가자 이름이 null인 경우 빈 리스트로 설정
+            }
+            return ResponseEntity.ok(participantNames);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 }
