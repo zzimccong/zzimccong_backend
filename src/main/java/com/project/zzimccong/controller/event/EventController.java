@@ -53,4 +53,13 @@ public class EventController {
         return ResponseEntity.ok(EventDTO.toEventDTOList(events));
     }
 
+    // 특정 이벤트 업데이트
+    @PutMapping("/{eventId}")
+    public ResponseEntity<EventDTO> updateEvent(@PathVariable Long eventId, @RequestBody EventDTO eventDTO) {
+        Restaurant restaurant = restaurantService.findById(eventDTO.getRestaurantId());
+        Event eventDetails = EventDTO.toEntity(eventDTO, restaurant);
+        Event updatedEvent = eventService.updateEvent(eventId, eventDetails);
+        return ResponseEntity.ok(EventDTO.fromEntity(updatedEvent));
+    }
+
 }

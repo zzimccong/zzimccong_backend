@@ -55,4 +55,21 @@ public class EventServiceImpl implements EventService {
         // 모든 이벤트를 조회
         return eventRepository.findAll();
     }
+
+    @Override
+    public Event updateEvent(Long eventId, Event eventDetails) {
+        // 주어진 이벤트 ID로 이벤트를 조회하고 정보를 업데이트
+        Event event = findEventById(eventId);
+
+        if (eventDetails.getStartDate() != null && !eventDetails.getStartDate().equals(event.getStartDate())) {
+            event.setStartDate(eventDetails.getStartDate());
+        }
+        if (eventDetails.getEndDate() != null && !eventDetails.getEndDate().equals(event.getEndDate())) {
+            event.setEndDate(eventDetails.getEndDate());
+        }
+
+        // 기타 필요한 필드 업데이트...
+
+        return eventRepository.save(event);
+    }
 }

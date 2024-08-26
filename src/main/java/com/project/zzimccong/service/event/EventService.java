@@ -14,4 +14,6 @@ public interface EventService {
 
     List<Event> findAllEvents();  // 모든 이벤트를 조회하는 메서드
 
+    Event updateEvent(Long eventId, Event eventDetails); // 이벤트 업데이트
+
 }
