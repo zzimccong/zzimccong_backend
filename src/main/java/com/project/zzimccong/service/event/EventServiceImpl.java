@@ -72,4 +72,21 @@ public class EventServiceImpl implements EventService {
 
         return eventRepository.save(event);
     }
+
+    @Transactional
+    @Override
+    public void deleteEvent(Long eventId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new EntityNotFoundException("Event not found"));
+
+        // 먼저 이벤트와 관련된 모든 참가 기록을 삭제하기 전에 쿠폰과의 연관 관계 해제
+        List<EventParticipation> participations = eventParticipationRepository.findByEvent(event);
+        for (EventParticipation participation : participations) {
+            participation.setCoupon(null);
+        }
+        eventParticipationRepository.deleteAll(participations);
+
+        // 그런 다음 이벤트 자체를 삭제
+        eventRepository.delete(event);
+    }
 }
