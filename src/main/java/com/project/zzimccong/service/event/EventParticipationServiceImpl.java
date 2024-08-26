@@ -114,5 +114,11 @@ public class EventParticipationServiceImpl implements EventParticipationService 
         return savedParticipation;
     }
 
-
+    @Override
+    public List<EventParticipation> getParticipationsByEventId(Long eventId) {
+        if (eventId == null) {
+            throw new IllegalArgumentException("이벤트 ID는 null일 수 없습니다."); // 이벤트 ID 유효성 검사
+        }
+        return eventParticipationRepository.findByEventId(eventId); // 이벤트 ID로 참여 기록 조회
+    }
 }

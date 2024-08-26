@@ -67,5 +67,15 @@ public class EventParticipationController {
         }
     }
 
+    // 특정 이벤트의 모든 참여 기록 조회
+    @GetMapping("/{eventId}/participations")
+    public ResponseEntity<List<EventParticipation>> getParticipationsByEventId(@PathVariable Long eventId) {
+        try {
+            List<EventParticipation> participations = eventParticipationService.getParticipationsByEventId(eventId);
+            return ResponseEntity.ok(participations);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Collections.emptyList());
+        }
+    }
 
 }
