@@ -19,4 +19,9 @@ public interface EventParticipationService {
 
     List<String> getParticipantNamesByEventId(Long eventId);
 
+    // 특정 이벤트에서 사용된 모든 쿠폰을 조회하는 메서드
+    List<Coupon> getCouponsUsedInEvent(Long eventId);
+
+    // 특정 이벤트에서 추첨하는 메서드
+    Map<String, Object> drawLottery(Long eventId);
 }

@@ -104,4 +104,21 @@ public class EventParticipationController {
             return ResponseEntity.badRequest().body(null);
         }
     }
+
+    // 이벤트 추첨 실행
+    @PostMapping("/{eventId}/lottery/draw")
+    public ResponseEntity<Map<String, Object>> drawLottery(@PathVariable Long eventId) {
+        try {
+            Map<String, Object> result = eventParticipationService.drawLottery(eventId);
+
+            if (result.containsKey("error")) {
+                return ResponseEntity.badRequest().body(result);
+            }
+
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("error", "추첨 중 오류가 발생했습니다."));
+        }
+    }
 }
