@@ -132,4 +132,16 @@ public class EventParticipationServiceImpl implements EventParticipationService 
         }
         return eventParticipationRepository.findByUserIdAndEventId(userId, eventId); // 사용자와 이벤트 ID로 참여 기록 조회
     }
+
+    @Override
+    public List<String> getParticipantNamesByEventId(Long eventId) {
+        if (eventId == null) {
+            throw new IllegalArgumentException("이벤트 ID는 null일 수 없습니다."); // 이벤트 ID 유효성 검사
+        }
+
+        List<EventParticipation> participations = eventParticipationRepository.findByEventId(eventId); // 이벤트 ID로 참여 기록 조회
+        return participations.stream()
+                .map(participation -> participation.getUser().getName()) // 참여자의 이름을 리스트로 반환
+                .collect(Collectors.toList());
+    }
 }
