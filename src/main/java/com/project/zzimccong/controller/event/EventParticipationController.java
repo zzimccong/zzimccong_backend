@@ -11,6 +11,7 @@ import com.project.zzimccong.service.event.EventParticipationService;
 import com.project.zzimccong.service.notification.NotificationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.SecureRandom;
@@ -28,15 +29,17 @@ public class EventParticipationController {
 
     private final NotificationService notificationService;
 
+    private final PasswordEncoder passwordEncoder;
     // Controller 생성자
     public EventParticipationController(EventParticipationService eventParticipationService,
                                         EventRepository eventRepository,
-                                        UserRepository userRepository, CouponRepository couponRepository, NotificationService notificationService) {
+                                        UserRepository userRepository, CouponRepository couponRepository, NotificationService notificationService,PasswordEncoder passwordEncoder) {
         this.eventParticipationService = eventParticipationService;
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.couponRepository = couponRepository;
         this.notificationService = notificationService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // 이벤트 참여 요청 처리
@@ -137,5 +140,87 @@ public class EventParticipationController {
             @PathVariable Integer userId) {
         Integer totalCouponsUsed = eventParticipationService.getTotalCouponsUsedByUserInAllEvents(userId);
         return ResponseEntity.ok(totalCouponsUsed);
+    }
+
+    // 임의의 참여자 생성
+    @PostMapping("/{eventId}/generate-random-participants")
+    public ResponseEntity<String> generateRandomParticipants(@PathVariable Long eventId) {
+        try {
+            Event event = eventRepository.findById(eventId)
+                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 이벤트 ID입니다."));
+
+            for (int i = 1; i <= 100; i++) {
+                int userId = 1000 + i;
+                int couponCount = 5;
+
+                User user = userRepository.findById(userId)
+                        .orElseGet(() -> createRandomUser(userId));
+
+                giveUserLotteryCoupons(user, couponCount);
+
+                eventParticipationService.participateInEvent(user.getId(), eventId, couponCount);
+            }
+
+            return ResponseEntity.ok("100명의 임의의 참여자가 생성되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("임의의 참여자 생성 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
+
+    // 임의의 사용자 생성
+    private User createRandomUser(int userId) {
+        Random random = new SecureRandom();
+
+        User user = new User();
+        user.setId(userId);
+        user.setLoginId(generateRandomLoginId()); // 랜덤 로그인 ID 생성
+        user.setName(generateRandomName()); // 랜덤 이름 생성
+        user.setPassword(passwordEncoder.encode("1234")); // 비밀번호 암호화
+        user.setEmail("user" + userId + "+" + random.nextInt(100000) + "@example.com");
+        user.setBirth(generateRandomBirthday()); // 랜덤 생일 생성
+        user.setPhone(generateRandomPhoneNumber()); // 랜덤 전화번호 생성
+        user.setRole(generateRandomRole()); // 역할 설정
+
+        return userRepository.save(user);
+    }
+
+    private String generateRandomLoginId() {
+        return "user" + UUID.randomUUID().toString().substring(0, 8);
+    }
+
+    private String generateRandomName() {
+        String[] firstNames = {"김", "장", "신", "정", "도"};
+        String[] lastNames = {"민", "구", "동", "정", "이"};
+        Random random = new SecureRandom();
+        return firstNames[random.nextInt(firstNames.length)] + lastNames[random.nextInt(lastNames.length)];
+    }
+
+    private LocalDate generateRandomBirthday() {
+        int startYear = 1970;
+        int endYear = 2000;
+        int dayOfYear = new Random().nextInt(365) + 1;
+        int randomYear = new Random().nextInt(endYear - startYear + 1) + startYear;
+        return LocalDate.ofYearDay(randomYear, dayOfYear);
+    }
+
+    private String generateRandomPhoneNumber() {
+        Random random = new SecureRandom();
+        return "010-" + (random.nextInt(9000) + 1000) + "-" + (random.nextInt(9000) + 1000);
+    }
+
+    private String generateRandomRole() {
+        return "USER";
+    }
+
+    // 사용자에게 추첨권 부여
+    private void giveUserLotteryCoupons(User user, int couponCount) {
+        for (int i = 0; i < couponCount; i++) {
+            Coupon coupon = new Coupon();
+            coupon.setUser(user);
+            coupon.setType("추첨권");
+            coupon.setCnt(5);
+            couponRepository.save(coupon);
+        }
     }
 }
