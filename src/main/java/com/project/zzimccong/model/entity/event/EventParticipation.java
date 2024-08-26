@@ -48,7 +48,6 @@ public class EventParticipation {
         this.usedCouponCount = usedCouponCount;
     }
 
-    // Getter 및 Setter 메서드
     public Long getId() {
         return id;
     }
