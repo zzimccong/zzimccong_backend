@@ -14,7 +14,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "notification_tokens")
+@Table(name = "TB_NOTIFICATION_TOKEN")
 public class NotificationToken {
 
     @Id

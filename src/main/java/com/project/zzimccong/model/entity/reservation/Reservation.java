@@ -12,6 +12,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name="TB_RESERVATION")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})  // 이 부분 추가
 public class Reservation {
     @Id
