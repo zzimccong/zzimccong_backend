@@ -144,4 +144,45 @@ public class EventParticipationServiceImpl implements EventParticipationService 
                 .map(participation -> participation.getUser().getName()) // 참여자의 이름을 리스트로 반환
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<Coupon> getCouponsUsedInEvent(Long eventId) {
+        if (eventId == null) {
+            throw new IllegalArgumentException("이벤트 ID는 null일 수 없습니다."); // 이벤트 ID 유효성 검사
+        }
+        return eventParticipationRepository.findCouponsByEventId(eventId); // 이벤트에서 사용된 쿠폰 조회
+    }
+
+
+
+    @Override
+    public Map<String, Object> drawLottery(Long eventId) {
+        if (eventId == null) {
+            throw new IllegalArgumentException("이벤트 ID는 null일 수 없습니다."); // 이벤트 ID 유효성 검사
+        }
+
+        try {
+            List<EventParticipation> participations = eventParticipationRepository.findByEventId(eventId); // 이벤트 참여자 목록 조회
+
+            if (participations.isEmpty()) {
+                return Collections.singletonMap("error", "이 이벤트에 참여한 사람이 없습니다."); // 참여자가 없을 경우 오류 반환
+            }
+
+            Random random = new Random();
+            int winnerIndex = random.nextInt(participations.size()); // 랜덤으로 당첨자 선택
+            EventParticipation winner = participations.get(winnerIndex);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("winnerName", winner.getUser().getName()); // 당첨자 이름 반환
+            response.put("winnerIndex", winnerIndex); // 당첨자 인덱스 반환
+
+            winner.setWinner(true); // 당첨 상태 업데이트
+            eventParticipationRepository.save(winner); // 당첨자 정보 저장
+
+            return response; // 당첨자 정보 반환
+        } catch (Exception e) {
+            logger.error("추첨 중 오류 발생", e); // 오류 로그 기록
+            return Collections.singletonMap("error", "추첨 중 오류가 발생했습니다."); // 오류 메시지 반환
+        }
+    }
 }
