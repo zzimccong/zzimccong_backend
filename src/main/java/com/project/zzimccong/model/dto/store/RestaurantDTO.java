@@ -1,5 +1,6 @@
 package com.project.zzimccong.model.dto.store;
 
+import com.project.zzimccong.model.dto.event.EventDTO;
 import com.project.zzimccong.model.entity.store.Restaurant;
 import lombok.Builder;
 
@@ -32,9 +33,11 @@ public class RestaurantDTO {
     private double longitude;
     private String seats;
 
+    private List<EventDTO> events;
+
     public RestaurantDTO() {}
     @Builder
-    public RestaurantDTO(long id, String name, String category, String roadAddress, String numberAddress, String phoneNumber, String detailInfo, String businessHours, String link, List<MenuDTO> menus, String facilities, String parkingInfo, String mainPhotoUrl, String photo1Url, String photo2Url, String photo3Url, String photo4Url, String photo5Url, double latitude, double longitude, String seats) {
+    public RestaurantDTO(long id, String name, String category, String roadAddress, String numberAddress, String phoneNumber, String detailInfo, String businessHours, String link, List<MenuDTO> menus, String facilities, String parkingInfo, String mainPhotoUrl, String photo1Url, String photo2Url, String photo3Url, String photo4Url, String photo5Url, double latitude, double longitude, String seats, List<EventDTO> events) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -56,6 +59,7 @@ public class RestaurantDTO {
         this.latitude = latitude;
         this.longitude = longitude;
         this.seats = seats;
+        this.events = events;
     }
 
     public long getId() {
@@ -133,6 +137,7 @@ public class RestaurantDTO {
                 .latitude(restaurant.getLatitude())
                 .longitude(restaurant.getLongitude())
                 .seats(restaurant.getSeats())
+                .events(EventDTO.toEventDTOList(restaurant.getEvents())) // 이벤트 리스트를 DTO로 변환
                 .build();
     }
 
@@ -257,6 +262,15 @@ public class RestaurantDTO {
         this.seats = seats;
     }
 
+    public List<EventDTO> getEvents() {
+        return events;
+    }
+
+    public void setEvents(List<EventDTO> events) {
+        this.events = events;
+    }
+
+
     @Override
     public String toString() {
         return "RestaurantDTO{" +
@@ -281,6 +295,7 @@ public class RestaurantDTO {
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 ", seats='" + seats + '\'' +
+                ", events=" + events +
                 '}';
     }
 }

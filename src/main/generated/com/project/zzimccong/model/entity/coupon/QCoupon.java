@@ -26,9 +26,13 @@ public class QCoupon extends EntityPathBase<Coupon> {
 
     public final NumberPath<Integer> discountPrice = createNumber("discountPrice", Integer.class);
 
+    public final com.project.zzimccong.model.entity.event.QEvent event;
+
     public final NumberPath<Integer> id = createNumber("id", Integer.class);
 
     public final StringPath type = createString("type");
+
+    public final BooleanPath used = createBoolean("used");
 
     public final com.project.zzimccong.model.entity.user.QUser user;
 
@@ -50,6 +54,7 @@ public class QCoupon extends EntityPathBase<Coupon> {
 
     public QCoupon(Class<? extends Coupon> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.event = inits.isInitialized("event") ? new com.project.zzimccong.model.entity.event.QEvent(forProperty("event"), inits.get("event")) : null;
         this.user = inits.isInitialized("user") ? new com.project.zzimccong.model.entity.user.QUser(forProperty("user")) : null;
     }
 

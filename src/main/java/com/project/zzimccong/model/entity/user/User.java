@@ -2,6 +2,7 @@ package com.project.zzimccong.model.entity.user;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.zzimccong.model.entity.cart.Cart;
+import com.project.zzimccong.model.entity.event.EventParticipation;
 import com.project.zzimccong.model.entity.reservation.Reservation;
 import com.project.zzimccong.model.entity.store.Restaurant;
 
@@ -46,11 +47,13 @@ public class User {
     @JsonManagedReference(value = "user-reservations")
     private List<Reservation> reservations;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "user-participations")
+    private List<EventParticipation> participations;
 
-    public User() {
-    }
+    public User() {}
 
-    public User(Integer id, String loginId, String password, String name, LocalDate birth, String email, String phone, String role, List<Restaurant> restaurants, List<Reservation> reservations, List<Cart> restaurantLists) {
+    public User(Integer id, String loginId, String password, String name, LocalDate birth, String email, String phone, String role, List<Restaurant> restaurants, List<Reservation> reservations, List<EventParticipation> participations) {
         this.id = id;
         this.loginId = loginId;
         this.password = password;
@@ -61,8 +64,10 @@ public class User {
         this.role = role;
         this.restaurants = restaurants;
         this.reservations = reservations;
+        this.participations = participations;
     }
 
+    // Getter 및 Setter 메서드
     public Integer getId() {
         return id;
     }
@@ -143,6 +148,14 @@ public class User {
         this.reservations = reservations;
     }
 
+    public List<EventParticipation> getParticipations() {
+        return participations;
+    }
+
+    public void setParticipations(List<EventParticipation> participations) {
+        this.participations = participations;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -156,6 +169,7 @@ public class User {
                 ", role='" + role + '\'' +
                 ", restaurants=" + restaurants +
                 ", reservations=" + reservations +
+                ", participations=" + participations +
                 '}';
     }
 }
