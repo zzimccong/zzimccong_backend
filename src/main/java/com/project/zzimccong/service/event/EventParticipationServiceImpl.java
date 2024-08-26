@@ -185,4 +185,21 @@ public class EventParticipationServiceImpl implements EventParticipationService 
             return Collections.singletonMap("error", "추첨 중 오류가 발생했습니다."); // 오류 메시지 반환
         }
     }
+
+    @Override
+    public Integer getTotalCouponsUsedByUserInEvent(Integer userId, Long eventId) {
+        if (userId == null || eventId == null) {
+            throw new IllegalArgumentException("사용자 ID와 이벤트 ID는 null일 수 없습니다."); // 사용자 ID와 이벤트 ID 유효성 검사
+        }
+
+        Integer totalUsed = eventParticipationRepository.findTotalUsedCouponsByUserInEvent(userId, eventId); // 특정 이벤트에서 사용한 쿠폰 수 조회
+
+        if (totalUsed == null) {
+            totalUsed = 0; // 쿠폰 사용 내역이 없을 경우 0 반환
+        }
+
+        logger.info("User {} used {} coupons in event {}", userId, totalUsed, eventId); // 로그 기록
+
+        return totalUsed; // 총 사용된 쿠폰 수 반환
+    }
 }

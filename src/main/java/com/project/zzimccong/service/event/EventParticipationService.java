@@ -24,4 +24,8 @@ public interface EventParticipationService {
 
     // 특정 이벤트에서 추첨하는 메서드
     Map<String, Object> drawLottery(Long eventId);
+
+    // 사용자가 특정 이벤트에서 사용한 추첨권 수 조회
+    Integer getTotalCouponsUsedByUserInEvent(Integer userId, Long eventId);
+
 }
