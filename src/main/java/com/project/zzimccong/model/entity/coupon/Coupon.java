@@ -1,6 +1,7 @@
 package com.project.zzimccong.model.entity.coupon;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.zzimccong.model.entity.event.Event;
 import com.project.zzimccong.model.entity.user.User;
 
 import javax.persistence.*;
@@ -27,15 +28,25 @@ public class Coupon {
     @Column(name="cnt", nullable = false)
     private Integer cnt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id")
+    private Event event;
+
+    @Column(name = "used", nullable = false)
+    private Boolean used = false;
+
+
     public Coupon() {
     }
 
-    public Coupon(Integer id, User user, String type, Integer discountPrice, Integer cnt) {
+    public Coupon(Integer id, User user, String type, Integer discountPrice, Integer cnt, Event event, Boolean used) {
         this.id = id;
         this.user = user;
         this.type = type;
         this.discountPrice = discountPrice;
         this.cnt = cnt;
+        this.event = event;
+        this.used = used;
     }
 
     public Integer getId() {
@@ -76,5 +87,21 @@ public class Coupon {
 
     public void setCnt(Integer cnt) {
         this.cnt = cnt;
+    }
+
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+
+    public Boolean getUsed() {
+        return used;
+    }
+
+    public void setUsed(Boolean used) {
+        this.used = used;
     }
 }

@@ -28,6 +28,8 @@ public class QRestaurant extends EntityPathBase<Restaurant> {
 
     public final StringPath detailInfo = createString("detailInfo");
 
+    public final ListPath<com.project.zzimccong.model.entity.event.Event, com.project.zzimccong.model.entity.event.QEvent> events = this.<com.project.zzimccong.model.entity.event.Event, com.project.zzimccong.model.entity.event.QEvent>createList("events", com.project.zzimccong.model.entity.event.Event.class, com.project.zzimccong.model.entity.event.QEvent.class, PathInits.DIRECT2);
+
     public final StringPath facilities = createString("facilities");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);

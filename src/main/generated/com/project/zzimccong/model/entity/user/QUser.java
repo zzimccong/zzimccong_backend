@@ -30,6 +30,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final StringPath name = createString("name");
 
+    public final ListPath<com.project.zzimccong.model.entity.event.EventParticipation, com.project.zzimccong.model.entity.event.QEventParticipation> participations = this.<com.project.zzimccong.model.entity.event.EventParticipation, com.project.zzimccong.model.entity.event.QEventParticipation>createList("participations", com.project.zzimccong.model.entity.event.EventParticipation.class, com.project.zzimccong.model.entity.event.QEventParticipation.class, PathInits.DIRECT2);
+
     public final StringPath password = createString("password");
 
     public final StringPath phone = createString("phone");

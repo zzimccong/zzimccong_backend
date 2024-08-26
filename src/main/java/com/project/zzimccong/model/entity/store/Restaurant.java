@@ -3,6 +3,7 @@ package com.project.zzimccong.model.entity.store;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.zzimccong.model.entity.cart.Cart;
+import com.project.zzimccong.model.entity.event.Event;
 import com.project.zzimccong.model.entity.reservation.Reservation;
 import com.project.zzimccong.model.entity.timeSlot.TimeSlot;
 import com.project.zzimccong.model.entity.user.User;
@@ -12,6 +13,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@Table(name = "TB_RESTAURANT")
 public class Restaurant {
 
     @Id
@@ -83,10 +85,14 @@ public class Restaurant {
     @JsonManagedReference(value = "restaurant-lists")
     private List<Cart> restaurantLists;
 
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "restaurant-events")
+    private List<Event> events; // 이벤트
+
 
     public Restaurant() {}
 
-    public Restaurant(long id, String name, String category, String roadAddress, String numberAddress, String phoneNumber, String detailInfo, String businessHours, String link, List<Menu> menus, List<Zzim> zzims, String facilities, String parkingInfo, String mainPhotoUrl, String photo1Url, String photo2Url, String photo3Url, String photo4Url, String photo5Url, double latitude, double longitude, String seats, Integer reservationSeats, String state, String lotteryEvent, User user, List<Reservation> reservations, List<TimeSlot> timeSlots, List<Cart> restaurantLists) {
+    public Restaurant(long id, String name, String category, String roadAddress, String numberAddress, String phoneNumber, String detailInfo, String businessHours, String link, List<Menu> menus, List<Zzim> zzims, String facilities, String parkingInfo, String mainPhotoUrl, String photo1Url, String photo2Url, String photo3Url, String photo4Url, String photo5Url, double latitude, double longitude, String seats, Integer reservationSeats, String state, String lotteryEvent, User user, List<Reservation> reservations, List<TimeSlot> timeSlots, List<Cart> restaurantLists, List<Event> events) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -116,6 +122,7 @@ public class Restaurant {
         this.reservations = reservations;
         this.timeSlots = timeSlots;
         this.restaurantLists = restaurantLists;
+        this.events = events;
     }
 
     public long getId() {
@@ -349,4 +356,13 @@ public class Restaurant {
     public void setRestaurantLists(List<Cart> restaurantLists) {
         this.restaurantLists = restaurantLists;
     }
+
+    public List<Event> getEvents() {
+        return events;
+    }
+
+    public void setEvents(List<Event> events) {
+        this.events = events;
+    }
+
 }
