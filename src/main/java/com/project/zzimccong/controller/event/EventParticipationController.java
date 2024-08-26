@@ -78,4 +78,16 @@ public class EventParticipationController {
         }
     }
 
+    // 특정 이벤트에서 사용된 쿠폰의 총 개수 조회
+    @GetMapping("/{eventId}/coupons/count")
+    public ResponseEntity<Integer> getCouponsUsedCount(@PathVariable Long eventId) {
+        try {
+            // 이벤트에서 사용된 모든 쿠폰을 가져와 총 개수를 계산
+            List<EventParticipation> participations = eventParticipationService.getParticipationsByEventId(eventId);
+            int totalCouponsUsed = participations.stream().mapToInt(EventParticipation::getUsedCouponCount).sum();
+            return ResponseEntity.ok(totalCouponsUsed);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(0);
+        }
+    }
 }
