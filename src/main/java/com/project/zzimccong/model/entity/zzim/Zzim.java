@@ -8,7 +8,7 @@ import com.project.zzimccong.model.entity.user.User;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "TB_Zzim")
+@Table(name = "TB_ZZIM")
 public class Zzim {
 
     @Id

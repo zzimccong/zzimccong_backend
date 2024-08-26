@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.time.LocalTime;
 
 @Entity
+@Table(name="TB_TIMESLOT")
 public class TimeSlot {
 
     @Id

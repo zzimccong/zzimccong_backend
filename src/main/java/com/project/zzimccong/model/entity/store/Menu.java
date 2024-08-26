@@ -6,6 +6,7 @@ import javax.persistence.*;
 
 
 @Entity
+@Table(name="TB_MENU")
 public class Menu {
 
     @Id

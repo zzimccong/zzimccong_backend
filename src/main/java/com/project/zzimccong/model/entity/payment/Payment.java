@@ -16,7 +16,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="tb_payment", indexes = {
+@Table(name="TB_PAYMENT", indexes = {
         @Index(name = "idx_payment_member", columnList="customer"),
         @Index(name = "idx_payment_paymentKey", columnList = "paymentKey"),
 })
