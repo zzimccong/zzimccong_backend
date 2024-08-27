@@ -16,8 +16,8 @@ public class ZzimController {
     private ZzimService zzimService;
 
     @PostMapping
-    public Zzim createZzim(@RequestBody Zzim zzim, @RequestParam String userType) {
-        return zzimService.createZzim(zzim, userType);
+    public Zzim createZzim(@RequestBody ZzimDTO zzimDTO, @RequestParam String userType) {
+        return zzimService.createZzim(zzimDTO, userType);
     }
 
     @DeleteMapping("/{userId}/{restaurantId}")

@@ -5,11 +5,14 @@ import com.project.zzimccong.model.entity.reservation.Reservation;
 import com.project.zzimccong.security.jwt.JwtTokenUtil;
 import com.project.zzimccong.service.reservation.ReservationService;
 import com.project.zzimccong.service.user.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/reservations")
 public class ReservationController {
@@ -23,10 +26,17 @@ public class ReservationController {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
-    @PostMapping
-    public Reservation createReservation(@RequestBody Reservation reservation, @RequestHeader("Authorization") String tokenHeader) {
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Reservation createReservation(@RequestBody ReservationDTO reservation, @RequestHeader("Authorization") String tokenHeader) {
         String token = tokenHeader.replace("Bearer ", "");
-        return reservationService.saveReservation(reservation, token);
+
+        log.trace("Received reservation request: {}", reservation);
+        log.debug("Authorization token: {}", token);
+
+        Reservation savedReservation = reservationService.saveReservation(reservation, token);
+
+        log.trace("Saved reservation: {}", savedReservation);
+        return savedReservation;
     }
 
     @GetMapping

@@ -1,9 +1,6 @@
 package com.project.zzimccong.model.entity.reservation;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import com.project.zzimccong.model.entity.corp.Corporation;
 import com.project.zzimccong.model.entity.store.Restaurant;
 import com.project.zzimccong.model.entity.user.User;
@@ -13,27 +10,30 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name="TB_RESERVATION")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})  // 이 부분 추가
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})  // 이 부분 추가
 public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
-    @JsonBackReference(value = "user-reservations")
+    @JsonBackReference  // 고유한 참조 이름 설정
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "restaurant_id")
-    @JsonBackReference(value = "restaurant-reservations")
-//    @JsonManagedReference
+    @JsonBackReference // 고유한 참조 이름 설정
     private Restaurant restaurant;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "corp_id")
-    @JsonBackReference(value = "corp-reservations")
+    @JsonBackReference // 고유한 참조 이름 설정
     private Corporation corporation;
+
+
 
     private LocalDateTime reservationTime; //예약 시간
     private LocalDateTime reservationRegistrationTime; // 예약등록 시간

@@ -1,5 +1,6 @@
 package com.project.zzimccong.model.entity.corp;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.zzimccong.model.entity.email.EmailVerification;
 import com.project.zzimccong.model.entity.reservation.Reservation;
@@ -44,9 +45,8 @@ public class Corporation implements Serializable {
     private List<EmailVerification> emailVerifications;
 
     @OneToMany(mappedBy = "corporation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "corp-reservations")
+    @JsonManagedReference // 고유한 참조 이름 설정
     private List<Reservation> reservations;
-
     public Corporation() {
     }
 

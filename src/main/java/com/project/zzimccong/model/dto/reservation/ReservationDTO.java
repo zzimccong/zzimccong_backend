@@ -1,7 +1,10 @@
 package com.project.zzimccong.model.dto.reservation;
 
-import java.time.LocalDateTime;
+import com.project.zzimccong.model.entity.reservation.Reservation;
+import lombok.ToString;
 
+import java.time.LocalDateTime;
+@ToString
 public class ReservationDTO {
 
     private Long id;
@@ -119,5 +122,9 @@ public class ReservationDTO {
 
     public void setCorpName(String corpName) {
         this.corpName = corpName;
+    }
+
+    public Reservation toEntity(){
+        return new Reservation(null, null, null, null, this.reservationTime,this.reservationRegistrationTime, this.count, this.state, this.request);
     }
 }

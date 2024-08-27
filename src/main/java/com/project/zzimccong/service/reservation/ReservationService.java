@@ -7,7 +7,7 @@ import com.project.zzimccong.model.entity.user.User;
 import java.util.List;
 
 public interface ReservationService {
-    Reservation saveReservation(Reservation reservation, String token);
+    Reservation saveReservation(ReservationDTO reservation, String token);
     List<ReservationDTO> getAllReservations();
     Reservation updateReservationStatus(Long id, String status);
     List<ReservationDTO> getReservationsByUserId(Integer userId, String userType);

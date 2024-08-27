@@ -2,15 +2,20 @@ package com.project.zzimccong.service.reservation;
 
 import com.project.zzimccong.model.dto.reservation.ReservationDTO;
 import com.project.zzimccong.model.entity.corp.Corporation;
+import com.project.zzimccong.model.entity.notification.NotificationToken;
 import com.project.zzimccong.model.entity.reservation.Reservation;
+import com.project.zzimccong.model.entity.store.Restaurant;
 import com.project.zzimccong.model.entity.user.User;
 import com.project.zzimccong.repository.corp.CorporationRepository;
 import com.project.zzimccong.repository.coupon.CouponDSLRepository;
 import com.project.zzimccong.repository.reservation.ReservationDSLRepository;
 import com.project.zzimccong.repository.reservation.ReservationRepository;
+import com.project.zzimccong.repository.store.RestaurantRepository;
 import com.project.zzimccong.repository.user.UserRepository;
 import com.project.zzimccong.security.jwt.JwtTokenUtil;
 import com.project.zzimccong.service.coupon.CouponService;
+import com.project.zzimccong.service.notification.NotificationService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +23,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class ReservationServiceImpl implements ReservationService {
+
+    @Autowired
+    private RestaurantRepository restaurantRepository;
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -42,13 +51,20 @@ public class ReservationServiceImpl implements ReservationService {
     @Autowired
     private ReservationDSLRepository reservationDSLRepository;
 
+    @Autowired
+    private NotificationService notificationService;
+
     @Override
-    public Reservation saveReservation(Reservation reservation, String token) {
+    public Reservation saveReservation(ReservationDTO reservationDto, String token) {
         // JWT 토큰에서 userId 및 userType 추출
         String userId = jwtTokenUtil.getUserIdFromToken(token);
         String userType = jwtTokenUtil.getUserTypeFromToken(token);
+        Restaurant restaurant = restaurantRepository.findById(reservationDto.getRestaurantId()).get();
+        Reservation reservation = reservationDto.toEntity();
+        reservation.setRestaurant(restaurant);
+        Reservation savedReservation;
 
-        // 유저 타입에 따라 Reservation 엔터 티의 필드를 설정
+        // 유저 타입에 따라 Reservation 엔터티의 필드를 설정
         if ("user".equals(userType) || "manager".equals(userType)) {
             // User 조회 시 Optional 처리
             Optional<User> userOptional = userRepository.findByLoginId(userId);
@@ -56,9 +72,9 @@ public class ReservationServiceImpl implements ReservationService {
                 User user = userOptional.get();
                 reservation.setUser(user); // userId 설정
                 reservation.setCorporation(null); // corpId는 null로 설정
-                System.out.println(user);
                 // 예약 시 쿠폰 차감
                 couponService.decreaseCouponCnt(user.getId());
+                savedReservation = reservationRepository.save(reservation);
             } else {
                 throw new RuntimeException("User not found with loginId: " + userId);
             }
@@ -68,15 +84,46 @@ public class ReservationServiceImpl implements ReservationService {
             if (corpOptional.isPresent()) {
                 reservation.setCorporation(corpOptional.get()); // corpId 설정
                 reservation.setUser(null); // userId는 null로 설정
+                savedReservation = reservationRepository.save(reservation);
             } else {
                 throw new RuntimeException("Corporation not found with corpId: " + userId);
             }
-
         } else {
             throw new IllegalArgumentException("Invalid user type");
         }
-        return reservationRepository.save(reservation);
+
+//        // 예약이 성공적으로 저장된 후, manager에게 알림 전송
+//        sendNotificationToStoreManager(savedReservation);
+
+        return savedReservation;
     }
+
+//    private void sendNotificationToStoreManager(Reservation reservation) {
+//        Optional<User> managerOptional = userRepository.findByStoreAndRole(reservation.getStore(), "manager");
+//        String title = "새 예약 알림";
+//        String message = "새로운 예약이 생성되었습니다. 예약 ID: " + reservation.getId();
+//
+//        if (managerOptional.isPresent()) {
+//            User manager = managerOptional.get();
+//
+//            // manager에 연결된 NotificationToken 조회
+//            Optional<NotificationToken> tokenOptional = notificationTokenRepository.findByUser(manager);
+//            if (tokenOptional.isPresent()) {
+//                String token = tokenOptional.get().getToken(); // manager의 FCM 토큰을 가져옴
+//                if (token != null && !token.isEmpty()) {
+//                    try {
+//                        notificationService.sendMessage(token, title, message);
+//                    } catch (Exception e) {
+//                        log.error("관리자 {}에게 알림 전송 중 오류 발생: {}", manager.getLoginId(), e.getMessage());
+//                    }
+//                }
+//            } else {
+//                log.warn("관리자 {}의 알림 토큰을 찾을 수 없습니다.", manager.getLoginId());
+//            }
+//        } else {
+//            log.warn("예약된 가게의 매니저를 찾을 수 없습니다.");
+//        }
+//    }
 
     @Override
     public List<ReservationDTO> getAllReservations() {
@@ -116,7 +163,7 @@ public class ReservationServiceImpl implements ReservationService {
             reservation.setState(status);
 
             // 상태가 "예약 확정", "예약 취소", "방문 완료" 중 하나일 경우
-            if ("예약 확정".equals(status) || "예약 취소".equals(status) || "방문 완료".equals(status)) {
+            if ("예약 취소".equals(status) || "방문 완료".equals(status)) {
                 // 예약 테이블에서 userId가 null이 아닐 때만 쿠폰 증가 호출
                 if (reservation.getUser() != null) {
                     Integer userId = reservation.getUser().getId();
