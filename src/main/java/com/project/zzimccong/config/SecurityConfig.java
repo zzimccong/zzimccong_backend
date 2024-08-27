@@ -45,7 +45,7 @@ public class SecurityConfig {
             public void addCorsMappings(@NotNull CorsRegistry registry) {
                 // 모든 경로에 대해 http://localhost:3000에서 오는 요청을 허용
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000", "http://10.10.10.227:3000")
+                        .allowedOrigins("http://localhost:3000", "http://192.168.219.100:3000")
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedMethods("*")
                         .allowCredentials(true);

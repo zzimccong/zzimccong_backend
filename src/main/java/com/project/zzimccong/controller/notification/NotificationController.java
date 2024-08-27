@@ -31,16 +31,19 @@ public class NotificationController {
     @PostMapping("/save-token")
     public ResponseEntity<String> saveToken(@RequestBody TokenRequest tokenRequest,
                                             @AuthenticationPrincipal UserDetails userDetails) {
+        log.info("saveToken 메서드 호출됨. userDetails: {}", userDetails);
+
         if (userDetails instanceof UserDetailsImpl) {
             Integer userId = ((UserDetailsImpl) userDetails).getUser().getId();
+            log.info("UserDetailsImpl로 확인된 사용자 ID: {}", userId);
             notificationService.saveUserToken(userId, tokenRequest.getToken());
         } else if (userDetails instanceof CorpDetails) {
             Integer corpId = ((CorpDetails) userDetails).getCorporation().getId();
+            log.info("CorpDetails로 확인된 기업 ID: {}", corpId);
             notificationService.saveCorpToken(corpId, tokenRequest.getToken());
         }
         return ResponseEntity.ok("토큰이 성공적으로 저장되었습니다.");
     }
-
 
     @PostMapping("/delete-token")
     public ResponseEntity<String> deleteToken(@RequestBody TokenRequest tokenRequest,

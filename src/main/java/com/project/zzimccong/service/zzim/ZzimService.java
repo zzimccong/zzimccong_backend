@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ZzimService {
 
-    Zzim createZzim(ZzimDTO zzimDto, String userType);
+    ZzimDTO createZzim(ZzimDTO zzimDto, String userType);
 
     void deleteZzimByUserIdAndRestaurantId(Integer userId, Long restaurantId, String userType);
 

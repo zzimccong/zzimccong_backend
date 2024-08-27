@@ -28,16 +28,25 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void saveUserToken(Integer userId, String token) {
-        log.info("사용자 ID: {}에 대한 토큰을 Redis에 저장 중...", userId);
-        fcmTokenService.saveFcmToken("user:" + userId, token);
-        log.info("사용자 ID: {}에 새로운 토큰이 Redis에 저장되었습니다.", userId);
+        try {
+            log.info("사용자 ID: {}에 대한 토큰을 Redis에 저장 중...", userId);
+            fcmTokenService.saveFcmToken("user:" + userId, token);
+            log.info("사용자 ID: {}에 새로운 토큰이 Redis에 저장되었습니다.", userId);
+        } catch (Exception e) {
+            log.error("사용자 ID: {}에 대한 토큰 저장 중 오류 발생: {}", userId, e.getMessage());
+        }
     }
 
     @Override
     public void saveCorpToken(Integer corpId, String token) {
+        try {
         log.info("기업 ID: {}에 대한 토큰을 Redis에 저장 중...", corpId);
         fcmTokenService.saveFcmToken("corp:" + corpId, token);
         log.info("기업 ID: {}에 새로운 토큰이 Redis에 저장되었습니다.", corpId);
+        } catch (Exception e) {
+            log.error("사용자 ID: {}에 대한 토큰 저장 중 오류 발생: {}", corpId, e.getMessage());
+        }
+
     }
 
     @Override
