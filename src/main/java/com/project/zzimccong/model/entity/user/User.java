@@ -1,5 +1,6 @@
 package com.project.zzimccong.model.entity.user;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.zzimccong.model.entity.cart.Cart;
 import com.project.zzimccong.model.entity.event.EventParticipation;
@@ -44,8 +45,9 @@ public class User {
     private List<Restaurant> restaurants;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "user-reservations")
+    @JsonManagedReference(value = "user-reservations")  // 고유한 참조 이름 설정
     private List<Reservation> reservations;
+
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference(value = "user-participations")

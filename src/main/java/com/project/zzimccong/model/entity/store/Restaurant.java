@@ -67,14 +67,14 @@ public class Restaurant {
 
     private String lotteryEvent; // 추첨 상태
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonBackReference(value = "user-restaurants")
+    @JsonBackReference
     private User user;
 
+
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "restaurant-reservations")
-//    @JsonBackReference
+    @JsonManagedReference  // 고유한 참조 이름 설정
     private List<Reservation> reservations;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -92,6 +92,9 @@ public class Restaurant {
 
     public Restaurant() {}
 
+    public Restaurant(long id){
+        this.id = id;
+    }
     public Restaurant(long id, String name, String category, String roadAddress, String numberAddress, String phoneNumber, String detailInfo, String businessHours, String link, List<Menu> menus, List<Zzim> zzims, String facilities, String parkingInfo, String mainPhotoUrl, String photo1Url, String photo2Url, String photo3Url, String photo4Url, String photo5Url, double latitude, double longitude, String seats, Integer reservationSeats, String state, String lotteryEvent, User user, List<Reservation> reservations, List<TimeSlot> timeSlots, List<Cart> restaurantLists, List<Event> events) {
         this.id = id;
         this.name = name;

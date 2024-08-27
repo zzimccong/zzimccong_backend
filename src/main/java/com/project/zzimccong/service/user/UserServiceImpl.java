@@ -180,6 +180,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id).orElse(null);
     }
 
+
     @Override
     public User createManagerUser(String loginId, String password, String name, LocalDate birth, String email, String phone) throws Exception {
         if (userRepository.existsByLoginId(loginId) || userRepository.existsByEmail(email)) {
@@ -195,7 +196,13 @@ public class UserServiceImpl implements UserService {
         user.setPhone(phone);
         user.setRole("MANAGER");
 
-        return userRepository.save(user);
+        // 사용자 저장
+        User savedUser = userRepository.save(user);
+
+        // 쿠폰 발급 로직 추가
+        createCouponsForUser(savedUser);
+
+        return savedUser;
     }
 
     // 카카오 회원가입 처리 (비밀번호 없이)

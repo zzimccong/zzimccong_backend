@@ -35,7 +35,7 @@ public class Zzim {
 
     public Zzim() {}
 
-    public Zzim(long id, User user, Corporation corporation, Restaurant restaurant, String name) {
+    public Zzim(Long id, User user, Corporation corporation, Restaurant restaurant, String name) {
         this.id = id;
         this.user = user;
         this.corporation = corporation;

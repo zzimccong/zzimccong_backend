@@ -21,6 +21,10 @@ public class CouponDSLRepository {
                 .set(coupon.cnt, coupon.cnt.subtract(2))
                 .where(coupon.user.id.eq(userId)
                         .and(coupon.type.eq("예약쿠폰")))
+
+                .set(coupon.cnt, coupon.cnt.subtract(1))
+                .where(coupon.user.id.eq(userId)
+                        .and(coupon.type.eq("추첨권")))
                 .execute();
 
         System.out.println("Updated rows: " + updatedRows);

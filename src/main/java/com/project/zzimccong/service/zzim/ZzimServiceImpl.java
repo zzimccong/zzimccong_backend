@@ -1,7 +1,13 @@
 package com.project.zzimccong.service.zzim;
 
 import com.project.zzimccong.model.dto.zzim.ZzimDTO;
+import com.project.zzimccong.model.entity.corp.Corporation;
+import com.project.zzimccong.model.entity.store.Restaurant;
+import com.project.zzimccong.model.entity.user.User;
 import com.project.zzimccong.model.entity.zzim.Zzim;
+import com.project.zzimccong.repository.corp.CorporationRepository;
+import com.project.zzimccong.repository.store.RestaurantRepository;
+import com.project.zzimccong.repository.user.UserRepository;
 import com.project.zzimccong.repository.zzim.ZzimRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,18 +22,40 @@ public class ZzimServiceImpl implements ZzimService {
     @Autowired
     private ZzimRepository zzimRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private CorporationRepository corporationRepository;
+
+    @Autowired
+    private RestaurantRepository restaurantRepository;
+
     @Override
-    public Zzim createZzim(Zzim zzim, String userType) {
+    public Zzim createZzim(ZzimDTO zzimDTO, String userType) {
+        User user = null;
+        Corporation corporation = null;
+
+        // Restaurant 객체를 조회
+        Restaurant restaurant = restaurantRepository.findById(zzimDTO.getRestaurantId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid restaurant ID: " + zzimDTO.getRestaurantId()));
+
         if ("USER".equalsIgnoreCase(userType) || "MANAGER".equalsIgnoreCase(userType)) {
-            zzim.setUser(zzim.getUser());
-            zzim.setCorporation(null);
+            // userId로 User 객체 조회
+            user = userRepository.findById(zzimDTO.getUserId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + zzimDTO.getUserId()));
         } else if ("CORP".equalsIgnoreCase(userType)) {
-            zzim.setUser(null);
-            zzim.setCorporation(zzim.getCorporation());
+            // corpId로 Corporation 객체 조회
+            corporation = corporationRepository.findById(zzimDTO.getCorpId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid corporation ID: " + zzimDTO.getCorpId()));
         } else {
             throw new IllegalArgumentException("Invalid user type: " + userType);
         }
 
+        // ZzimDTO에서 Zzim 엔티티로 변환할 때 User, Corporation, Restaurant 객체를 전달
+        Zzim zzim = zzimDTO.toEntity(user, corporation, restaurant);
+
+        // Zzim 엔티티를 저장
         return zzimRepository.save(zzim);
     }
 
@@ -44,14 +72,12 @@ public class ZzimServiceImpl implements ZzimService {
 
     @Override
     public List<ZzimDTO> getZzimsByUserId(Integer userId, String userType) {
-        System.out.println("Fetching Zzims for userId: " + userId + " with userType: " + userType);
         List<Zzim> zzims;
         if ("CORP".equalsIgnoreCase(userType)) {
             zzims = zzimRepository.findByCorporationId(userId);
         } else {
             zzims = zzimRepository.findByUserId(userId);
         }
-        System.out.println("Fetched Zzims: " + zzims);
         return zzims.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
@@ -70,5 +96,3 @@ public class ZzimServiceImpl implements ZzimService {
         );
     }
 }
-
-

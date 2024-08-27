@@ -238,7 +238,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/logout2")
+    @PostMapping("/logout")
     public ResponseEntity<String> logoutUser(
             @RequestBody Map<String, String> tokenRequest,
             HttpServletRequest request,
@@ -254,7 +254,7 @@ public class UserController {
                 refreshTokenService.deleteRefreshToken(loginId);
 
                 // FCM 토큰 삭제
-                notificationService.deleteUserToken(Integer.parseInt(loginId));
+//                notificationService.deleteUserToken(Integer.parseInt(loginId));
 
                 // 세션 무효화
                 Authentication auth = SecurityContextHolder.getContext().getAuthentication();
