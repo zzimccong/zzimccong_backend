@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: zzimccong
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: qwer1234
+      MYSQL_ROOT_PASSWORD: qwer1234
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - backend-network
+
+  redis:
+    image: redis:6.2
+    ports:
+      - "6379:6379"
+    networks:
+      - backend-network
+
+  backend:
+    build: .
+    container_name: backend-app
+    ports:
+      - "8090:8090"
+    networks:
+      - backend-network
+    depends_on:
+      - db
+      - redis
+
+networks:
+  backend-network:
+
+volumes:
+  db-data:

@@ -6,7 +6,7 @@ import com.project.zzimccong.model.dto.store.RestaurantResDTO;
 import com.project.zzimccong.model.entity.store.Restaurant;
 import com.project.zzimccong.repository.store.RestaurantRepository;
 import com.project.zzimccong.repository.user.UserRepository;
-import com.project.zzimccong.service.s3.S3Service;
+//import com.project.zzimccong.service.s3.S3Service;
 import com.project.zzimccong.service.store.RestaurantService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -32,7 +32,7 @@ public class RestaurantController {
     private final UserRepository userRepository;
     private RestaurantService restaurantService;
     private RestaurantRepository restaurantRepository;
-    private S3Service s3Service;
+//    private S3Service s3Service;
 
 
     @Value("${naver.client.id}")
@@ -125,61 +125,61 @@ public class RestaurantController {
     }
 
 
-    @PostMapping("/restaurant/create-with-photos")
-    public ResponseEntity<Restaurant> createRestaurantWithPhotos(
-            @RequestPart("restaurant") Restaurant restaurant,
-            @RequestPart("photos") MultipartFile[] photos) {
-
-        // 1. 가게 정보 생성
-        restaurant.setState("승인 대기 중");
-        restaurant.setReservationSeats(20);
-        Restaurant createdRestaurant = restaurantService.createRestaurant(restaurant);
-
-        if (createdRestaurant == null) {
-            throw new RuntimeException("Failed to create restaurant");
-        }
-
-        Long restaurantId = createdRestaurant.getId();
-
-        if (restaurantId == null) {
-            throw new RuntimeException("Restaurant ID is null after creation");
-        }
-
-        // 2. 사진 업로드
-        for (int i = 0; i < photos.length; i++) {
-            MultipartFile photo = photos[i];
-            if (photo != null && !photo.isEmpty()) {
-                String photoUrl = s3Service.uploadRestaurantPhoto(photo, restaurantId);
-
-                // 각 사진 URL을 레스토랑 엔티티에 저장 (예시: photo1Url, photo2Url 등)
-                switch (i) {
-                    case 0:
-                        createdRestaurant.setPhoto1Url(photoUrl);
-                        break;
-                    case 1:
-                        createdRestaurant.setPhoto2Url(photoUrl);
-                        break;
-                    case 2:
-                        createdRestaurant.setPhoto3Url(photoUrl);
-                        break;
-                    case 3:
-                        createdRestaurant.setPhoto4Url(photoUrl);
-                        break;
-                    case 4:
-                        createdRestaurant.setPhoto5Url(photoUrl);
-                        break;
-                }
-            } else {
-                throw new RuntimeException("Photo is null or empty");
-            }
-        }
-
-        // 3. 데이터베이스에 저장
-        restaurantRepository.save(createdRestaurant);
-
-        // 4. 생성된 가게 정보를 반환
-        return ResponseEntity.ok(createdRestaurant);
-    }
+//    @PostMapping("/restaurant/create-with-photos")
+//    public ResponseEntity<Restaurant> createRestaurantWithPhotos(
+//            @RequestPart("restaurant") Restaurant restaurant,
+//            @RequestPart("photos") MultipartFile[] photos) {
+//
+//        // 1. 가게 정보 생성
+//        restaurant.setState("승인 대기 중");
+//        restaurant.setReservationSeats(20);
+//        Restaurant createdRestaurant = restaurantService.createRestaurant(restaurant);
+//
+//        if (createdRestaurant == null) {
+//            throw new RuntimeException("Failed to create restaurant");
+//        }
+//
+//        Long restaurantId = createdRestaurant.getId();
+//
+//        if (restaurantId == null) {
+//            throw new RuntimeException("Restaurant ID is null after creation");
+//        }
+//
+//        // 2. 사진 업로드
+//        for (int i = 0; i < photos.length; i++) {
+//            MultipartFile photo = photos[i];
+//            if (photo != null && !photo.isEmpty()) {
+//                String photoUrl = s3Service.uploadRestaurantPhoto(photo, restaurantId);
+//
+//                // 각 사진 URL을 레스토랑 엔티티에 저장 (예시: photo1Url, photo2Url 등)
+//                switch (i) {
+//                    case 0:
+//                        createdRestaurant.setPhoto1Url(photoUrl);
+//                        break;
+//                    case 1:
+//                        createdRestaurant.setPhoto2Url(photoUrl);
+//                        break;
+//                    case 2:
+//                        createdRestaurant.setPhoto3Url(photoUrl);
+//                        break;
+//                    case 3:
+//                        createdRestaurant.setPhoto4Url(photoUrl);
+//                        break;
+//                    case 4:
+//                        createdRestaurant.setPhoto5Url(photoUrl);
+//                        break;
+//                }
+//            } else {
+//                throw new RuntimeException("Photo is null or empty");
+//            }
+//        }
+//
+//        // 3. 데이터베이스에 저장
+//        restaurantRepository.save(createdRestaurant);
+//
+//        // 4. 생성된 가게 정보를 반환
+//        return ResponseEntity.ok(createdRestaurant);
+//    }
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/restaurantUpdate/{id}")
