@@ -32,31 +32,25 @@ public class ZzimServiceImpl implements ZzimService {
     private RestaurantRepository restaurantRepository;
 
     @Override
-    public Zzim createZzim(ZzimDTO zzimDTO, String userType) {
-        User user = null;
-        Corporation corporation = null;
-
-        // Restaurant 객체를 조회
+    public ZzimDTO createZzim(ZzimDTO zzimDTO, String userType) {
+        // 레스토랑 ID로 레스토랑을 조회
         Restaurant restaurant = restaurantRepository.findById(zzimDTO.getRestaurantId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid restaurant ID: " + zzimDTO.getRestaurantId()));
+                .orElseThrow(() -> new IllegalArgumentException("Invalid restaurant ID"));
+
+        Zzim zzim = zzimDTO.toEntity(userRepository, corporationRepository, restaurantRepository);
 
         if ("USER".equalsIgnoreCase(userType) || "MANAGER".equalsIgnoreCase(userType)) {
-            // userId로 User 객체 조회
-            user = userRepository.findById(zzimDTO.getUserId())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + zzimDTO.getUserId()));
+            zzim.setCorporation(null);  // USER 타입이면 corporation은 null로 설정
         } else if ("CORP".equalsIgnoreCase(userType)) {
-            // corpId로 Corporation 객체 조회
-            corporation = corporationRepository.findById(zzimDTO.getCorpId())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid corporation ID: " + zzimDTO.getCorpId()));
+            zzim.setUser(null);  // CORP 타입이면 user는 null로 설정
         } else {
             throw new IllegalArgumentException("Invalid user type: " + userType);
         }
 
-        // ZzimDTO에서 Zzim 엔티티로 변환할 때 User, Corporation, Restaurant 객체를 전달
-        Zzim zzim = zzimDTO.toEntity(user, corporation, restaurant);
+        zzim.setRestaurant(restaurant);  // 확인된 레스토랑 설정
 
-        // Zzim 엔티티를 저장
-        return zzimRepository.save(zzim);
+        Zzim savedZzim = zzimRepository.save(zzim);
+        return convertToDTO(savedZzim);
     }
 
     @Override
@@ -85,6 +79,7 @@ public class ZzimServiceImpl implements ZzimService {
     public List<Zzim> getZzimsByRestaurantId(Long restaurantId) {
         return zzimRepository.findByRestaurantId(restaurantId);
     }
+
 
     private ZzimDTO convertToDTO(Zzim zzim) {
         return new ZzimDTO(

@@ -26,7 +26,7 @@ public class Zzim {
     private Corporation corporation;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "restaurant_id")
+    @JoinColumn(name = "restaurant_id" )
     @JsonBackReference(value = "restaurant-zzims")
     private Restaurant restaurant;
 
@@ -41,7 +41,11 @@ public class Zzim {
         this.corporation = corporation;
         this.restaurant = restaurant;
         this.name = name;
+
+
     }
+
+
 
     public long getId() {
         return id;
@@ -82,4 +86,5 @@ public class Zzim {
     public void setName(String name) {
         this.name = name;
     }
+
 }

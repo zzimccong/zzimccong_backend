@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -55,17 +56,18 @@ public class ReservationServiceImpl implements ReservationService {
     private NotificationService notificationService;
 
     @Override
+    @Transactional
     public Reservation saveReservation(ReservationDTO reservationDto, String token) {
         // JWT 토큰에서 userId 및 userType 추출
         String userId = jwtTokenUtil.getUserIdFromToken(token);
         String userType = jwtTokenUtil.getUserTypeFromToken(token);
-        Restaurant restaurant = restaurantRepository.findById(reservationDto.getRestaurantId()).get();
+        Restaurant restaurant = restaurantRepository.findById(reservationDto.getRestaurantId()).orElseThrow(() -> new RuntimeException("Restaurant not found"));
         Reservation reservation = reservationDto.toEntity();
         reservation.setRestaurant(restaurant);
         Reservation savedReservation;
 
         // 유저 타입에 따라 Reservation 엔터티의 필드를 설정
-        if ("user".equals(userType) || "manager".equals(userType)) {
+        if ("user".equalsIgnoreCase(userType) || "manager".equalsIgnoreCase(userType)) {
             // User 조회 시 Optional 처리
             Optional<User> userOptional = userRepository.findByLoginId(userId);
             if (userOptional.isPresent()) {
@@ -78,7 +80,7 @@ public class ReservationServiceImpl implements ReservationService {
             } else {
                 throw new RuntimeException("User not found with loginId: " + userId);
             }
-        } else if ("corp".equals(userType)) {
+        } else if ("corp".equalsIgnoreCase(userType)) {
             // Corporation 조회 시 Optional 처리
             Optional<Corporation> corpOptional = corporationRepository.findByCorpId(userId);
             if (corpOptional.isPresent()) {
@@ -92,38 +94,37 @@ public class ReservationServiceImpl implements ReservationService {
             throw new IllegalArgumentException("Invalid user type");
         }
 
-//        // 예약이 성공적으로 저장된 후, manager에게 알림 전송
-//        sendNotificationToStoreManager(savedReservation);
+        // 예약이 성공적으로 저장된 후, manager에게 알림 전송
+        sendNotificationToStoreManager(savedReservation);
 
         return savedReservation;
     }
 
-//    private void sendNotificationToStoreManager(Reservation reservation) {
-//        Optional<User> managerOptional = userRepository.findByStoreAndRole(reservation.getStore(), "manager");
-//        String title = "새 예약 알림";
-//        String message = "새로운 예약이 생성되었습니다. 예약 ID: " + reservation.getId();
-//
-//        if (managerOptional.isPresent()) {
-//            User manager = managerOptional.get();
-//
-//            // manager에 연결된 NotificationToken 조회
-//            Optional<NotificationToken> tokenOptional = notificationTokenRepository.findByUser(manager);
-//            if (tokenOptional.isPresent()) {
-//                String token = tokenOptional.get().getToken(); // manager의 FCM 토큰을 가져옴
-//                if (token != null && !token.isEmpty()) {
-//                    try {
-//                        notificationService.sendMessage(token, title, message);
-//                    } catch (Exception e) {
-//                        log.error("관리자 {}에게 알림 전송 중 오류 발생: {}", manager.getLoginId(), e.getMessage());
-//                    }
-//                }
-//            } else {
-//                log.warn("관리자 {}의 알림 토큰을 찾을 수 없습니다.", manager.getLoginId());
-//            }
-//        } else {
-//            log.warn("예약된 가게의 매니저를 찾을 수 없습니다.");
-//        }
-//    }
+    private void sendNotificationToStoreManager(Reservation reservation) {
+        // 예약된 레스토랑에 연결된 매니저 찾기
+        List<User> managers = restaurantRepository.findManagersByRestaurantId(reservation.getRestaurant().getId());
+
+        String title = "새 예약 알림";
+        String message = "새로운 예약이 생성되었습니다. 예약 ID: " + reservation.getId();
+
+        if (!managers.isEmpty()) {
+            for (User manager : managers) {
+                // 매니저에 연결된 NotificationToken 조회
+                String token = notificationService.getUserToken(manager.getId());
+                if (token != null && !token.isEmpty()) {
+                    try {
+                        notificationService.sendMessage(token, title, message);
+                    } catch (Exception e) {
+                        log.error("관리자 {}에게 알림 전송 중 오류 발생: {}", manager.getLoginId(), e.getMessage());
+                    }
+                } else {
+                    log.warn("관리자 {}의 알림 토큰을 찾을 수 없습니다.", manager.getLoginId());
+                }
+            }
+        } else {
+            log.warn("예약된 가게의 매니저를 찾을 수 없습니다.");
+        }
+    }
 
     @Override
     public List<ReservationDTO> getAllReservations() {
@@ -162,6 +163,12 @@ public class ReservationServiceImpl implements ReservationService {
             Reservation reservation = optionalReservation.get();
             reservation.setState(status);
 
+            // 예약 상태가 "예약 확정" 또는 "예약 취소" 중 하나일 경우
+            if ("예약 확정".equals(status) || "예약 취소".equals(status)) {
+                // 예약한 유저에게 알림 발송
+                sendNotificationToUser(reservation, status);
+            }
+
             // 상태가 "예약 확정", "예약 취소", "방문 완료" 중 하나일 경우
             if ("예약 취소".equals(status) || "방문 완료".equals(status)) {
                 // 예약 테이블에서 userId가 null이 아닐 때만 쿠폰 증가 호출
@@ -174,6 +181,32 @@ public class ReservationServiceImpl implements ReservationService {
             return reservationRepository.save(reservation);
         }
         throw new RuntimeException("Reservation not found");
+    }
+
+    private void sendNotificationToUser(Reservation reservation, String status) {
+        User user = reservation.getUser();
+        if (user != null) {
+            String title = "예약 상태 변경 알림";
+            String message = "";
+
+            if ("예약 확정".equals(status)) {
+                message = "예약이 확정되었습니다.";
+            } else if ("예약 취소".equals(status)) {
+                message = "예약이 취소되었습니다.";
+            }
+
+            // 유저의 알림 토큰 조회
+            String token = notificationService.getUserToken(user.getId());
+            if (token != null && !token.isEmpty()) {
+                try {
+                    notificationService.sendMessage(token, title, message);
+                } catch (Exception e) {
+                    log.error("유저 {}에게 알림 전송 중 오류 발생: {}", user.getLoginId(), e.getMessage());
+                }
+            } else {
+                log.warn("유저 {}의 알림 토큰을 찾을 수 없습니다.", user.getLoginId());
+            }
+        }
     }
 
     @Override

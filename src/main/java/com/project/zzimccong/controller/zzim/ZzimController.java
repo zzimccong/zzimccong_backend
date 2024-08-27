@@ -16,7 +16,7 @@ public class ZzimController {
     private ZzimService zzimService;
 
     @PostMapping
-    public Zzim createZzim(@RequestBody ZzimDTO zzimDTO, @RequestParam String userType) {
+    public ZzimDTO createZzim(@RequestBody ZzimDTO zzimDTO, @RequestParam String userType) {
         return zzimService.createZzim(zzimDTO, userType);
     }
 
