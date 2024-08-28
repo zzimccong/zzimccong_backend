@@ -27,14 +27,6 @@ public class CouponDSLRepository {
 
         log.debug("Updated reservation coupon rows: {}", updatedReservationRows);
 
-        long updatedLotteryRows = queryFactory
-                .update(coupon)
-                .set(coupon.cnt, coupon.cnt.subtract(1))
-                .where(coupon.user.id.eq(userId)
-                        .and(coupon.type.eq("추첨권")))
-                .execute();
-
-        log.debug("Updated lottery coupon rows: {}", updatedLotteryRows);
     }
 
     @Transactional
