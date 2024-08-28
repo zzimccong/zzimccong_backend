@@ -73,14 +73,14 @@ public class RestaurantController {
     @GetMapping("/search/{searchWord}")
     public List<RestaurantResDTO> findByKeyword(@PathVariable String searchWord){
         List<RestaurantResDTO> results = restaurantService.findByKeyword(searchWord);
-        return results.size() > 200 ? results.subList(0, 200) : results;
+        return results.size() > 50 ? results.subList(0, 50) : results;
     }
 
     //2차 키워드로 가게 필터
     @PostMapping("/search/filter")
     public List<RestaurantResDTO> findByFilter(@RequestBody Map<String, Object> filters){
         List<RestaurantResDTO> results = restaurantService.findByFilter(filters);
-        return results.size() > 200 ? results.subList(0, 200) : results;
+        return results.size() > 50 ? results.subList(0, 50) : results;
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
