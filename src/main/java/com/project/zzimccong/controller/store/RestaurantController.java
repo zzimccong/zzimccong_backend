@@ -1,7 +1,6 @@
 package com.project.zzimccong.controller.store;
 
 
-import com.project.zzimccong.model.dto.store.RestaurantDTO;
 import com.project.zzimccong.model.dto.store.RestaurantResDTO;
 import com.project.zzimccong.model.entity.store.Restaurant;
 import com.project.zzimccong.repository.store.RestaurantRepository;
