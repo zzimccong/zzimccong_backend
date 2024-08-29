@@ -149,16 +149,15 @@ public class EventParticipationController {
         return ResponseEntity.ok(totalCouponsUsed);
     }
 
-    // 임의의 참여자 생성
     @PostMapping("/{eventId}/generate-random-participants")
     public ResponseEntity<String> generateRandomParticipants(@PathVariable Long eventId) {
         try {
             Event event = eventRepository.findById(eventId)
                     .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 이벤트 ID입니다."));
 
-            for (int i = 1; i <= 100; i++) {
+            for (int i = 1; i <= 500; i++) {
                 int userId = 1000 + i;
-                int couponCount = 5;
+                int couponCount = generateRandomCouponCount(); // 1~5장 사이의 랜덤 추첨권 수
 
                 User user = userRepository.findById(userId)
                         .orElseGet(() -> createRandomUser(userId));
@@ -168,11 +167,17 @@ public class EventParticipationController {
                 eventParticipationService.participateInEvent(user.getId(), eventId, couponCount);
             }
 
-            return ResponseEntity.ok("100명의 임의의 참여자가 생성되었습니다.");
+            return ResponseEntity.ok("500명의 임의의 참여자가 생성되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("임의의 참여자 생성 중 오류가 발생했습니다: " + e.getMessage());
         }
+    }
+
+    // 랜덤 쿠폰 수 생성
+    private int generateRandomCouponCount() {
+        Random random = new SecureRandom();
+        return random.nextInt(5) + 1; // 1~5 사이의 랜덤 값 생성
     }
 
     // 임의의 사용자 생성
@@ -197,10 +202,11 @@ public class EventParticipationController {
     }
 
     private String generateRandomName() {
-        String[] firstNames = {"김", "장", "신", "정", "도"};
-        String[] lastNames = {"민", "구", "동", "정", "이"};
+        String[] firstNames = {"김", "장", "신", "정", "도", "이","박","지","조","오","한","안","장","홍"};
+        String[] secondNames = {"권", "애", "준", "기", "가", "호", "채", "승", "나", "성", "동", "정", "원", "나"};
+        String[] lastNames = {"민", "구", "동", "정", "이", "원", "재", "민", "현", "준", "범", "욱", "석", "주"};
         Random random = new SecureRandom();
-        return firstNames[random.nextInt(firstNames.length)] + lastNames[random.nextInt(lastNames.length)];
+        return firstNames[random.nextInt(firstNames.length)] + secondNames[random.nextInt(secondNames.length)] + lastNames[random.nextInt(lastNames.length)];
     }
 
     private LocalDate generateRandomBirthday() {

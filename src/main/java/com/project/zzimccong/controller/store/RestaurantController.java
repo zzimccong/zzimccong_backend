@@ -1,7 +1,6 @@
 package com.project.zzimccong.controller.store;
 
 
-import com.project.zzimccong.model.dto.store.RestaurantDTO;
 import com.project.zzimccong.model.dto.store.RestaurantResDTO;
 import com.project.zzimccong.model.entity.store.Restaurant;
 import com.project.zzimccong.repository.store.RestaurantRepository;
@@ -73,14 +72,14 @@ public class RestaurantController {
     @GetMapping("/search/{searchWord}")
     public List<RestaurantResDTO> findByKeyword(@PathVariable String searchWord){
         List<RestaurantResDTO> results = restaurantService.findByKeyword(searchWord);
-        return results.size() > 200 ? results.subList(0, 200) : results;
+        return results.size() > 20 ? results.subList(0, 20) : results;
     }
 
     //2차 키워드로 가게 필터
     @PostMapping("/search/filter")
     public List<RestaurantResDTO> findByFilter(@RequestBody Map<String, Object> filters){
         List<RestaurantResDTO> results = restaurantService.findByFilter(filters);
-        return results.size() > 200 ? results.subList(0, 200) : results;
+        return results.size() > 20 ? results.subList(0, 20) : results;
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
