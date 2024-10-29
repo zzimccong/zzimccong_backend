@@ -1,0 +1,257 @@
+// UserServiceImpl.java
+package com.project.zzimccong.service.user;
+
+import com.project.zzimccong.model.dto.user.UserDTO;
+import com.project.zzimccong.model.entity.coupon.Coupon;
+import com.project.zzimccong.model.entity.user.User;
+import com.project.zzimccong.repository.coupon.CouponRepository;
+import com.project.zzimccong.repository.user.UserRepository;
+import com.project.zzimccong.service.email.EmailVerificationService;
+import com.project.zzimccong.service.redis.TemporaryStorageService;
+import com.project.zzimccong.util.sms.SmsUtil;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.util.Optional;
+
+@Service
+public class UserServiceImpl implements UserService {
+
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final SmsUtil smsUtil;
+    private final TemporaryStorageService temporaryStorageService;
+    private final EmailVerificationService emailVerificationService;
+    private final CouponRepository couponRepository;
+
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, SmsUtil smsUtil, TemporaryStorageService temporaryStorageService, EmailVerificationService emailVerificationService, CouponRepository couponRepository) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.smsUtil = smsUtil;
+        this.temporaryStorageService = temporaryStorageService;
+        this.emailVerificationService = emailVerificationService;
+        this.couponRepository=couponRepository;
+    }
+
+    @Override
+    public User registerUser(UserDTO userDTO) {
+        User user = new User();
+        user.setLoginId(userDTO.getLoginId());
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        user.setName(userDTO.getName());
+        user.setBirth(LocalDate.parse(userDTO.getBirth()));
+        user.setEmail(userDTO.getEmail());
+        user.setPhone(userDTO.getPhone());
+        user.setRole(userDTO.getRole());
+        User savedUser = userRepository.save(user);
+
+        Coupon reservationCoupon = new Coupon();
+        reservationCoupon.setUser(savedUser);
+        reservationCoupon.setType("예약쿠폰");
+        reservationCoupon.setDiscountPrice(null);
+        reservationCoupon.setCnt(10);
+        couponRepository.save(reservationCoupon);
+
+        Coupon lotteryCoupon = new Coupon();
+        lotteryCoupon.setUser(savedUser);
+        lotteryCoupon.setType("추첨권");
+        lotteryCoupon.setDiscountPrice(null);
+        lotteryCoupon.setCnt(2);
+        couponRepository.save(lotteryCoupon);
+
+        return savedUser;
+    }
+
+    @Override
+    public User authenticate(String loginId, String password) {
+        Optional<User> userOptional = userRepository.findByLoginId(loginId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            if (passwordEncoder.matches(password, user.getPassword())) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isEmailExists(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean isLoginIdExists(String loginId) {
+        return userRepository.existsByLoginId(loginId);
+    }
+
+    @Override
+    public User getUserById(String loginId) {
+        return userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with loginId: " + loginId));
+    }
+
+    @Override
+    public boolean isPhoneExists(String phone) {
+        return userRepository.existsByPhone(phone);
+    }
+
+    @Override
+    public void sendSmsVerification(String phoneNum) {
+        String verificationCode = generateVerificationCode();
+        smsUtil.sendOne(phoneNum, verificationCode);
+        temporaryStorageService.saveSMSVerificationCode(phoneNum, verificationCode);
+    }
+
+    @Override
+    public boolean verifySmsCode(String phoneNum, String verificationCode) {
+        return temporaryStorageService.verifySMSCode(phoneNum, verificationCode);
+    }
+
+    private String generateVerificationCode() {
+        SecureRandom random = new SecureRandom();
+        int code = random.nextInt(8999) + 1000; // 1000 ~ 9999 범위의 숫자 생성
+        return String.valueOf(code);
+    }
+
+    @Override
+    public User updateUser(UserDTO userDTO) {
+        User user = userRepository.findByLoginId(userDTO.getLoginId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (userDTO.getName() != null) {
+            user.setName(userDTO.getName());
+        }
+        if (userDTO.getBirth() != null) {
+            user.setBirth(LocalDate.parse(userDTO.getBirth()));
+        }
+        if (userDTO.getEmail() != null) {
+            user.setEmail(userDTO.getEmail());
+        }
+        if (userDTO.getPhone() != null) {
+            user.setPhone(userDTO.getPhone());
+        }
+        if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        }
+
+        return userRepository.save(user);
+    }
+
+    @Override
+    public void changePassword(String loginId, String oldPassword, String newPassword) {
+        User user = userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Old password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
+    @Override
+    public boolean deleteUser(String loginId, String password) {
+        Optional<User> userOptional = userRepository.findByLoginId(loginId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            if (passwordEncoder.matches(password, user.getPassword())) {
+                userRepository.delete(user);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public User getUserByNameAndEmail(String name, String email) {
+        return userRepository.findByNameAndEmail(name, email).orElse(null);
+    }
+
+    @Override
+    public void sendTemporaryPassword(String loginId, String email) {
+        emailVerificationService.sendTemporaryPassword(null, loginId, email);
+    }
+
+    @Override
+    public User findById(Integer id) {
+        return userRepository.findById(id).orElse(null);
+    }
+
+
+    @Override
+    public User createManagerUser(String loginId, String password, String name, LocalDate birth, String email, String phone) throws Exception {
+        if (userRepository.existsByLoginId(loginId) || userRepository.existsByEmail(email)) {
+            throw new Exception("Username or Email already exists");
+        }
+
+        User user = new User();
+        user.setLoginId(loginId);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setName(name);
+        user.setBirth(birth);
+        user.setEmail(email);
+        user.setPhone(phone);
+        user.setRole("MANAGER");
+
+        // 사용자 저장
+        User savedUser = userRepository.save(user);
+
+        // 쿠폰 발급 로직 추가
+        createCouponsForUser(savedUser);
+
+        return savedUser;
+    }
+
+    // 카카오 회원가입 처리 (비밀번호 없이)
+    @Override
+    public User registerUserWithoutPassword(UserDTO userDTO) {
+        User user = new User();
+        user.setLoginId(userDTO.getLoginId());
+        user.setPassword(null);  // OAuth 사용자는 비밀번호가 필요 없으므로 null로 설정
+        user.setName(userDTO.getName());
+
+        // 생년월일 처리: birth가 null이 아닌 경우에만 설정
+        if (userDTO.getBirth() != null && !userDTO.getBirth().isEmpty()) {
+            user.setBirth(LocalDate.parse(userDTO.getBirth()));
+        }
+
+        user.setEmail(userDTO.getEmail());
+
+        // 전화번호가 null이 아닌 경우 설정
+        if (userDTO.getPhone() != null && !userDTO.getPhone().isEmpty()) {
+            user.setPhone(userDTO.getPhone());
+        }
+
+        user.setRole(userDTO.getRole());  // 기본적으로 "USER" 역할로 설정
+
+        // 회원 정보 저장
+        User savedUser = userRepository.save(user);
+
+        // 쿠폰 발급 로직 추가
+        createCouponsForUser(savedUser);
+
+        return savedUser;
+    }
+
+    // 쿠폰 생성 메서드
+    private void createCouponsForUser(User user) {
+        // 예약 쿠폰 발급
+        Coupon reservationCoupon = new Coupon();
+        reservationCoupon.setUser(user);
+        reservationCoupon.setType("예약쿠폰");
+        reservationCoupon.setDiscountPrice(null); // 할인 금액이 없으면 null
+        reservationCoupon.setCnt(10); // 10개의 쿠폰 발급
+        couponRepository.save(reservationCoupon);
+
+        // 추첨권 발급
+        Coupon lotteryCoupon = new Coupon();
+        lotteryCoupon.setUser(user);
+        lotteryCoupon.setType("추첨권");
+        lotteryCoupon.setDiscountPrice(null); // 할인 금액이 없으면 null
+        lotteryCoupon.setCnt(2); // 2개의 추첨권 발급
+        couponRepository.save(lotteryCoupon);
+    }
+}

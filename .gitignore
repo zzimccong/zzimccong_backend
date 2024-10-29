@@ -18,13 +18,15 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
-.idea
+.ideach
 *.iws
 *.iml
 *.ipr
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+/src/main/resources/application.properties
+/src/test/java/com/project/zzimccong/RestaurantServicePerformanceTest.java
 
 ### NetBeans ###
 /nbproject/private/
